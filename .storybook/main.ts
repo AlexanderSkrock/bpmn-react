@@ -13,5 +13,8 @@ const config: StorybookConfig = {
     name: "@storybook/react-vite",
     options: {},
   },
+  staticDirs: [
+    "../resources"
+  ]
 };
 export default config;

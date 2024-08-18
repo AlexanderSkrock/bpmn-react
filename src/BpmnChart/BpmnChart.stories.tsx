@@ -1,12 +1,20 @@
-import { StoryFn, Meta } from "@storybook/react";
+import type { StoryObj, Meta } from "@storybook/react";
 
 import BpmnChart from "./BpmnChart";
 
-export default {
+const meta: Meta<typeof BpmnChart> = {
+    component: BpmnChart,
+    render: (args, { loaded: { xml } }) => <BpmnChart {...args} xml={ xml } />,
 } as Meta<typeof BpmnChart>;
 
-const Template: StoryFn<typeof BpmnChart> = (args) => <BpmnChart {...args} />;
+export default meta;
 
-export const BpmnTest = Template.bind({});
-BpmnTest.args = {
+type Story = StoryObj<typeof BpmnChart>;
+
+export const Primary: Story = {
+    loaders: [
+        async () => ({
+            xml: await (await fetch('process.bpmn')).text(),
+        }),
+    ],
 };
