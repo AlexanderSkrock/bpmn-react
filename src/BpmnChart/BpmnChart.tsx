@@ -3,24 +3,76 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import type { EventBusEventCallback, ImportDoneEvent } from "bpmn-js/lib/BaseViewer";
 import Viewer from "bpmn-js/lib/Viewer";
 
-import type { BpmnChartProps } from "./BpmnChart.types";
-import { getCanvas } from "./serviceHelpers";
+import type { BpmnChartProps, OverlayDefinition } from "./BpmnChart.types";
+import { isOverlayDefinition, isSingleOverlayDefinitionBuilder, isMultipleOverlayDefinitionBuilder } from "./BpmnChart.types";
 
-const BpmnChart: React.FC<BpmnChartProps> = ({ xml, onLoadingSuccess, onLoadingError }: BpmnChartProps) => {
+
+import { getCanvas, getElementRegistry, getOverlays} from "./serviceHelpers";
+
+const BpmnChart: React.FC<BpmnChartProps> = ({ xml, overlays, onLoadingSuccess, onLoadingError }: BpmnChartProps) => {
     const chartContainerRef = useRef<HTMLDivElement>(null);
     const [bpmnViewer, setBpmnViewer] = useState<Viewer | undefined>();
 
+
+    const initializeOverlays = useCallback(() => {
+        if (!bpmnViewer) {
+            return;
+        }
+
+        const overlayService = getOverlays(bpmnViewer);
+        const elementRegistry = getElementRegistry(bpmnViewer);
+
+        overlayService.clear();
+        console.log("Removed all active overlays.");
+
+
+        const overlayDefinitions: OverlayDefinition[] = [];
+        overlays?.forEach(overlay => {
+            if (isOverlayDefinition(overlay)) {
+                overlayDefinitions.push(overlay);
+            } else if (isSingleOverlayDefinitionBuilder(overlay)) {
+                const element = elementRegistry.get(overlay.element);
+                if (element) {
+                    const overlayDefinition = overlay.buildDefinition(element);
+                    overlayDefinitions.push(overlayDefinition);
+                }
+            } else if (isMultipleOverlayDefinitionBuilder(overlay)) {
+                const elements = overlay.elementFilter
+                    ? elementRegistry.filter(overlay.elementFilter)
+                    : elementRegistry.getAll();
+                
+                elements.forEach(element => {
+                    const overlayDefinition = overlay.buildDefinition(element);
+                    overlayDefinitions.push(overlayDefinition);
+                });
+            }
+        });
+
+        overlayDefinitions.forEach(({ type, element, config }) => {
+            if (type) {
+                overlayService.add(element, type, config);
+            } else {
+                overlayService.add(element, config);
+            }
+        });
+        console.log(`Registered ${overlayDefinitions.length} overlays.`);
+    }, [bpmnViewer, overlays]);
+
     const handleImportDone: EventBusEventCallback<ImportDoneEvent> = useCallback((event: ImportDoneEvent) => {
         const { error, warnings } = event;
-      
+
         if (error) {
           return onLoadingError?.(error);
         }
 
-        getCanvas(bpmnViewer)?.zoom('fit-viewport');
-  
+        initializeOverlays();
+
+        if (bpmnViewer) {
+            getCanvas(bpmnViewer).zoom('fit-viewport');
+        }
+
         return onLoadingSuccess?.({ warnings });
-    }, [bpmnViewer, onLoadingSuccess, onLoadingError]);
+    }, [bpmnViewer, initializeOverlays, onLoadingSuccess, onLoadingError]);
 
     useEffect(() => {
         if (!bpmnViewer && chartContainerRef.current) {
