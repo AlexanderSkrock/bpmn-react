@@ -2,11 +2,7 @@ export function pointDistance(pointA, pointB) {
     return Math.sqrt(Math.pow(pointB.x - pointA.x, 2) + Math.pow(pointB.y - pointA.y, 2));
 }
 
-export function distanceToEdge(W, H, x, y) {
-    // Center of the rectangle
-    const centerX = W / 2;
-    const centerY = H / 2;
-
+export function distanceToEdge(centerX, centerY, W, H, x, y) {
     // Vector components
     const dx = x - centerX;
     const dy = y - centerY;

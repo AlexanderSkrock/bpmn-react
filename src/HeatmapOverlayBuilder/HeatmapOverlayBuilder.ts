@@ -29,17 +29,28 @@ class HeatmapOverlayBuilder implements MultipleOverlayDefinitionBuilder {
         const elementValue = this.values[element.id];
         const centerX = element.width / 2;
         const centerY = element.height / 2;
-        const overlayWidth = element.width;
-        const overlayHeight = element.height;
+
+        const overlayOverflow = 10;
+        const overlayWidth = element.width + (2 * overlayOverflow);
+        const overlayHeight = element.height + (2 * overlayOverflow);
 
         const heatValues = [];
-        for (let y = 0; y < overlayHeight; y++) {
-            for (let x = 0; x < overlayWidth; x++) {
-                const centerToPoint = pointDistance({ x: centerX, y: centerY }, { x, y });
-                const centerToEdge = distanceToEdge(overlayWidth, overlayHeight, x, y);
+        for (let rowIndex = 0; rowIndex < overlayHeight; rowIndex++) {
+            for (let columnIndex = 0; columnIndex < overlayWidth; columnIndex++) {
+                const coordinateX = columnIndex - overlayOverflow;
+                const coordinateY = rowIndex - overlayOverflow;
+
+                const centerToPoint = pointDistance(
+                    { x: centerX, y: centerY },
+                    { x: coordinateX, y: coordinateY }
+                );
+                const centerToEdge = distanceToEdge(
+                    centerX, centerY, element.width, element.height,
+                    coordinateX, coordinateY
+                );
                 const valueScale = 1 - (centerToPoint / centerToEdge);
                 const pointValue = elementValue * valueScale;
-                heatValues[y * overlayWidth + x] = pointValue;
+                heatValues[rowIndex * overlayWidth + columnIndex] = pointValue;
             }   
         }
 
@@ -47,17 +58,21 @@ class HeatmapOverlayBuilder implements MultipleOverlayDefinitionBuilder {
             .size([overlayWidth, overlayHeight])
             .thresholds(10);
         const heatContours = contoursGenerator(heatValues);
+
         const nonOverlappingHeatContours = [];
         for (let i = 0; i < heatContours.length; i++) {
-            let featureC = feature(heatContours[i]);
-            for (let j = i + 1; j < heatContours.length; j++) {
-                featureC = difference(featureCollection([featureC, feature(heatContours[j])]));
+            const c = heatContours[i];
+            const nextC = heatContours[i + 1];
+            if (nextC) {
+                const cleanedContur = difference(featureCollection([
+                    feature(c),
+                    feature(nextC),
+                ]));
+                nonOverlappingHeatContours.push({ ...c, ...cleanedContur.geometry });
+            } else {
+                nonOverlappingHeatContours.push(c);
             }
-            nonOverlappingHeatContours.push({ ...heatContours[i], ...featureC.geometry });
         }
-
-        const color = scaleSequential(interpolateRgbBasis(["green", "yellow", "red"])).domain([this.minValue, this.maxValue]);
-        const path = geoPath().projection(geoIdentity().scale(1));
 
         const canvas = create("canvas")
             .attr("width", `${overlayWidth}px`)
@@ -65,12 +80,15 @@ class HeatmapOverlayBuilder implements MultipleOverlayDefinitionBuilder {
             .node();
         const renderContext = canvas.getContext("2d");
         renderContext.globalAlpha = 0.25;        
+
+        const color = scaleSequential(interpolateRgbBasis(["green", "yellow", "red"])).domain([this.minValue, this.maxValue]);
+        const path = geoPath().projection(geoIdentity().scale(1)).context(renderContext);
        
         nonOverlappingHeatContours.forEach(c => {
             renderContext.fillStyle = color(c.value);
-            
+        
             renderContext.beginPath();
-            path.context(renderContext)(c);
+            path(c);
             renderContext.fill();
             renderContext.closePath();
         });
@@ -80,8 +98,8 @@ class HeatmapOverlayBuilder implements MultipleOverlayDefinitionBuilder {
             element: element.id,
             config: {
                 position: {
-                    top: 0,
-                    left: 0,
+                    top: -overlayOverflow,
+                    left: -overlayOverflow,
                 },
                 html: canvas,
             },
