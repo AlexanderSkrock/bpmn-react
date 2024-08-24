@@ -39,6 +39,7 @@
     "@storybook/test": "^8.2.9",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/react": "^16.0.0",
+    "@types/d3": "^7.4.3",
     "@types/jest": "^29.5.12",
     "@types/react": "^18.3.3",
     "babel-jest": "^29.7.0",
@@ -53,5 +54,9 @@
   },
   "resolutions": {
     "jsdom": "24.1.1"
+  },
+  "dependencies": {
+    "@turf/turf": "^7.1.0",
+    "d3": "^7.9.0"
   }
 }

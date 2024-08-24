@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import type { EventBusEventCallback, ImportDoneEvent } from "bpmn-js/lib/BaseViewer";
-import Viewer from "bpmn-js/lib/Viewer";
+import Viewer from "bpmn-js/lib/NavigatedViewer";
 
 import type { BpmnChartProps, OverlayDefinition } from "./BpmnChart.types";
 import { isOverlayDefinition, isSingleOverlayDefinitionBuilder, isMultipleOverlayDefinitionBuilder } from "./BpmnChart.types";
