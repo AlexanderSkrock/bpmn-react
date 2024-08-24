@@ -1,27 +1,33 @@
-import { min as minValue, max as maxValue, contours, create, geoPath, geoIdentity, scaleSequential, interpolateRgbBasis } from "d3";
-import { difference, feature, featureCollection, geometryCollection } from "@turf/turf";
+import { contours, create, geoPath, geoIdentity, scaleSequential, interpolateRgbBasis } from "d3";
+import { difference, feature, featureCollection } from "@turf/turf";
 
 import { ElementLike } from "diagram-js/lib/model/Types";
 
+import type { HeatmapOverlayBuilderOptions } from "./HeatmapOverlayBuilder.types";
+
 import { OverlayBuilderEnvironment, OverlayDefinitionsBuilder } from "../BpmnChart/BpmnChart.types"
-import { distanceToEdge, getClosest, pointDistance } from "./util";
+import { getClosest, pointDistance } from "./util";
 
 class HeatmapOverlayBuilder implements OverlayDefinitionsBuilder {
 
-    values: { [key: string]: number };
+    options: HeatmapOverlayBuilderOptions;
 
-    minValue: number;
-    maxValue: number;
+    color: (value: number) => string;
 
-    constructor(values: { [key: string]: number }) {
-        this.values = values;
+    constructor(options: HeatmapOverlayBuilderOptions) {
+        this.options = {
+            renderMode: "svg",
+            opacity: 0.25,
+            ...options,
+        };
 
-        this.minValue = minValue(Object.values(values)) || 0;
-        this.maxValue = maxValue(Object.values(values)) || 0;
+        const minValue = Math.min(...Object.values(this.options.values));
+        const maxValue = Math.max(...Object.values(this.options.values));
+        this.color = scaleSequential(interpolateRgbBasis(["green", "yellow", "red"])).domain([minValue, maxValue]);
     }
 
     elementFilter = (element: ElementLike) => {
-        const elementValue = this.values[element.id];
+        const elementValue = this.options.values[element.id];
         return elementValue !== null && elementValue !== undefined;
     }
 
@@ -37,7 +43,7 @@ class HeatmapOverlayBuilder implements OverlayDefinitionsBuilder {
                 x: element.x + (element.width / 2),
                 y: element.y + (element.height / 2),
             },
-            value: this.values[element.id],
+            value: this.options.values[element.id],
         }));
 
         const heatMatrix = [];
@@ -74,24 +80,9 @@ class HeatmapOverlayBuilder implements OverlayDefinitionsBuilder {
             }
         }
 
-        const canvas = create("canvas")
-            .attr("width", `${overlayWidth}px`)
-            .attr("height", `${overlayHeight}px`)
-            .node();
-        const renderContext = canvas.getContext("2d");
-        renderContext.globalAlpha = 0.25;        
+        const renderFunction = this.options.renderMode === "canvas" ? this.renderContoursToCanvas : this.renderContoursToSvg;
 
-        const color = scaleSequential(interpolateRgbBasis(["green", "yellow", "red"])).domain([this.minValue, this.maxValue]);
-        const path = geoPath().projection(geoIdentity().scale(1)).context(renderContext);
-       
-        nonOverlappingHeatContours.forEach(c => {
-            renderContext.fillStyle = color(c.value);
-        
-            renderContext.beginPath();
-            path(c);
-            renderContext.fill();
-            renderContext.closePath();
-        });
+        const htmlElement = renderFunction(overlayWidth, overlayHeight, nonOverlappingHeatContours, this.color)
 
         return [{
             type: "Overlay_Heatmap",
@@ -101,9 +92,50 @@ class HeatmapOverlayBuilder implements OverlayDefinitionsBuilder {
                     top: overlayOffsetY,
                     left: overlayOffsetX,
                 },
-                html: canvas,
+                html: htmlElement,
             },
         }];
+    }
+
+    renderContoursToCanvas = (width, height, heatmapContours) => {
+        const canvas = create("canvas")
+            .attr("width", `${width}px`)
+            .attr("height", `${height}px`)
+            .node();
+
+        const renderContext = canvas.getContext("2d");
+        const path = geoPath().projection(geoIdentity().scale(1)).context(renderContext);
+
+        renderContext.globalAlpha = this.options.opacity;        
+
+        heatmapContours.forEach(c => {
+            renderContext.fillStyle = this.color(c.value);
+        
+            renderContext.beginPath();
+            path(c);
+            renderContext.fill();
+            renderContext.closePath();
+        });
+
+        return canvas;
+    }
+
+    renderContoursToSvg = (width, height, heatmapContours) => {
+        const svg = create("svg")
+            .attr("width", `${width}px`)
+            .attr("height", `${height}px`);
+
+        const path = geoPath().projection(geoIdentity().scale(1));
+
+        svg.append("g")
+            .selectAll()
+            .data(heatmapContours)
+            .join("path")
+            .attr("d", c => path(c))
+            .attr("fill", c => this.color(c.value))
+            .attr("fill-opacity", this.options.opacity);
+
+        return svg.node();
     }
 }
 
