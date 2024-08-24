@@ -56,8 +56,10 @@ class HeatmapOverlayBuilder implements OverlayDefinitionsBuilder {
                 const closestValue = heatPoints.find(point => closestPosition.x === point.position.x && closestPosition.y === point.position.y).value;
                 const distance = pointDistance({ x: coordinateX, y: coordinateY }, closestPosition);
 
-                const valueScale = 1 - (Math.min(50, distance) / 50);
-                const pointValue = closestValue * valueScale;
+                const isOutsideOfHeat = distance > 50;
+                const heatScale = 1 - (distance / 50);
+                const pointValue = isOutsideOfHeat ? Number.NaN : closestValue * heatScale;
+
                 heatMatrix[rowIndex * overlayWidth + columnIndex] = pointValue;
             }   
         }        
