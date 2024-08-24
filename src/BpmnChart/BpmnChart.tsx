@@ -4,7 +4,7 @@ import type { EventBusEventCallback, ImportDoneEvent } from "bpmn-js/lib/BaseVie
 import Viewer from "bpmn-js/lib/NavigatedViewer";
 
 import type { BpmnChartProps, OverlayDefinition } from "./BpmnChart.types";
-import { isOverlayDefinition, isSingleOverlayDefinitionBuilder, isMultipleOverlayDefinitionBuilder } from "./BpmnChart.types";
+import { isOverlayDefinition, isOverlayDefinitionBuilder, isOverlayDefinitionsBuilder } from "./BpmnChart.types";
 
 
 import { getCanvas, getElementRegistry, getOverlays} from "./serviceHelpers";
@@ -27,22 +27,32 @@ const BpmnChart: React.FC<BpmnChartProps> = ({ xml, overlays, onLoadingSuccess, 
 
 
         const overlayDefinitions: OverlayDefinition[] = [];
+
+        const overlayBuilderEnvironment = {
+            rootElement: () => getCanvas(bpmnViewer).getRootElement(),
+            canvas: () => getCanvas(bpmnViewer),
+        };
+
         overlays?.forEach(overlay => {
             if (isOverlayDefinition(overlay)) {
                 overlayDefinitions.push(overlay);
-            } else if (isSingleOverlayDefinitionBuilder(overlay)) {
-                const element = elementRegistry.get(overlay.element);
-                if (element) {
-                    const overlayDefinition = overlay.buildDefinition(element);
-                    overlayDefinitions.push(overlayDefinition);
-                }
-            } else if (isMultipleOverlayDefinitionBuilder(overlay)) {
+            } else if (isOverlayDefinitionBuilder(overlay)) {
+                const elementFilter = overlay.elementFilter;
+                const elements = typeof elementFilter === 'string'
+                    ? elementRegistry.filter(element => elementFilter === element.id)
+                    : elementRegistry.filter(elementFilter);
+
+                elements.forEach(element => {
+                    const buildResult = overlay.buildDefinition(element, overlayBuilderEnvironment);
+                    overlayDefinitions.push(buildResult);
+                })
+            } else if (isOverlayDefinitionsBuilder(overlay)) {
                 const elements = overlay.elementFilter
                     ? elementRegistry.filter(overlay.elementFilter)
                     : elementRegistry.getAll();
                 
-                elements.forEach(element => {
-                    const overlayDefinition = overlay.buildDefinition(element);
+                const buildResults = overlay.buildDefinitions(elements, overlayBuilderEnvironment);
+                buildResults.forEach(overlayDefinition => {
                     overlayDefinitions.push(overlayDefinition);
                 });
             }

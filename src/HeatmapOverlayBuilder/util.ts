@@ -1,3 +1,18 @@
+export function getClosest(point, points) {
+    let closestPoint = null;;
+    let closesDistance = Number.POSITIVE_INFINITY;
+
+    points.forEach(otherPoint => {
+        const distance = pointDistance(point, otherPoint);
+        if (distance < closesDistance) {
+            closesDistance = distance;
+            closestPoint = otherPoint;
+        }
+    });
+
+    return closestPoint;
+}
+
 export function pointDistance(pointA, pointB) {
     return Math.sqrt(Math.pow(pointB.x - pointA.x, 2) + Math.pow(pointB.y - pointA.y, 2));
 }

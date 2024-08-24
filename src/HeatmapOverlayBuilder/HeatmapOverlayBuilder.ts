@@ -3,10 +3,10 @@ import { difference, feature, featureCollection, geometryCollection } from "@tur
 
 import { ElementLike } from "diagram-js/lib/model/Types";
 
-import { MultipleOverlayDefinitionBuilder } from "../BpmnChart/BpmnChart.types"
-import { distanceToEdge, pointDistance } from "./util";
+import { OverlayBuilderEnvironment, OverlayDefinitionsBuilder } from "../BpmnChart/BpmnChart.types"
+import { distanceToEdge, getClosest, pointDistance } from "./util";
 
-class HeatmapOverlayBuilder implements MultipleOverlayDefinitionBuilder {
+class HeatmapOverlayBuilder implements OverlayDefinitionsBuilder {
 
     values: { [key: string]: number };
 
@@ -25,39 +25,39 @@ class HeatmapOverlayBuilder implements MultipleOverlayDefinitionBuilder {
         return elementValue !== null && elementValue !== undefined;
     }
 
-    buildDefinition = (element: ElementLike) => {
-        const elementValue = this.values[element.id];
-        const centerX = element.width / 2;
-        const centerY = element.height / 2;
+    buildDefinitions = (elements: ElementLike[], env: OverlayBuilderEnvironment) => {
+        const overlayWidth = env.canvas().viewbox().inner.width;
+        const overlayHeight = env.canvas().viewbox().inner.height;
 
-        const overlayOverflow = 10;
-        const overlayWidth = element.width + (2 * overlayOverflow);
-        const overlayHeight = element.height + (2 * overlayOverflow);
+        const overlayOffsetX = env.canvas().viewbox().inner.x;
+        const overlayOffsetY = env.canvas().viewbox().inner.y;
 
-        const heatValues = [];
+        const heatPoints = elements.map(element => ({
+            position: {
+                x: element.x + (element.width / 2),
+                y: element.y + (element.height / 2),
+            },
+            value: this.values[element.id],
+        }));
+
+        const heatMatrix = [];
         for (let rowIndex = 0; rowIndex < overlayHeight; rowIndex++) {
             for (let columnIndex = 0; columnIndex < overlayWidth; columnIndex++) {
-                const coordinateX = columnIndex - overlayOverflow;
-                const coordinateY = rowIndex - overlayOverflow;
+                const coordinateX = columnIndex + overlayOffsetX;
+                const coordinateY = rowIndex + overlayOffsetY
+                
+                const closestPosition = getClosest({ x: coordinateX, y: coordinateY }, heatPoints.map(point => point.position));
+                const closestValue = heatPoints.find(point => closestPosition.x === point.position.x && closestPosition.y === point.position.y).value;
+                const distance = pointDistance({ x: coordinateX, y: coordinateY }, closestPosition);
 
-                const centerToPoint = pointDistance(
-                    { x: centerX, y: centerY },
-                    { x: coordinateX, y: coordinateY }
-                );
-                const centerToEdge = distanceToEdge(
-                    centerX, centerY, element.width, element.height,
-                    coordinateX, coordinateY
-                );
-                const valueScale = 1 - (centerToPoint / centerToEdge);
-                const pointValue = elementValue * valueScale;
-                heatValues[rowIndex * overlayWidth + columnIndex] = pointValue;
+                const valueScale = 1 - (Math.min(50, distance) / 50);
+                const pointValue = closestValue * valueScale;
+                heatMatrix[rowIndex * overlayWidth + columnIndex] = pointValue;
             }   
-        }
+        }        
 
-        const contoursGenerator = contours()
-            .size([overlayWidth, overlayHeight])
-            .thresholds(10);
-        const heatContours = contoursGenerator(heatValues);
+        const contoursGenerator = contours().size([overlayWidth, overlayHeight]).thresholds(10);
+        const heatContours = contoursGenerator(heatMatrix);
 
         const nonOverlappingHeatContours = [];
         for (let i = 0; i < heatContours.length; i++) {
@@ -93,17 +93,17 @@ class HeatmapOverlayBuilder implements MultipleOverlayDefinitionBuilder {
             renderContext.closePath();
         });
 
-        return {
+        return [{
             type: "Overlay_Heatmap",
-            element: element.id,
+            element: env.rootElement().id,
             config: {
                 position: {
-                    top: -overlayOverflow,
-                    left: -overlayOverflow,
+                    top: overlayOffsetY,
+                    left: overlayOffsetX,
                 },
                 html: canvas,
             },
-        };
+        }];
     }
 }
 
