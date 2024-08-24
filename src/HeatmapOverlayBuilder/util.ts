@@ -1,20 +1,44 @@
-export function getClosest(point, points) {
-    let closestPoint = null;;
-    let closesDistance = Number.POSITIVE_INFINITY;
+import { pointDistance } from "diagram-js/lib/util/Geometry";
+import { center } from "diagram-js/lib/util/PositionUtil";
 
-    points.forEach(otherPoint => {
-        const distance = pointDistance(point, otherPoint);
-        if (distance < closesDistance) {
-            closesDistance = distance;
-            closestPoint = otherPoint;
+export function getDistances(point, elements) {
+    const result = {};
+
+    elements.forEach(element => {
+        const isLineElement = !element.width || !element.height
+        if (isLineElement) {
+            const lines = [];
+            if (element.waypoints) {
+                for (let i = 0; i < element.waypoints.length - 1; i++) {
+                    lines.push([element.waypoints[i], element.waypoints[i + 1]]);
+                }
+            }
+            result[element.id] = pointLinesDistance(point, lines);
+        } else {
+            result[element.id] = pointDistance(point, center(element));
         }
     });
 
-    return closestPoint;
+    return result;
 }
 
-export function pointDistance(pointA, pointB) {
-    return Math.sqrt(Math.pow(pointB.x - pointA.x, 2) + Math.pow(pointB.y - pointA.y, 2));
+export function pointLinesDistance(point, lines) {
+    if (lines.length <= 0) {
+        return Number.POSITIVE_INFINITY;
+    }
+    const distances = lines.map(([linePointA, linePointB]) => pointLineDistance(point, linePointA, linePointB));
+    return Math.min(...distances);
+}
+
+export function pointLineDistance(point, linePointA, linePointB) {
+    // Calculate the distance to the line segment
+    const segmentLength = Math.sqrt((linePointB.x - linePointA.x) ** 2 + (linePointB.y - linePointA.y) ** 2);
+    const dotProduct = (point.x - linePointA.x) * (linePointB.x - linePointA.x) + (point.y - linePointA.y) * (linePointB.y - linePointA.y);
+    const t = Math.max(0, Math.min(1, dotProduct / (segmentLength * segmentLength)));
+    const closestPointX = linePointA.x + t * (linePointB.x - linePointA.x);
+    const closestPointY = linePointA.y + t * (linePointB.y - linePointA.y);
+
+    return Math.sqrt((point.x - closestPointX) ** 2 + (point.y - closestPointY) ** 2);
 }
 
 export function distanceToEdge(centerX, centerY, W, H, x, y) {

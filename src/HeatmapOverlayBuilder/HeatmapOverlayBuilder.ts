@@ -1,12 +1,14 @@
-import { contours, create, geoPath, geoIdentity, scaleSequential, interpolateRgbBasis } from "d3";
+import { contours, create, geoPath, geoIdentity, scaleSequential, interpolateRgbBasis, filter } from "d3";
 import { difference, feature, featureCollection } from "@turf/turf";
 
 import { ElementLike } from "diagram-js/lib/model/Types";
+import { isConnection } from "diagram-js/lib/util/ModelUtil";
 
 import type { HeatmapOverlayBuilderOptions } from "./HeatmapOverlayBuilder.types";
 
 import { OverlayBuilderEnvironment, OverlayDefinitionsBuilder } from "../BpmnChart/BpmnChart.types"
-import { getClosest, pointDistance } from "./util";
+import { getDistances } from "./util";
+import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 
 class HeatmapOverlayBuilder implements OverlayDefinitionsBuilder {
 
@@ -28,7 +30,8 @@ class HeatmapOverlayBuilder implements OverlayDefinitionsBuilder {
 
     elementFilter = (element: ElementLike) => {
         const elementValue = this.options.values[element.id];
-        return elementValue !== null && elementValue !== undefined;
+        const hasHeatValue = elementValue !== null && elementValue !== undefined;
+        return hasHeatValue || isConnection(element);
     }
 
     buildDefinitions = (elements: ElementLike[], env: OverlayBuilderEnvironment) => {
@@ -38,13 +41,17 @@ class HeatmapOverlayBuilder implements OverlayDefinitionsBuilder {
         const overlayOffsetX = env.canvas().viewbox().inner.x;
         const overlayOffsetY = env.canvas().viewbox().inner.y;
 
-        const heatPoints = elements.map(element => ({
-            position: {
-                x: element.x + (element.width / 2),
-                y: element.y + (element.height / 2),
-            },
-            value: this.options.values[element.id],
-        }));
+        const heatValues = {};
+        elements.forEach(element => {
+            let value = this.options.values[element.id];
+            if (isConnection(element)) {
+                const businessObject = getBusinessObject(element);
+                const inHeatValue =  this.options.values[businessObject.sourceRef.id];
+                const outHeatValue =  this.options.values[businessObject.targetRef.id];
+                value = Math.min(inHeatValue, outHeatValue);
+            }
+            heatValues[element.id] = value;
+        });
 
         const heatMatrix = [];
         for (let rowIndex = 0; rowIndex < overlayHeight; rowIndex++) {
@@ -52,15 +59,35 @@ class HeatmapOverlayBuilder implements OverlayDefinitionsBuilder {
                 const coordinateX = columnIndex + overlayOffsetX;
                 const coordinateY = rowIndex + overlayOffsetY
                 
-                const closestPosition = getClosest({ x: coordinateX, y: coordinateY }, heatPoints.map(point => point.position));
-                const closestValue = heatPoints.find(point => closestPosition.x === point.position.x && closestPosition.y === point.position.y).value;
-                const distance = pointDistance({ x: coordinateX, y: coordinateY }, closestPosition);
+                const distances = getDistances({ x: coordinateX, y: coordinateY }, elements);
 
-                const isOutsideOfHeat = distance > 50;
-                const heatScale = 1 - (distance / 50);
-                const pointValue = isOutsideOfHeat ? Number.NaN : closestValue * heatScale;
+                const weigths = Object.fromEntries(elements.map(element => {
+                    const distance = distances[element.id];
+                    const distanceFactor = isConnection(element)
+                        ? (-(1 / Math.pow(10, 2)) * Math.pow(distance, 2)) + 1
+                        : (-(1 / Math.pow(50, 2)) * Math.pow(distance, 2)) + 1;
+                    const weight = Math.max(distanceFactor, 0);
+                    return [element.id, weight];
+                }));
 
-                heatMatrix[rowIndex * overlayWidth + columnIndex] = pointValue;
+
+
+                const dividend = elements
+                    .filter(element => !Number.isNaN(heatValues[element.id]))
+                    .map(element => weigths[element.id] * heatValues[element.id])
+                    .reduce((acc, cur) => acc + cur, 0);
+
+                const nonNullWeights = Object.values(weigths).filter(w => w > 0);
+                const divisor = nonNullWeights.reduce((acc, cur) => acc + cur, 0);
+
+                let heatValue = Number.NaN;
+                if (nonNullWeights.length === 1) {
+                    heatValue = dividend;
+                } else if (nonNullWeights.length > 1) {
+                    heatValue = dividend / divisor;
+                }
+
+                heatMatrix[rowIndex * overlayWidth + columnIndex] = heatValue;
             }   
         }        
 
