@@ -76,22 +76,14 @@ class HeatmapOverlayBuilder implements OverlayDefinitionsBuilder {
                     return [element.id, weight];
                 }));
 
-
-
-                const dividend = elements
-                    .filter(element => !Number.isNaN(heatValues[element.id]))
-                    .map(element => weigths[element.id] * heatValues[element.id])
-                    .reduce((acc, cur) => acc + cur, 0);
-
                 const nonNullWeights = Object.values(weigths).filter(w => w > 0);
-                const divisor = nonNullWeights.reduce((acc, cur) => acc + cur, 0);
-
-                let heatValue = Number.NaN;
-                if (nonNullWeights.length === 1) {
-                    heatValue = dividend;
-                } else if (nonNullWeights.length > 1) {
-                    heatValue = dividend / divisor;
-                }
+                const heatValue = nonNullWeights.length > 0
+                    ? elements
+                        .filter(element => !Number.isNaN(heatValues[element.id]))
+                        // as we have weights from 0 to 1 we do need to need to divide by the sum of weights
+                        .map(element => weigths[element.id] * heatValues[element.id])
+                        .reduce((acc, cur) => acc + cur, 0)
+                    : Number.NaN;
 
                 heatMatrix[rowIndex * overlayWidth + columnIndex] = heatValue;
             }   
