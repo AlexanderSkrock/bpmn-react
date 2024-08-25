@@ -7,7 +7,7 @@ import { isConnection } from "diagram-js/lib/util/ModelUtil";
 import type { HeatmapOverlayBuilderOptions } from "./HeatmapOverlayBuilder.types";
 
 import { OverlayBuilderEnvironment, OverlayDefinitionsBuilder } from "../BpmnChart/BpmnChart.types"
-import { getDistances } from "./util";
+import { calculateInfluenceMaxRange, distanceToEdge, getDistances } from "./util";
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 
 class HeatmapOverlayBuilder implements OverlayDefinitionsBuilder {
@@ -69,7 +69,7 @@ class HeatmapOverlayBuilder implements OverlayDefinitionsBuilder {
                         : 1.4;
                     const maxRange = isConnection(element)
                         ? 12
-                        : Math.sqrt(Math.pow(element.width / 2, 2) + Math.pow(element.height / 2, 2));
+                        : calculateInfluenceMaxRange(element, { x: coordinateX, y: coordinateY });
 
                     const distanceFactor = -(1 / Math.pow(maxRange, 2)) * Math.pow(distance, 2) + maxInfluence;
                     const weight = Math.max(distanceFactor, 0);

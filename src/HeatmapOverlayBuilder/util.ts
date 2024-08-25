@@ -41,6 +41,49 @@ export function pointLineDistance(point, linePointA, linePointB) {
     return Math.sqrt((point.x - closestPointX) ** 2 + (point.y - closestPointY) ** 2);
 }
 
+export function calculateInfluenceMaxRange(element, point) {
+    // Calculate the center of the rectangle
+    const centerX = element.x + element.width / 2;
+    const centerY = element.y + element.height / 2;
+
+    // Calculate the slope of the line
+    const slope = (point.y - centerY) / (point.x - centerX);
+
+    // Initialize intersection points
+    let intersectX, intersectY;
+
+    // Check intersection with left border (x = rectX)
+    intersectX = element.x;
+    intersectY = centerY + slope * (element.x - centerX);
+    if (intersectY >= element.y && intersectY <= element.y + element.height) {
+        return pointDistance({ x: centerX, y: centerY }, { x: intersectX, y: intersectY });
+    }
+
+    // Check intersection with right border (x = rectX + rectWidth)
+    intersectX = element.x + element.width;
+    intersectY = centerY + slope * (element.x + element.width - centerX);
+    if (intersectY >= element.y && intersectY <= element.y + element.height) {
+        return pointDistance({ x: centerX, y: centerY }, { x: intersectX, y: intersectY });
+    }
+
+    // Check intersection with top border (y = rectY)
+    intersectY = element.y;
+    intersectX = centerX + (element.y - centerY) / slope;
+    if (intersectX >= element.x && intersectX <= element.x + element.width) {
+        return pointDistance({ x: centerX, y: centerY }, { x: intersectX, y: intersectY });
+    }
+
+    // Check intersection with bottom border (y = rectY + rectHeight)
+    intersectY = element.y + element.height;
+    intersectX = centerX + (element.y + element.height - centerY) / slope;
+    if (intersectX >= element.x && intersectX <= element.x + element.width) {
+        return pointDistance({ x: centerX, y: centerY }, { x: intersectX, y: intersectY });
+    }
+
+    // If no valid intersection is found (should not happen in a valid rectangle)
+    return null;
+}
+
 export function distanceToEdge(centerX, centerY, W, H, x, y) {
     // Vector components
     const dx = x - centerX;
