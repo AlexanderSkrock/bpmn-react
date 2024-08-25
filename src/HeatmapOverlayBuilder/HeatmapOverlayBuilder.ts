@@ -65,10 +65,10 @@ class HeatmapOverlayBuilder implements OverlayDefinitionsBuilder {
                     const distance = distances[element.id];
 
                     const maxInfluence = isConnection(element)
-                        ? 0.5
-                        : 1;
+                        ? 0.9
+                        : 1.4;
                     const maxRange = isConnection(element)
-                        ? 10
+                        ? 12
                         : Math.sqrt(Math.pow(element.width / 2, 2) + Math.pow(element.height / 2, 2));
 
                     const distanceFactor = -(1 / Math.pow(maxRange, 2)) * Math.pow(distance, 2) + maxInfluence;
@@ -76,14 +76,20 @@ class HeatmapOverlayBuilder implements OverlayDefinitionsBuilder {
                     return [element.id, weight];
                 }));
 
-                const nonNullWeights = Object.values(weigths).filter(w => w > 0);
-                const heatValue = nonNullWeights.length > 0
-                    ? elements
+                const hasInfluence = Object.values(weigths).some(w => w > 0);
+
+                let heatValue = Number.NaN;
+                if (hasInfluence) {
+                    heatValue = elements
                         .filter(element => !Number.isNaN(heatValues[element.id]))
-                        // as we have weights from 0 to 1 we do need to need to divide by the sum of weights
                         .map(element => weigths[element.id] * heatValues[element.id])
-                        .reduce((acc, cur) => acc + cur, 0)
-                    : Number.NaN;
+                        .reduce((acc, cur) => acc + cur, 0);
+                    
+                    const weightsSum = Object.values(weigths).reduce((acc, cur) => acc + cur, 0);
+                    if (weightsSum >= 1) {
+                        heatValue /= weightsSum;
+                    }
+                }
 
                 heatMatrix[rowIndex * overlayWidth + columnIndex] = heatValue;
             }   
