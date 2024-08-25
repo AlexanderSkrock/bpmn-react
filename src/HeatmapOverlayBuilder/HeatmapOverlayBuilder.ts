@@ -63,9 +63,15 @@ class HeatmapOverlayBuilder implements OverlayDefinitionsBuilder {
 
                 const weigths = Object.fromEntries(elements.map(element => {
                     const distance = distances[element.id];
-                    const distanceFactor = isConnection(element)
-                        ? (-(1 / Math.pow(10, 2)) * Math.pow(distance, 2)) + 1
-                        : (-(1 / Math.pow(Math.max(element.width, element.height) / 2, 2)) * Math.pow(distance, 2)) + 1;
+
+                    const maxInfluence = isConnection(element)
+                        ? 0.5
+                        : 1;
+                    const maxRange = isConnection(element)
+                        ? 10
+                        : Math.sqrt(Math.pow(element.width / 2, 2) + Math.pow(element.height / 2, 2));
+
+                    const distanceFactor = -(1 / Math.pow(maxRange, 2)) * Math.pow(distance, 2) + maxInfluence;
                     const weight = Math.max(distanceFactor, 0);
                     return [element.id, weight];
                 }));
