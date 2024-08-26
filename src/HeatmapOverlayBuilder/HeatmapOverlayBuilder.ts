@@ -58,7 +58,7 @@ class HeatmapOverlayBuilder implements OverlayDefinitionsBuilder {
             for (let columnIndex = 0; columnIndex < overlayWidth; columnIndex++) {
                 const coordinateX = columnIndex + overlayOffsetX;
                 const coordinateY = rowIndex + overlayOffsetY
-                
+
                 const distances = getDistances({ x: coordinateX, y: coordinateY }, elements);
 
                 const weigths = Object.fromEntries(elements.map(element => {
@@ -66,10 +66,10 @@ class HeatmapOverlayBuilder implements OverlayDefinitionsBuilder {
 
                     const maxInfluence = isConnection(element)
                         ? 0.9
-                        : 1.4;
+                        : 1.8;
                     const maxRange = isConnection(element)
                         ? 12
-                        : calculateInfluenceMaxRange(element, { x: coordinateX, y: coordinateY });
+                        : calculateInfluenceMaxRange(element, { x: coordinateX, y: coordinateY }, 5);
 
                     const distanceFactor = -(1 / Math.pow(maxRange, 2)) * Math.pow(distance, 2) + maxInfluence;
                     const weight = Math.max(distanceFactor, 0);
@@ -84,7 +84,7 @@ class HeatmapOverlayBuilder implements OverlayDefinitionsBuilder {
                         .filter(element => !Number.isNaN(heatValues[element.id]))
                         .map(element => weigths[element.id] * heatValues[element.id])
                         .reduce((acc, cur) => acc + cur, 0);
-                    
+
                     const weightsSum = Object.values(weigths).reduce((acc, cur) => acc + cur, 0);
                     if (weightsSum >= 1) {
                         heatValue /= weightsSum;
@@ -92,8 +92,8 @@ class HeatmapOverlayBuilder implements OverlayDefinitionsBuilder {
                 }
 
                 heatMatrix[rowIndex * overlayWidth + columnIndex] = heatValue;
-            }   
-        }        
+            }
+        }
 
         const contoursGenerator = contours().size([overlayWidth, overlayHeight]).thresholds(10);
         const heatContours = contoursGenerator(heatMatrix);
@@ -139,11 +139,11 @@ class HeatmapOverlayBuilder implements OverlayDefinitionsBuilder {
         const renderContext = canvas.getContext("2d");
         const path = geoPath().projection(geoIdentity().scale(1)).context(renderContext);
 
-        renderContext.globalAlpha = this.options.opacity;        
+        renderContext.globalAlpha = this.options.opacity;
 
         heatmapContours.forEach(c => {
             renderContext.fillStyle = this.color(c.value);
-        
+
             renderContext.beginPath();
             path(c);
             renderContext.fill();

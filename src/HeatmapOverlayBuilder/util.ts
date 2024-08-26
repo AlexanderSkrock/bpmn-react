@@ -41,47 +41,101 @@ export function pointLineDistance(point, linePointA, linePointB) {
     return Math.sqrt((point.x - closestPointX) ** 2 + (point.y - closestPointY) ** 2);
 }
 
-export function calculateInfluenceMaxRange(element, point) {
+export function calculateInfluenceMaxRange(element, point, borderRadius) {
+    const { x: x1, y: y1, width: w, height: h } = element;
+    const { x: x2, y: y2 } = point;
+
     // Calculate the center of the rectangle
-    const centerX = element.x + element.width / 2;
-    const centerY = element.y + element.height / 2;
+    const x_c = x1 + w / 2;
+    const y_c = y1 + h / 2;
 
-    // Calculate the slope of the line
-    const slope = (point.y - centerY) / (point.x - centerX);
+    // Calculate the slope (m) and intercept (b) of the line
+    const m = (y2 - y_c) / (x2 - x_c);
+    const b = y_c - m * x_c;
 
-    // Initialize intersection points
-    let intersectX, intersectY;
-
-    // Check intersection with left border (x = rectX)
-    intersectX = element.x;
-    intersectY = centerY + slope * (element.x - centerX);
-    if (intersectY >= element.y && intersectY <= element.y + element.height) {
-        return pointDistance({ x: centerX, y: centerY }, { x: intersectX, y: intersectY });
+    // Function to check intersection with rectangle edges
+    function checkIntersection(x, y) {
+        return x >= x1 && x <= x1 + w && y >= y1 && y <= y1 + h;
     }
 
-    // Check intersection with right border (x = rectX + rectWidth)
-    intersectX = element.x + element.width;
-    intersectY = centerY + slope * (element.x + element.width - centerX);
-    if (intersectY >= element.y && intersectY <= element.y + element.height) {
-        return pointDistance({ x: centerX, y: centerY }, { x: intersectX, y: intersectY });
+    // Function to check intersection with quarter circles
+    function checkQuarterCircleIntersection(cx, cy, r, quadrant) {
+        const A = 1 + m * m;
+        const B = -2 * cx + 2 * m * (b - cy);
+        const C = cx * cx + (b - cy) * (b - cy) - r * r;
+        const D = B * B - 4 * A * C;
+
+        if (D >= 0) {
+            const x1 = (-B + Math.sqrt(D)) / (2 * A);
+            const y1 = m * x1 + b;
+            if (checkIntersection(x1, y1) && isInQuadrant(x1, y1, cx, cy, quadrant)) return { x: x1, y: y1 };
+
+            const x2 = (-B - Math.sqrt(D)) / (2 * A);
+            const y2 = m * x2 + b;
+            if (checkIntersection(x2, y2) && isInQuadrant(x2, y2, cx, cy, quadrant)) return { x: x2, y: y2 };
+        }
+        return null;
     }
 
-    // Check intersection with top border (y = rectY)
-    intersectY = element.y;
-    intersectX = centerX + (element.y - centerY) / slope;
-    if (intersectX >= element.x && intersectX <= element.x + element.width) {
-        return pointDistance({ x: centerX, y: centerY }, { x: intersectX, y: intersectY });
+    // Function to check if a point is in the specified quadrant
+    function isInQuadrant(x, y, cx, cy, quadrant) {
+        switch (quadrant) {
+            case 'top-left':
+                return x <= cx && y <= cy;
+            case 'top-right':
+                return x >= cx && y <= cy;
+            case 'bottom-left':
+                return x <= cx && y >= cy;
+            case 'bottom-right':
+                return x >= cx && y >= cy;
+            default:
+                return false;
+        }
     }
 
-    // Check intersection with bottom border (y = rectY + rectHeight)
-    intersectY = element.y + element.height;
-    intersectX = centerX + (element.y + element.height - centerY) / slope;
-    if (intersectX >= element.x && intersectX <= element.x + element.width) {
-        return pointDistance({ x: centerX, y: centerY }, { x: intersectX, y: intersectY });
-    }
+    // Check intersection with rectangle edges
+    let intersections = [];
 
-    // If no valid intersection is found (should not happen in a valid rectangle)
-    return null;
+    // Left edge
+    let y = m * x1 + b;
+    if (checkIntersection(x1, y) && y >= y1 + borderRadius && y <= y1 + h - borderRadius) intersections.push({ x: x1, y });
+
+    // Right edge
+    y = m * (x1 + w) + b;
+    if (checkIntersection(x1 + w, y) && y >= y1 + borderRadius && y <= y1 + h - borderRadius) intersections.push({ x: x1 + w, y });
+
+    // Top edge
+    let x = (y1 - b) / m;
+    if (checkIntersection(x, y1) && x >= x1 + borderRadius && x <= x1 + w - borderRadius) intersections.push({ x, y: y1 });
+
+    // Bottom edge
+    x = (y1 + h - b) / m;
+    if (checkIntersection(x, y1 + h) && x >= x1 + borderRadius && x <= x1 + w - borderRadius) intersections.push({ x, y: y1 + h });
+
+    // Check intersection with rounded corners
+    const corners = [
+        { cx: x1 + borderRadius, cy: y1 + borderRadius, quadrant: 'top-left' }, // Top-left
+        { cx: x1 + w - borderRadius, cy: y1 + borderRadius, quadrant: 'top-right' }, // Top-right
+        { cx: x1 + borderRadius, cy: y1 + h - borderRadius, quadrant: 'bottom-left' }, // Bottom-left
+        { cx: x1 + w - borderRadius, cy: y1 + h - borderRadius, quadrant: 'bottom-right' } // Bottom-right
+    ];
+
+    corners.forEach(corner => {
+        const intersection = checkQuarterCircleIntersection(corner.cx, corner.cy, borderRadius, corner.quadrant);
+        if (intersection) intersections.push(intersection);
+    });
+
+    // Find the closest intersection point
+    let minDistance = Infinity;
+
+    intersections.forEach(intersection => {
+        const distance = Math.sqrt((intersection.x - x_c) ** 2 + (intersection.y - y_c) ** 2);
+        if (distance < minDistance) {
+            minDistance = distance;
+        }
+    });
+
+    return minDistance;
 }
 
 export function distanceToEdge(centerX, centerY, W, H, x, y) {
