@@ -36,11 +36,13 @@ class HeatmapOverlayBuilder implements OverlayDefinitionsBuilder {
     }
 
     buildDefinitions = (elements: ElementLike[], env: OverlayBuilderEnvironment) => {
-        const overlayWidth = env.canvas().viewbox().inner.width;
-        const overlayHeight = env.canvas().viewbox().inner.height;
+        const overlayOverflow = 30;
 
-        const overlayOffsetX = env.canvas().viewbox().inner.x;
-        const overlayOffsetY = env.canvas().viewbox().inner.y;
+        const overlayWidth = env.canvas().viewbox().inner.width + overlayOverflow;
+        const overlayHeight = env.canvas().viewbox().inner.height + overlayOverflow;
+
+        const overlayOffsetX = env.canvas().viewbox().inner.x - overlayOverflow / 2;
+        const overlayOffsetY = env.canvas().viewbox().inner.y - overlayOverflow / 2;
 
         const heatValues = {};
         elements.forEach(element => {
