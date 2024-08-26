@@ -23,3 +23,8 @@ export interface ZoomControlProps {
     diagram: Diagram;
     options: ZoomOptions;
 }
+
+export interface ZoomControlGroupProps extends ZoomControlProps {
+    direction?: "horizontal" | "vertical"; 
+}
+

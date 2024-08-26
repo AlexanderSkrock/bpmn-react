@@ -58,6 +58,7 @@
   "dependencies": {
     "@turf/turf": "^7.1.0",
     "d3": "^7.9.0",
-    "grommet-icons": "^4.12.1"
+    "grommet-icons": "^4.12.1",
+    "styled-components": "^6.1.12"
   }
 }
