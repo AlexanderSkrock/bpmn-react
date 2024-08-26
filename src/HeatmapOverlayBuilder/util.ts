@@ -1,7 +1,8 @@
-import { pointDistance } from "diagram-js/lib/util/Geometry";
+import { pointDistance, Point } from "diagram-js/lib/util/Geometry";
 import { center } from "diagram-js/lib/util/PositionUtil";
+import {ElementLike} from "diagram-js/lib/model/Types";
 
-export function getDistances(point, elements) {
+export function getDistances(point: Point, elements: ElementLike[]): { [key: string]: number } {
     const result = {};
 
     elements.forEach(element => {
@@ -22,7 +23,7 @@ export function getDistances(point, elements) {
     return result;
 }
 
-export function pointLinesDistance(point, lines) {
+export function pointLinesDistance(point: Point, lines: [Point, Point][]): number {
     if (lines.length <= 0) {
         return Number.POSITIVE_INFINITY;
     }
@@ -30,7 +31,7 @@ export function pointLinesDistance(point, lines) {
     return Math.min(...distances);
 }
 
-export function pointLineDistance(point, linePointA, linePointB) {
+export function pointLineDistance(point: Point, linePointA: Point, linePointB: Point) {
     // Calculate the distance to the line segment
     const segmentLength = Math.sqrt((linePointB.x - linePointA.x) ** 2 + (linePointB.y - linePointA.y) ** 2);
     const dotProduct = (point.x - linePointA.x) * (linePointB.x - linePointA.x) + (point.y - linePointA.y) * (linePointB.y - linePointA.y);
@@ -41,7 +42,7 @@ export function pointLineDistance(point, linePointA, linePointB) {
     return Math.sqrt((point.x - closestPointX) ** 2 + (point.y - closestPointY) ** 2);
 }
 
-export function calculateInfluenceMaxRange(element, point, borderRadius) {
+export function calculateInfluenceMaxRange(element: ElementLike, point: Point, borderRadius: number): number {
     const { x: x1, y: y1, width: w, height: h } = element;
     const { x: x2, y: y2 } = point;
 
@@ -54,12 +55,12 @@ export function calculateInfluenceMaxRange(element, point, borderRadius) {
     const b = y_c - m * x_c;
 
     // Function to check intersection with rectangle edges
-    function checkIntersection(x, y) {
+    function checkIntersection(x: number, y: number): boolean {
         return x >= x1 && x <= x1 + w && y >= y1 && y <= y1 + h;
     }
 
     // Function to check intersection with quarter circles
-    function checkQuarterCircleIntersection(cx, cy, r, quadrant) {
+    function checkQuarterCircleIntersection(cx: number, cy: number, r: number, quadrant: string) {
         const A = 1 + m * m;
         const B = -2 * cx + 2 * m * (b - cy);
         const C = cx * cx + (b - cy) * (b - cy) - r * r;
@@ -78,7 +79,7 @@ export function calculateInfluenceMaxRange(element, point, borderRadius) {
     }
 
     // Function to check if a point is in the specified quadrant
-    function isInQuadrant(x, y, cx, cy, quadrant) {
+    function isInQuadrant(x: number, y: number, cx: number, cy: number, quadrant: string): boolean {
         switch (quadrant) {
             case 'top-left':
                 return x <= cx && y <= cy;
@@ -136,50 +137,4 @@ export function calculateInfluenceMaxRange(element, point, borderRadius) {
     });
 
     return minDistance;
-}
-
-export function distanceToEdge(centerX, centerY, W, H, x, y) {
-    // Vector components
-    const dx = x - centerX;
-    const dy = y - centerY;
-
-    // Intersection points
-    let intersectX, intersectY;
-
-    // Calculate intersection with the rectangle edges
-    if (dx !== 0) {
-        // Intersection with left and right edges
-        const t1 = -centerX / dx;
-        const t2 = (W - centerX) / dx;
-        const y1 = centerY + t1 * dy;
-        const y2 = centerY + t2 * dy;
-
-        if (y1 >= 0 && y1 <= H) {
-            intersectX = 0;
-            intersectY = y1;
-        } else if (y2 >= 0 && y2 <= H) {
-            intersectX = W;
-            intersectY = y2;
-        }
-    }
-
-    if (dy !== 0) {
-        // Intersection with top and bottom edges
-        const t3 = -centerY / dy;
-        const t4 = (H - centerY) / dy;
-        const x1 = centerX + t3 * dx;
-        const x2 = centerX + t4 * dx;
-
-        if (x1 >= 0 && x1 <= W) {
-            intersectX = x1;
-            intersectY = 0;
-        } else if (x2 >= 0 && x2 <= W) {
-            intersectX = x2;
-            intersectY = H;
-        }
-    }
-
-    // Calculate the distance from the center to the intersection point
-    const distance = Math.sqrt((intersectX - centerX) ** 2 + (intersectY - centerY) ** 2);
-    return distance;
 }

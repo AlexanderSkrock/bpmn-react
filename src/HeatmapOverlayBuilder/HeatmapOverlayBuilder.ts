@@ -7,8 +7,9 @@ import { isConnection } from "diagram-js/lib/util/ModelUtil";
 import type { HeatmapOverlayBuilderOptions } from "./HeatmapOverlayBuilder.types";
 
 import { OverlayBuilderEnvironment, OverlayDefinitionsBuilder } from "../BpmnChart/BpmnChart.types"
-import { calculateInfluenceMaxRange, distanceToEdge, getDistances } from "./util";
+import { calculateInfluenceMaxRange, getDistances } from "./util";
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
+import {ContourMultiPolygon} from "d3-contour";
 
 class HeatmapOverlayBuilder implements OverlayDefinitionsBuilder {
 
@@ -130,7 +131,7 @@ class HeatmapOverlayBuilder implements OverlayDefinitionsBuilder {
         }];
     }
 
-    renderContoursToCanvas = (width, height, heatmapContours) => {
+    renderContoursToCanvas = (width: number, height: number, heatmapContours: ContourMultiPolygon[], color: (value: number) => string): HTMLElement => {
         const canvas = create("canvas")
             .attr("width", `${width}px`)
             .attr("height", `${height}px`)
@@ -142,7 +143,7 @@ class HeatmapOverlayBuilder implements OverlayDefinitionsBuilder {
         renderContext.globalAlpha = this.options.opacity;
 
         heatmapContours.forEach(c => {
-            renderContext.fillStyle = this.color(c.value);
+            renderContext.fillStyle = color(c.value);
 
             renderContext.beginPath();
             path(c);
@@ -153,7 +154,7 @@ class HeatmapOverlayBuilder implements OverlayDefinitionsBuilder {
         return canvas;
     }
 
-    renderContoursToSvg = (width, height, heatmapContours) => {
+    renderContoursToSvg = (width: number, height: number, heatmapContours: ContourMultiPolygon[], color: (value: number) => string): HTMLElement => {
         const svg = create("svg")
             .attr("width", `${width}px`)
             .attr("height", `${height}px`);
@@ -165,7 +166,7 @@ class HeatmapOverlayBuilder implements OverlayDefinitionsBuilder {
             .data(heatmapContours)
             .join("path")
             .attr("d", c => path(c))
-            .attr("fill", c => this.color(c.value))
+            .attr("fill", c => color(c.value))
             .attr("fill-opacity", this.options.opacity);
 
         return svg.node();
