@@ -9,7 +9,7 @@ import { isOverlayDefinition, isOverlayDefinitionBuilder, isOverlayDefinitionsBu
 
 import { getCanvas, getElementRegistry, getOverlays} from "./serviceHelpers";
 
-const BpmnChart: React.FC<BpmnChartProps> = ({ xml, overlays, onLoadingSuccess, onLoadingError }: BpmnChartProps) => {
+const BpmnChart: React.FC<BpmnChartProps> = ({ xml, overlays, onViewerInitialized, onLoadingSuccess, onLoadingError }: BpmnChartProps) => {
     const chartContainerRef = useRef<HTMLDivElement>(null);
     const [bpmnViewer, setBpmnViewer] = useState<Viewer | undefined>();
 
@@ -93,6 +93,12 @@ const BpmnChart: React.FC<BpmnChartProps> = ({ xml, overlays, onLoadingSuccess, 
 
         return () => bpmnViewer?.destroy();
     }, [chartContainerRef.current]);
+
+    useEffect(() => {
+        if (bpmnViewer) {
+            onViewerInitialized?.(bpmnViewer);
+        }
+    }, [bpmnViewer, onViewerInitialized]);
 
     useEffect(() => {
         if (!bpmnViewer) {
