@@ -7,6 +7,10 @@ export interface ZoomOptions {
     maxZoom?: number;
 }
 
+export interface AttachedZoomOptions extends ZoomOptions {
+    initialFit?: boolean,
+}
+
 export interface ZoomInButtonProps {
     onZoomIn: () => void;
 }
@@ -25,6 +29,6 @@ export interface ZoomControlProps {
 }
 
 export interface ZoomControlGroupProps extends ZoomControlProps {
-    direction?: "horizontal" | "vertical"; 
+    direction?: "horizontal" | "vertical";
 }
 

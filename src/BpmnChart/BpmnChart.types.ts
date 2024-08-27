@@ -1,9 +1,10 @@
-import BaseViewer, { ImportXMLError, ImportXMLResult } from "bpmn-js/lib/BaseViewer";
-import { ElementLike } from "diagram-js/lib/model/Types";
-import { OverlayAttrs } from "diagram-js/lib/features/overlays/Overlays";
-import { ElementRegistryFilterCallback } from "diagram-js/lib/core/ElementRegistry";
+import { ModuleDeclaration } from "didi";
 import { Element } from "diagram-js/lib/model";
+import { ElementLike } from "diagram-js/lib/model/Types";
+import { ElementRegistryFilterCallback } from "diagram-js/lib/core/ElementRegistry";
 import Canvas from "diagram-js/lib/core/Canvas";
+import { OverlayAttrs } from "diagram-js/lib/features/overlays/Overlays";
+import BaseViewer, { ImportXMLError, ImportXMLResult } from "bpmn-js/lib/BaseViewer";
 
 export interface OverlayDefinition {
     type?: string;
@@ -42,8 +43,9 @@ export function isOverlayDefinitionsBuilder(o: OverlayDefinition | OverlayDefini
 }
 
 export interface BpmnChartProps {
-    xml: string,
-    overlays?: [ OverlayDefinition | OverlayDefinitionBuilder | OverlayDefinitionsBuilder ],
+    xml: string;
+    overlays?: [ OverlayDefinition | OverlayDefinitionBuilder | OverlayDefinitionsBuilder ];
+    modules?: ModuleDeclaration[];
     onViewerInitialized?: (viewer: BaseViewer) => void;
     onLoadingSuccess?: (result: ImportXMLResult) => void;
     onLoadingError?: (error: ImportXMLError) => void;

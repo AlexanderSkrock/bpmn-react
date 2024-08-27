@@ -32,3 +32,15 @@ export const DefaultZoomControlGroup: Story = {
         }),
     ],
 };
+
+export const AutoFittingZoomControlGroup: Story = {
+    loaders: [
+        async () => ({
+            xml: await (await fetch('process.bpmn')).text(),
+        }),
+    ],
+    args: {
+      initialFit: true,
+    },
+};
+

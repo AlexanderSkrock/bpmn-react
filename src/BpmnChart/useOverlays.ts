@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo} from "react";
+import { useCallback, useEffect } from "react";
 
 import { isOverlayDefinition,isOverlayDefinitionBuilder, isOverlayDefinitionsBuilder } from "./BpmnChart.types";
 import {
@@ -8,7 +8,7 @@ import {
     getOverlays
 } from "./serviceHelpers";
 
-const useOverlays = ({ overlays, diagram }) => {
+const useOverlays = (diagram, overlays) => {
     const initializeOverlays = useCallback(() => {
         if (diagram) {
             const overlayService = getOverlays(diagram);

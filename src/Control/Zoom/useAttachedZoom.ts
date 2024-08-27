@@ -2,10 +2,10 @@ import { useCallback, useEffect } from "react";
 import useZoom from "./useZoom";
 import { getCanvas, getEventBus } from "../../BpmnChart/serviceHelpers";
 import Diagram from "diagram-js";
-import { ZoomOptions } from "./Zoom.types";
+import { AttachedZoomOptions } from "./Zoom.types";
 
-const useAttachedZoom = (diagram: Diagram, options: ZoomOptions) => {
-    const [currentZoom, increaseZoom, decreaseZoom, setZoom] = useZoom(options);
+const useAttachedZoom = (diagram: Diagram, { initialFit, ...zoomOptions }: AttachedZoomOptions) => {
+    const [currentZoom, increaseZoom, decreaseZoom, setZoom] = useZoom(zoomOptions);
 
     useEffect(() => {
         if (diagram) {
@@ -18,6 +18,12 @@ const useAttachedZoom = (diagram: Diagram, options: ZoomOptions) => {
             getCanvas(diagram).zoom("fit-viewport");
         }
     }, [diagram]);
+
+    useEffect(() => {
+        if (diagram && initialFit) {
+            fitZoom();
+        }
+    }, [diagram, initialFit]);
 
     const handleScaleChanged = useCallback(event => {
         setZoom(event.viewbox.scale);
