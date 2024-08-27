@@ -4,7 +4,7 @@ import { getCanvas, getEventBus } from "../../BpmnChart/serviceHelpers";
 import Diagram from "diagram-js";
 import { AttachedZoomOptions } from "./Zoom.types";
 
-const useAttachedZoom = (diagram: Diagram, { initialFit, ...zoomOptions }: AttachedZoomOptions) => {
+const useAttachedZoom = (diagram: Diagram, { initialFit, ...zoomOptions }: AttachedZoomOptions = {}) => {
     const [currentZoom, increaseZoom, decreaseZoom, setZoom] = useZoom(zoomOptions);
 
     const handleScaleChanged = useCallback(event => {

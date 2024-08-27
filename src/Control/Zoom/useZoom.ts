@@ -12,7 +12,7 @@ const MAX_ZOOM_LEVEL = 7;
 /** Zoom Stufen -> 20% Schritte */
 const ZOOM_STEP = 0.2;
 
-const useZoom = ({ initialZoom = DEFAULT_ZOOM_LEVEL, minZoom = MIN_ZOOM_LEVEL, maxZoom = MAX_ZOOM_LEVEL, step = ZOOM_STEP }: ZoomOptions) => {
+const useZoom = ({ initialZoom = DEFAULT_ZOOM_LEVEL, minZoom = MIN_ZOOM_LEVEL, maxZoom = MAX_ZOOM_LEVEL, step = ZOOM_STEP }: ZoomOptions = {}) => {
     const [currentZoom, setZoom] = useState(initialZoom);
 
     const increaseZoom = useCallback(() => {

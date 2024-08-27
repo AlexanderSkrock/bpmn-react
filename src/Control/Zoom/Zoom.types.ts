@@ -13,22 +13,31 @@ export interface AttachedZoomOptions extends ZoomOptions {
 
 export interface ZoomInButtonProps {
     onZoomIn: () => void;
+    title?: string;
 }
 
 export interface ZoomOutButtonProps {
     onZoomOut: () => void;
+    title?: string;
 }
 
 export interface ZoomFitButtonProps {
     onZoomFit: () => void;
+    title?: string;
 }
 
 export interface ZoomControlProps {
     diagram: Diagram;
     options: ZoomOptions;
+    title?: string;
 }
 
-export interface ZoomControlGroupProps extends ZoomControlProps {
+export interface ZoomControlGroupProps {
     direction?: "horizontal" | "vertical";
+    diagram: Diagram;
+    options: ZoomOptions;
+    zoomInTitle?: string;
+    zoomOutTitle?: string;
+    zoomFitTitle?: string;
 }
 

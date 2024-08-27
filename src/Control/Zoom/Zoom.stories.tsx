@@ -5,7 +5,7 @@ import type { StoryObj, Meta } from "@storybook/react";
 import BpmnChart from "../../BpmnChart/BpmnChart";
 import ZoomControlGroup from "./ZoomControlGroup";
 
-const BpmnChartWithZoomControlGroup = ({ xml, ...options }) => {
+const BpmnChartWithZoomControlGroup = ({ xml, options }) => {
     const [viewer, setViewer] = useState(null);
 
     return (
@@ -40,7 +40,9 @@ export const AutoFittingZoomControlGroup: Story = {
         }),
     ],
     args: {
-      initialFit: true,
+      options: {
+          initialFit: true,
+      },
     },
 };
 
