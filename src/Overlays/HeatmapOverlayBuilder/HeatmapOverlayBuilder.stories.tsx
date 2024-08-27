@@ -2,16 +2,16 @@ import type { StoryObj, Meta } from "@storybook/react";
 
 import HeatmapOverlayBuilder from ".";
 
-import { BpmnChart } from "..";
+import BpmnViewer from "../../BpmnViewer";
 
-const meta: Meta<typeof BpmnChart> = {
-    component: BpmnChart,
-    render: (args, { loaded: { xml } }) => <BpmnChart { ...args } xml={ xml } />,
-} as Meta<typeof BpmnChart>;
+const meta: Meta<typeof BpmnViewer> = {
+    component: BpmnViewer,
+    render: (args, { loaded: { xml } }) => <BpmnViewer { ...args } xml={ xml } />,
+} as Meta<typeof BpmnViewer>;
 
 export default meta;
 
-type Story = StoryObj<typeof BpmnChart>;
+type Story = StoryObj<typeof BpmnViewer>;
 
 export const SimpleSvgHeatmap: Story = {
     loaders: [

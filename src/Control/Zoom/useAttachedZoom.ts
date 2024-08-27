@@ -1,8 +1,11 @@
 import { useCallback, useEffect } from "react";
-import useZoom from "./useZoom";
-import { getCanvas, getEventBus } from "../../BpmnChart/serviceHelpers";
+
 import Diagram from "diagram-js";
+
+import { getCanvas, getEventBus } from "../../BpmnViewer/serviceHelpers";
+
 import { AttachedZoomOptions } from "./Zoom.types";
+import useZoom from "./useZoom";
 
 const useAttachedZoom = (diagram: Diagram, { initialFit, ...zoomOptions }: AttachedZoomOptions = {}) => {
     const [currentZoom, increaseZoom, decreaseZoom, setZoom] = useZoom(zoomOptions);

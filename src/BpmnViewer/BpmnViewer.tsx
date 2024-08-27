@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef } from "react";
 
 import type { EventBusEventCallback, ImportDoneEvent } from "bpmn-js/lib/BaseViewer";
 
-import type { BpmnChartProps } from "./BpmnChart.types";
+import type { BpmnChartProps } from "./BpmnViewer.types";
 
 import { getCanvas } from "./serviceHelpers";
 import useOverlays from "./useOverlays";

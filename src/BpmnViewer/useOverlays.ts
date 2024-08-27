@@ -1,12 +1,7 @@
 import { useCallback, useEffect } from "react";
 
-import { isOverlayDefinition,isOverlayDefinitionBuilder, isOverlayDefinitionsBuilder } from "./BpmnChart.types";
-import {
-    getCanvas,
-    getElementRegistry,
-    getEventBus,
-    getOverlays
-} from "./serviceHelpers";
+import { isOverlayDefinition,isOverlayDefinitionBuilder, isOverlayDefinitionsBuilder } from "./BpmnViewer.types";
+import { getCanvas, getElementRegistry, getEventBus, getOverlays } from "./serviceHelpers";
 
 const useOverlays = (diagram, overlays) => {
     const initializeOverlays = useCallback(() => {
