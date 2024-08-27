@@ -1,7 +1,7 @@
 {
   "name": "@adagatiya/bpmn-react",
   "version": "0.1.0",
-  "description": "",
+  "description": "Reactified implementation of bpmn-js",
   "license": "MIT",
   "author": "Alexander Skrock",
   "main": "dist/cjs/index.js",
@@ -14,10 +14,14 @@
     "test": "jest"
   },
   "peerDependencies": {
+    "@turf/turf": "^7.1.0",
     "bpmn-js": "^17.9.2",
+    "d3": "^7.9.0",
     "diagram-js": "^14.8.0",
+    "grommet-icons": "^4.12.1",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "styled-components": "^6.1.12"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
@@ -51,14 +55,5 @@
     "storybook": "^8.2.9",
     "tslib": "^2.6.3",
     "typescript": "^4.9.5"
-  },
-  "resolutions": {
-    "jsdom": "24.1.1"
-  },
-  "dependencies": {
-    "@turf/turf": "^7.1.0",
-    "d3": "^7.9.0",
-    "grommet-icons": "^4.12.1",
-    "styled-components": "^6.1.12"
   }
 }
