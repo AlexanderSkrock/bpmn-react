@@ -20,7 +20,7 @@ Seemlessy integrate <a href="https://github.com/bpmn-io/bpmn-js">bpmn-js</a> int
 
 ## Getting Started
 
-To have a quick impression on this library check out the [Storybook](bpmn-react.projects.skrock.dev).
+To have a quick impression on this library check out the [Storybook](https://bpmn-react.projects.skrock.dev).
 
 
 <!-- CONTRIBUTING -->
