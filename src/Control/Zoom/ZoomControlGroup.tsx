@@ -10,11 +10,13 @@ import ZoomOutButton from "./ZoomOutButton";
 const HorizontalZoomControlContainer = styled.div`
     display: flex;
     flex-direction: row;
+    gap: 8px;
 `;
 
 const VerticalZoomControlContainer = styled.div`
     display: flex;
     flex-direction: column;
+    gap: 8px;
 `;
 
 const ZoomControlGroup = ({ direction = "horizontal", diagram, options }: ZoomControlGroupProps) => {

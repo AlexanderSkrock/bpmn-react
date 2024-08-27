@@ -2,13 +2,17 @@ import { useEffect, useState } from "react";
 
 import CoreModule from "bpmn-js/lib/core";
 import OverlaysModule from "diagram-js/lib/features/overlays";
+import SelectionModule from "diagram-js/lib/features/selection";
 import TranslateModule from "diagram-js/lib/i18n/translate";
+import MoveCanvasModule from 'diagram-js/lib/navigation/movecanvas';
 import Viewer from "bpmn-js/lib/BaseViewer";
 
 const DEFAULT_MODULES = [
     CoreModule,
     OverlaysModule,
     TranslateModule,
+    MoveCanvasModule,
+    SelectionModule,
 ];
 
 const withDefaultModules = (modules) => {

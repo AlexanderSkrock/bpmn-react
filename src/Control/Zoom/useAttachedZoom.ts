@@ -7,27 +7,30 @@ import { AttachedZoomOptions } from "./Zoom.types";
 const useAttachedZoom = (diagram: Diagram, { initialFit, ...zoomOptions }: AttachedZoomOptions) => {
     const [currentZoom, increaseZoom, decreaseZoom, setZoom] = useZoom(zoomOptions);
 
-    useEffect(() => {
+    const handleScaleChanged = useCallback(event => {
+        setZoom(event.viewbox.scale);
+    }, [setZoom]);
+
+    const zoom = useCallback((zoomValue) => {
         if (diagram) {
-            getCanvas(diagram).zoom(currentZoom, "auto");
+            const nextZoom = getCanvas(diagram).zoom(zoomValue);
+            setZoom(nextZoom);
         }
-    }, [diagram, currentZoom]);
+    }, [diagram, setZoom])
 
     const fitZoom = useCallback(() => {
-        if (diagram) {
-            getCanvas(diagram).zoom("fit-viewport");
-        }
+        zoom("fit-viewport");
     }, [diagram]);
+
+    useEffect(() => {
+        zoom(currentZoom);
+    }, [diagram, currentZoom]);
 
     useEffect(() => {
         if (diagram && initialFit) {
             fitZoom();
         }
     }, [diagram, initialFit]);
-
-    const handleScaleChanged = useCallback(event => {
-        setZoom(event.viewbox.scale);
-    }, [setZoom]);
 
     useEffect(() => {
         if (diagram) {
