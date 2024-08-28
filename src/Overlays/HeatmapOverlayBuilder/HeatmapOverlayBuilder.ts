@@ -1,10 +1,13 @@
-import { contours, create, geoPath, geoIdentity, scaleSequential, interpolateRgbBasis, filter } from "d3";
+import { contours, create, geoPath, geoIdentity, scaleSequential, interpolateRgbBasis } from "d3";
 import { difference, feature, featureCollection } from "@turf/turf";
 
 import { ElementLike } from "diagram-js/lib/model/Types";
 import { isConnection } from "diagram-js/lib/util/ModelUtil";
 
-import type { HeatmapOverlayBuilderOptions } from "./HeatmapOverlayBuilder.types";
+import type {
+    HeatDataPoint,
+    HeatmapOverlayBuilderOptions
+} from "./HeatmapOverlayBuilder.types";
 
 import { OverlayBuilderEnvironment, OverlayDefinitionsBuilder } from "../BpmnChart/BpmnChart.types"
 import { calculateInfluenceMaxRange, getDistances } from "./util";
@@ -13,25 +16,41 @@ import {ContourMultiPolygon} from "d3-contour";
 
 class HeatmapOverlayBuilder implements OverlayDefinitionsBuilder {
 
-    options: HeatmapOverlayBuilderOptions;
+    renderMode: "svg" | "canvas" = "svg";
+    opacity: number = 0.25;
+
+    values: { [key: string]: HeatDataPoint };
 
     color: (value: number) => string;
 
     constructor(options: HeatmapOverlayBuilderOptions) {
-        this.options = {
-            renderMode: "svg",
-            opacity: 0.25,
-            ...options,
-        };
+        if (options.renderMode) {
+            this.renderMode = options.renderMode;
+        }
 
-        const minValue = Math.min(...Object.values(this.options.values));
-        const maxValue = Math.max(...Object.values(this.options.values));
+        if (options.opacity != null && options.opacity != undefined) {
+            this.opacity = options.opacity;
+        }
+
+        const cleanedValues = {};
+        Object.entries(options.values).forEach(([id, dataPoint]) => {
+            if (typeof dataPoint === "number") {
+                cleanedValues[id] = { value: dataPoint };
+            } else {
+                cleanedValues[id] = dataPoint;
+            }
+        });
+        this.values = cleanedValues;
+
+
+
+        const minValue = Math.min(...Object.values(this.values).map(dataPoint => dataPoint.value));
+        const maxValue = Math.max(...Object.values(this.values).map(dataPoint => dataPoint.value));
         this.color = scaleSequential(interpolateRgbBasis(["green", "yellow", "red"])).domain([minValue, maxValue]);
     }
 
     elementFilter = (element: ElementLike) => {
-        const elementValue = this.options.values[element.id];
-        const hasHeatValue = elementValue !== null && elementValue !== undefined;
+        const hasHeatValue = !!this.values[element.id];
         return hasHeatValue || isConnection(element);
     }
 
@@ -53,11 +72,11 @@ class HeatmapOverlayBuilder implements OverlayDefinitionsBuilder {
 
         const heatValues = {};
         elements.forEach(element => {
-            let value = this.options.values[element.id];
+            let value = this.values[element.id]?.value;
             if (isConnection(element)) {
                 const businessObject = getBusinessObject(element);
-                const inHeatValue =  this.options.values[businessObject.sourceRef.id];
-                const outHeatValue =  this.options.values[businessObject.targetRef.id];
+                const inHeatValue =  this.values[businessObject.sourceRef.id]?.value;
+                const outHeatValue =  this.values[businessObject.targetRef.id]?.value;
                 value = Math.min(inHeatValue, outHeatValue);
             }
             heatValues[element.id] = value;
@@ -123,7 +142,7 @@ class HeatmapOverlayBuilder implements OverlayDefinitionsBuilder {
             }
         }
 
-        const renderFunction = this.options.renderMode === "canvas" ? this.renderContoursToCanvas : this.renderContoursToSvg;
+        const renderFunction = this.renderMode === "canvas" ? this.renderContoursToCanvas : this.renderContoursToSvg;
 
         const htmlElement = renderFunction(overlayWidth, overlayHeight, nonOverlappingHeatContours, this.color)
 
@@ -143,12 +162,15 @@ class HeatmapOverlayBuilder implements OverlayDefinitionsBuilder {
 
     createTooltipOverlayDefinitions = (elements) => {
         return elements
-            .filter(element => this.options.values[element.id] !== null && this.options.values[element.id] !== undefined)
+            .filter(element => this.values[element.id])
             .map(element => {
                 const htmlElement = document.createElement("div");
                 htmlElement.style.width = `${element.width}px`;
                 htmlElement.style.height = `${element.height}px`;
-                htmlElement.title = `${this.options.values[element.id]}`;
+
+                const heatDatapoint = this.values[element.id];
+                htmlElement.title = `${heatDatapoint.displayValue ?? heatDatapoint.value}`;
+
                 return {
                         type: "Overlay_Heatmap_Tooltip",
                         interactive: true,
@@ -173,7 +195,7 @@ class HeatmapOverlayBuilder implements OverlayDefinitionsBuilder {
         const renderContext = canvas.getContext("2d");
         const path = geoPath().projection(geoIdentity().scale(1)).context(renderContext);
 
-        renderContext.globalAlpha = this.options.opacity;
+        renderContext.globalAlpha = this.opacity;
 
         heatmapContours.forEach(c => {
             renderContext.fillStyle = color(c.value);
@@ -200,7 +222,7 @@ class HeatmapOverlayBuilder implements OverlayDefinitionsBuilder {
             .join("path")
             .attr("d", c => path(c))
             .attr("fill", c => color(c.value))
-            .attr("fill-opacity", this.options.opacity);
+            .attr("fill-opacity", this.opacity);
 
         return svg.node();
     }
