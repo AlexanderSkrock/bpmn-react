@@ -34,7 +34,7 @@ export interface ZoomControlProps {
 
 export interface ZoomControlGroupProps {
     direction?: "horizontal" | "vertical";
-    diagram: Diagram;
+    diagram: Diagram | null;
     options: ZoomOptions;
     zoomInTitle?: string;
     zoomOutTitle?: string;

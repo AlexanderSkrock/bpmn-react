@@ -6,15 +6,13 @@ import { getCanvas, getEventBus } from "../../BpmnViewer/serviceHelpers";
 
 import { AttachedZoomOptions } from "./Zoom.types";
 import useZoom from "./useZoom";
+import useEventHandler from "../../BpmnViewer/useEventHandler";
+import { EventBusEventCallback } from "diagram-js/lib/core/EventBus";
 
-const useAttachedZoom = (diagram: Diagram, { initialFit, ...zoomOptions }: AttachedZoomOptions = {}) => {
-    const [currentZoom, increaseZoom, decreaseZoom, setZoom] = useZoom(zoomOptions);
+const useAttachedZoom = (diagram: Diagram | null, { initialFit, ...zoomOptions }: AttachedZoomOptions = {}): [number | "fit-viewport", () => void, () => void, () => void, (nextZoom: number | "fit-viewport") => void] => {
+    const [currentZoom, increaseZoom, decreaseZoom, setZoom] = useZoom(zoomOptions)
 
-    const handleScaleChanged = useCallback(event => {
-        setZoom(event.viewbox.scale);
-    }, [setZoom]);
-
-    const zoom = useCallback((zoomValue) => {
+    const zoom = useCallback((zoomValue: number | "fit-viewport") => {
         if (diagram) {
             const nextZoom = getCanvas(diagram).zoom(zoomValue);
             setZoom(nextZoom);
@@ -35,16 +33,10 @@ const useAttachedZoom = (diagram: Diagram, { initialFit, ...zoomOptions }: Attac
         }
     }, [diagram, initialFit]);
 
-    useEffect(() => {
-        if (diagram) {
-            getEventBus(diagram).on("canvas.viewbox.changed", handleScaleChanged);
-        }
-        return () => {
-            if (diagram) {
-                getEventBus(diagram).off("canvas.viewbox.changed", handleScaleChanged);
-            }
-        }
-    }, [diagram, handleScaleChanged]);
+    const handleScaleChanged: EventBusEventCallback<any> = useCallback(event => {
+        setZoom(event.viewbox.scale);
+    }, [setZoom]);
+    useEventHandler(diagram, "canvas.viewbox.changed", handleScaleChanged);
 
     return [currentZoom, increaseZoom, decreaseZoom, fitZoom, setZoom];
 };

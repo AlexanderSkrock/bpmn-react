@@ -1,9 +1,11 @@
+import Diagram from "diagram-js";
+import { OverlayAttrs } from "diagram-js/lib/features/overlays/Overlays";
 import { useCallback, useEffect } from "react";
 
-import { isOverlayDefinition,isOverlayDefinitionBuilder, isOverlayDefinitionsBuilder } from "./BpmnViewer.types";
+import { isOverlayDefinition,isOverlayDefinitionBuilder, isOverlayDefinitionsBuilder, OverlayDefinition, OverlayDefinitionBuilder, OverlayDefinitionsBuilder } from "./BpmnViewer.types";
 import { getCanvas, getElementRegistry, getEventBus, getOverlays } from "./serviceHelpers";
 
-const wrapOverlay = (config) => {
+const wrapOverlay = (config: OverlayAttrs): OverlayAttrs => {
     const overlayContainer = document.createElement("div");
     if (typeof config.html === "string") {
         overlayContainer.innerHTML = config.html;
@@ -17,17 +19,19 @@ const wrapOverlay = (config) => {
     };
 };
 
-const wrapOverlayInteractive = (config) => {
+const wrapOverlayInteractive = (config: OverlayAttrs): OverlayAttrs => {
     return wrapOverlay(config);
 }
 
-const wrapOverlayNonInteractive = (config) => {
+const wrapOverlayNonInteractive = (config: OverlayAttrs): OverlayAttrs => {
     const wrappedOverlay = wrapOverlay(config);
-    wrappedOverlay.html.classList.add("non-interactive");
+    if (typeof wrappedOverlay.html !== "string") {
+        wrappedOverlay.html.classList.add("non-interactive");
+    }
     return wrappedOverlay;
 }
 
-const useOverlays = (diagram, overlays) => {
+const useOverlays = (diagram: Diagram | null, overlays?: [ OverlayDefinition | OverlayDefinitionBuilder | OverlayDefinitionsBuilder ]): void => {
     const initializeOverlays = useCallback(() => {
         if (diagram) {
             const overlayService = getOverlays(diagram);
@@ -41,7 +45,7 @@ const useOverlays = (diagram, overlays) => {
                 canvas: () => getCanvas(diagram),
             });
 
-            const overlayDefinitions = [];
+            const overlayDefinitions: OverlayDefinition[] = [];
             overlays?.forEach(overlay => {
                 if (isOverlayDefinition(overlay)) {
                     overlayDefinitions.push(overlay);

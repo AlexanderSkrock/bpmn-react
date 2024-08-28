@@ -4,7 +4,7 @@ import styled from "styled-components";
 
 import type { EventBusEventCallback, ImportDoneEvent } from "bpmn-js/lib/BaseViewer";
 
-import type { BpmnViewerProps } from "./BpmnViewer.types";
+import type { BpmnViewerProps, ProcessViewerProps } from "./BpmnViewer.types";
 import { getCanvas } from "./serviceHelpers";
 import useOverlays from "./useOverlays";
 import useViewer from "./useViewer";
@@ -18,7 +18,7 @@ const BpmnViewerContainer = styled.div`
 `;
 
 const BpmnViewer: React.FC<BpmnViewerProps> = ({ process, loadProcess, modules, onViewerInitialized, onLoadingSuccess, onLoadingError }: BpmnViewerProps) => {
-    const [calledElements, setCalledElements] = useState({});
+    const [calledElements, setCalledElements] = useState<{ [key: string]: ProcessViewerProps }>({});
 
     const [currentProcess, setCurrentProcess] = useState(process);
     useEffect(() => {
@@ -56,7 +56,7 @@ const BpmnViewer: React.FC<BpmnViewerProps> = ({ process, loadProcess, modules, 
 
     useEventHandler(bpmnViewer, "import.done", handleImportDone);
 
-    const handleCallActivityClicked = useCallback(({ element }) => {
+    const handleCallActivityClicked: EventBusEventCallback<any> = useCallback(({ element }: any) => {
         if (element.type !== "bpmn:CallActivity") {
             return;
         }
@@ -64,7 +64,7 @@ const BpmnViewer: React.FC<BpmnViewerProps> = ({ process, loadProcess, modules, 
             setCurrentProcess(calledElements[element.id]);
         } else {
             const businessElement = getBusinessObject(element);
-            loadProcess(businessElement).then(calledProcess => {
+            loadProcess?.(businessElement).then(calledProcess => {
                 setCalledElements(curentCalledElements => ({ ...curentCalledElements, [element.id]: calledProcess, }))
                 setCurrentProcess(calledProcess);
             });

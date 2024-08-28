@@ -1,10 +1,9 @@
-import { ModuleDeclaration } from "didi";
 import { Element } from "diagram-js/lib/model";
 import { ElementLike } from "diagram-js/lib/model/Types";
 import { ElementRegistryFilterCallback } from "diagram-js/lib/core/ElementRegistry";
 import Canvas from "diagram-js/lib/core/Canvas";
 import { OverlayAttrs } from "diagram-js/lib/features/overlays/Overlays";
-import BaseViewer, { ImportXMLError, ImportXMLResult } from "bpmn-js/lib/BaseViewer";
+import BaseViewer, { ImportXMLError, ImportXMLResult, ModuleDeclaration } from "bpmn-js/lib/BaseViewer";
 
 export interface OverlayDefinition {
     type?: string;
@@ -43,6 +42,10 @@ export function isOverlayDefinitionsBuilder(o: OverlayDefinition | OverlayDefini
     return !!multipleBuilder.buildDefinitions;
 }
 
+export interface CalledBpmnElementDefinition {
+    calledElement: string;
+}
+
 export interface ProcessViewerProps {
     xml: string;
     overlays?: [ OverlayDefinition | OverlayDefinitionBuilder | OverlayDefinitionsBuilder ];
@@ -50,7 +53,7 @@ export interface ProcessViewerProps {
 
 export interface BpmnViewerProps {
     process: ProcessViewerProps;
-    loadProcess: () => Promise<ProcessViewerProps>;
+    loadProcess?: (calledElement: CalledBpmnElementDefinition) => Promise<ProcessViewerProps>;
     modules?: ModuleDeclaration[];
     onViewerInitialized?: (viewer: BaseViewer) => void;
     onLoadingSuccess?: (result: ImportXMLResult) => void;

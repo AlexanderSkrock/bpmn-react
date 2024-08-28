@@ -2,11 +2,15 @@ import { useState } from "react";
 
 import type { StoryObj, Meta } from "@storybook/react";
 
+import type { ProcessViewerProps } from "../../BpmnViewer/BpmnViewer.types";
+import type { AttachedZoomOptions } from "./Zoom.types";
+
 import BpmnViewer from "../../BpmnViewer";
 import ZoomControlGroup from "./ZoomControlGroup";
+import BaseViewer from "bpmn-js/lib/BaseViewer";
 
-const BpmnViewerWithZoomControlGroup = ({ process, options }) => {
-    const [viewer, setViewer] = useState(null);
+const BpmnViewerWithZoomControlGroup = ({ process, options }: { process: ProcessViewerProps, options: AttachedZoomOptions }) => {
+    const [viewer, setViewer] = useState<BaseViewer | null>(null);
 
     return (
         <>

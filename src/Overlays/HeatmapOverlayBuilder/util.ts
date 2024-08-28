@@ -1,14 +1,15 @@
+import type { ElementLike, ShapeLike } from "diagram-js/lib/model/Types";
+
 import { pointDistance, Point } from "diagram-js/lib/util/Geometry";
 import { center } from "diagram-js/lib/util/PositionUtil";
-import {ElementLike} from "diagram-js/lib/model/Types";
 
 export function getDistances(point: Point, elements: ElementLike[]): { [key: string]: number } {
-    const result = {};
+    const result: { [key: string]: number} = {};
 
     elements.forEach(element => {
         const isLineElement = !element.width || !element.height
         if (isLineElement) {
-            const lines = [];
+            const lines: [Point, Point][] = [];
             if (element.waypoints) {
                 for (let i = 0; i < element.waypoints.length - 1; i++) {
                     lines.push([element.waypoints[i], element.waypoints[i + 1]]);
@@ -16,7 +17,7 @@ export function getDistances(point: Point, elements: ElementLike[]): { [key: str
             }
             result[element.id] = pointLinesDistance(point, lines);
         } else {
-            result[element.id] = pointDistance(point, center(element));
+            result[element.id] = pointDistance(point, center(element as ShapeLike));
         }
     });
 
