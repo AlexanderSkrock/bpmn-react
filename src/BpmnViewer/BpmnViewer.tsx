@@ -1,15 +1,22 @@
 import React, { useCallback, useEffect, useRef } from "react";
 
+import styled from "styled-components";
+
 import type { EventBusEventCallback, ImportDoneEvent } from "bpmn-js/lib/BaseViewer";
 
 import type { BpmnChartProps } from "./BpmnViewer.types";
-
 import { getCanvas } from "./serviceHelpers";
 import useOverlays from "./useOverlays";
 import useViewer from "./useViewer";
 import useEventHandler from "./useEventHandler";
 
-const BpmnChart: React.FC<BpmnChartProps> = ({ xml, overlays, modules, onViewerInitialized, onLoadingSuccess, onLoadingError }: BpmnChartProps) => {
+const BpmnViewerContainer = styled.div`
+  .djs-overlay:has(.non-interactive) {
+    pointer-events: none;
+  }
+`;
+
+const BpmnViewer: React.FC<BpmnChartProps> = ({ xml, overlays, modules, onViewerInitialized, onLoadingSuccess, onLoadingError }: BpmnChartProps) => {
     const chartContainerRef = useRef<HTMLDivElement>(null);
     const bpmnViewer = useViewer(chartContainerRef, {
         modules,
@@ -44,8 +51,8 @@ const BpmnChart: React.FC<BpmnChartProps> = ({ xml, overlays, modules, onViewerI
     }, [bpmnViewer, xml])
 
     return (
-        <div data-testid="bpmnChart" ref={ chartContainerRef } />
+        <BpmnViewerContainer data-testid="bpmnChart" ref={ chartContainerRef } />
     );
 };
 
-export default BpmnChart;
+export default BpmnViewer;

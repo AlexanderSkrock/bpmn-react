@@ -8,6 +8,7 @@ import BaseViewer, { ImportXMLError, ImportXMLResult } from "bpmn-js/lib/BaseVie
 
 export interface OverlayDefinition {
     type?: string;
+    interactive?: boolean;
     element: string | Element;
     config: OverlayAttrs;
 }

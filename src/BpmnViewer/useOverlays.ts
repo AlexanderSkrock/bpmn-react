@@ -3,6 +3,25 @@ import { useCallback, useEffect } from "react";
 import { isOverlayDefinition,isOverlayDefinitionBuilder, isOverlayDefinitionsBuilder } from "./BpmnViewer.types";
 import { getCanvas, getElementRegistry, getEventBus, getOverlays } from "./serviceHelpers";
 
+const wrapOverlay = (config) => {
+    const overlayContainer = document.createElement("div");
+    overlayContainer.appendChild(config.html);
+    return {
+        ...config,
+        html: overlayContainer,
+    };
+};
+
+const wrapOverlayInteractive = (config) => {
+    return wrapOverlay(config);
+}
+
+const wrapOverlayNonInteractive = (config) => {
+    const wrappedOverlay = wrapOverlay(config);
+    wrappedOverlay.html.classList.add("non-interactive");
+    return wrappedOverlay;
+}
+
 const useOverlays = (diagram, overlays) => {
     const initializeOverlays = useCallback(() => {
         if (diagram) {
@@ -43,11 +62,15 @@ const useOverlays = (diagram, overlays) => {
                 }
             });
 
-            overlayDefinitions.forEach(({type, element, config}) => {
+            overlayDefinitions.forEach(({type, element, interactive, config}) => {
+                const overlayConfig = interactive
+                    ? wrapOverlayInteractive(config)
+                    : wrapOverlayNonInteractive(config);
+
                 if (type) {
-                    overlayService.add(element, type, config);
+                    overlayService.add(element, type, overlayConfig);
                 } else {
-                    overlayService.add(element, config);
+                    overlayService.add(element, overlayConfig);
                 }
             });
             console.log(`Registered ${overlayDefinitions.length} overlays.`);
