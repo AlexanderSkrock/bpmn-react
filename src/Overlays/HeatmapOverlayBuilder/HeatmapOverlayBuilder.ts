@@ -36,6 +36,13 @@ class HeatmapOverlayBuilder implements OverlayDefinitionsBuilder {
     }
 
     buildDefinitions = (elements: ElementLike[], env: OverlayBuilderEnvironment) => {
+        return [
+            this.createHeatmapOverlayDefinition(elements, env),
+            ...this.createTooltipOverlayDefinitions(elements),
+        ];
+    }
+
+    createHeatmapOverlayDefinition = (elements, env) => {
         const overlayOverflow = 30;
 
         const overlayWidth = env.canvas().viewbox().inner.width + overlayOverflow;
@@ -120,8 +127,9 @@ class HeatmapOverlayBuilder implements OverlayDefinitionsBuilder {
 
         const htmlElement = renderFunction(overlayWidth, overlayHeight, nonOverlappingHeatContours, this.color)
 
-        return [{
+        return {
             type: "Overlay_Heatmap",
+            interactive: false,
             element: env.rootElement().id,
             config: {
                 position: {
@@ -130,7 +138,30 @@ class HeatmapOverlayBuilder implements OverlayDefinitionsBuilder {
                 },
                 html: htmlElement,
             },
-        }];
+        };
+    }
+
+    createTooltipOverlayDefinitions = (elements) => {
+        return elements
+            .filter(element => this.options.values[element.id] !== null && this.options.values[element.id] !== undefined)
+            .map(element => {
+                const htmlElement = document.createElement("div");
+                htmlElement.style.width = `${element.width}px`;
+                htmlElement.style.height = `${element.height}px`;
+                htmlElement.title = `${this.options.values[element.id]}`;
+                return {
+                        type: "Overlay_Heatmap_Tooltip",
+                        interactive: true,
+                        element: element.id,
+                        config: {
+                        position: {
+                            top: 0,
+                                left: 0,
+                        },
+                        html: htmlElement
+                    }
+                };
+            });
     }
 
     renderContoursToCanvas = (width: number, height: number, heatmapContours: ContourMultiPolygon[], color: (value: number) => string): HTMLElement => {
