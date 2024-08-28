@@ -5,7 +5,12 @@ import { getCanvas, getElementRegistry, getEventBus, getOverlays } from "./servi
 
 const wrapOverlay = (config) => {
     const overlayContainer = document.createElement("div");
-    overlayContainer.appendChild(config.html);
+    if (typeof config.html === "string") {
+        overlayContainer.innerHTML = config.html;
+    } else {
+        overlayContainer.appendChild(config.html);
+    }
+
     return {
         ...config,
         html: overlayContainer,

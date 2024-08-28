@@ -43,9 +43,14 @@ export function isOverlayDefinitionsBuilder(o: OverlayDefinition | OverlayDefini
     return !!multipleBuilder.buildDefinitions;
 }
 
-export interface BpmnChartProps {
+export interface ProcessViewerProps {
     xml: string;
     overlays?: [ OverlayDefinition | OverlayDefinitionBuilder | OverlayDefinitionsBuilder ];
+}
+
+export interface BpmnViewerProps {
+    process: ProcessViewerProps;
+    loadProcess: () => Promise<ProcessViewerProps>;
     modules?: ModuleDeclaration[];
     onViewerInitialized?: (viewer: BaseViewer) => void;
     onLoadingSuccess?: (result: ImportXMLResult) => void;
