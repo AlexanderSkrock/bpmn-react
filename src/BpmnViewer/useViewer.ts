@@ -1,4 +1,4 @@
-import { RefObject, useEffect, useState } from "react";
+import { Ref, RefObject, useCallback, useEffect, useState } from "react";
 
 import OverlaysModule from "diagram-js/lib/features/overlays";
 import SelectionModule from "diagram-js/lib/features/selection";
@@ -20,22 +20,28 @@ const withDefaultModules = (modules?: ModuleDeclaration) => {
     return modules ? [ ...DEFAULT_MODULES, modules ] : DEFAULT_MODULES;
 }
 
-const useViewer = (ref: RefObject<HTMLElement>, config?: BaseViewerOptions): BaseViewer | null => {
+const useViewer = (config?: BaseViewerOptions): [(ref: any) => void, BaseViewer | null] => {
     const [viewer, setViewer] = useState<BaseViewer | null>(null);
 
-    useEffect(() => {
-        if (ref.current && !viewer) {
+    const handleRef = useCallback((ref: any) => {
+        if (viewer) {
+            if (ref) {
+                viewer.attachTo(ref)
+            } else {
+                viewer.detach();
+            }
+        } else if (ref) {
             setViewer(new BaseViewer({
                 ...config,
                 container: ref.current,
                 additionalModules: withDefaultModules(config?.modules),
             }));
         }
+    }, [viewer, setViewer]);
 
-        return () => viewer?.destroy();
-    }, [ref.current]);
+    useEffect(() => () => viewer?.destroy(), []);
 
-    return viewer;
+    return [handleRef, viewer];
 };
 
 export default useViewer;

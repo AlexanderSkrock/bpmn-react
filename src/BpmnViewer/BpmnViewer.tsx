@@ -26,11 +26,7 @@ const BpmnViewer: React.FC<BpmnViewerProps> = ({ process, loadProcess, modules, 
         setCalledElements({})
     }, [process, setCurrentProcess]);
 
-
-    const chartContainerRef = useRef<HTMLDivElement>(null);
-    const bpmnViewer = useViewer(chartContainerRef, {
-        modules,
-    });
+    const [handleRef, bpmnViewer] = useViewer({ modules });
 
     useEffect(() => {
         if (bpmnViewer) {
@@ -80,7 +76,7 @@ const BpmnViewer: React.FC<BpmnViewerProps> = ({ process, loadProcess, modules, 
     }, [bpmnViewer, currentProcess])
 
     return (
-        <BpmnViewerContainer data-testid="bpmnChart" ref={ chartContainerRef } />
+        <BpmnViewerContainer data-testid="bpmnChart" ref={ handleRef } />
     );
 };
 
