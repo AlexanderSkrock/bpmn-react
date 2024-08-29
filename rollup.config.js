@@ -1,3 +1,5 @@
+import { dirname } from "path";
+
 import commonjs from "@rollup/plugin-commonjs";
 import resolve from "@rollup/plugin-node-resolve";
 import terser from "@rollup/plugin-terser";
@@ -12,12 +14,16 @@ export default [
     input: "src/index.ts",
     output: [
       {
-        file: packageJson.main,
+        dir: dirname(packageJson.main),
+        preserveModules: true,
+        preserveModulesRoot: "src",
         format: "cjs",
         sourcemap: true,
       },
       {
-        file: packageJson.module,
+        dir: dirname(packageJson.module),
+        preserveModules: true,
+        preserveModulesRoot: "src",
         format: "esm",
         sourcemap: true,
       },
@@ -29,7 +35,16 @@ export default [
       typescript({ tsconfig: "./tsconfig.json" }),
       terser(),
     ],
-    external: ["react", "react-dom"],
+    external: [
+      "@turf/turf",
+      "bpmn-js",
+      "d3",
+      "diagram-js",
+      "grommet-icons",
+      "react",
+      "react-dom",
+      "styled-components"
+    ]
   },
   {
     input: "src/index.ts",
