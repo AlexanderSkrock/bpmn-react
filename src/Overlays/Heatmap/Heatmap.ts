@@ -67,84 +67,11 @@ class Heatmap implements OverlayDefinitionsBuilder {
         const overlayOffsetX = env.canvas().viewbox().inner.x - overlayOverflow / 2;
         const overlayOffsetY = env.canvas().viewbox().inner.y - overlayOverflow / 2;
 
-        const heatValues: { [key: string]: number} = {};
-        elements.forEach(element => {
-            let value = this.values[element.id]?.value;
-            if (isConnection(element)) {
-                const businessObject = getBusinessObject(element);
-                const inHeatValue =  this.values[businessObject.sourceRef.id]?.value;
-                const outHeatValue =  this.values[businessObject.targetRef.id]?.value;
-                value = Math.min(inHeatValue, outHeatValue);
-            }
-            heatValues[element.id] = value;
-        });
-
-        const heatMatrix = [];
-        for (let rowIndex = 0; rowIndex < overlayHeight; rowIndex++) {
-            for (let columnIndex = 0; columnIndex < overlayWidth; columnIndex++) {
-                const coordinateX = columnIndex + overlayOffsetX;
-                const coordinateY = rowIndex + overlayOffsetY
-
-                const distances = getDistances({ x: coordinateX, y: coordinateY }, elements);
-
-                const weigths = Object.fromEntries(elements.map(element => {
-                    const distance = distances[element.id];
-
-                    const maxInfluence = isConnection(element)
-                        ? 0.9
-                        : 1.8;
-                    const maxRange = isConnection(element)
-                        ? 12
-                        : calculateInfluenceMaxRange(element, { x: coordinateX, y: coordinateY }, 5);
-
-                    const distanceFactor = -(1 / Math.pow(maxRange, 2)) * Math.pow(distance, 2) + maxInfluence;
-                    const weight = Math.max(distanceFactor, 0);
-                    return [element.id, weight];
-                }));
-
-                const hasInfluence = Object.values(weigths).some(w => w > 0);
-
-                let heatValue = Number.NaN;
-                if (hasInfluence) {
-                    heatValue = elements
-                        .filter(element => !Number.isNaN(heatValues[element.id]))
-                        .map(element => weigths[element.id] * heatValues[element.id])
-                        .reduce((acc, cur) => acc + cur, 0);
-
-                    const weightsSum = Object.values(weigths).reduce((acc, cur) => acc + cur, 0);
-                    if (weightsSum >= 1) {
-                        heatValue /= weightsSum;
-                    }
-                }
-
-                heatMatrix[rowIndex * overlayWidth + columnIndex] = heatValue;
-            }
-        }
-
-        const contoursGenerator = contours().size([overlayWidth, overlayHeight]).thresholds(10);
-        const heatContours = contoursGenerator(heatMatrix);
-
-        const nonOverlappingHeatContours = [];
-        for (let i = 0; i < heatContours.length; i++) {
-            const c = heatContours[i];
-            const nextC = heatContours[i + 1];
-            if (nextC) {
-                const cleanedContur = difference(featureCollection([
-                    feature(c),
-                    feature(nextC),
-                ]));
-                if (cleanedContur) {
-                    const cleanedGeometry = { ...c, ...cleanedContur.geometry } as ContourMultiPolygon
-                    nonOverlappingHeatContours.push(cleanedGeometry);
-                }
-            } else {
-                nonOverlappingHeatContours.push(c);
-            }
-        }
+        const heatMatrix = this.calculateHeatMatrix(elements, overlayOffsetX, overlayOffsetY, overlayWidth, overlayHeight);
+        const contours = this.calculateContours(heatMatrix, overlayWidth, overlayHeight);
 
         const renderFunction = this.renderMode === "canvas" ? this.renderContoursToCanvas : this.renderContoursToSvg;
-
-        const htmlElement = renderFunction(overlayWidth, overlayHeight, nonOverlappingHeatContours, this.color)
+        const htmlElement = renderFunction(overlayWidth, overlayHeight, contours, this.color)
 
         return {
             type: "Overlay_Heatmap",
@@ -184,6 +111,87 @@ class Heatmap implements OverlayDefinitionsBuilder {
                     }
                 };
             });
+    }
+
+    calculateHeatMatrix = (elements: ElementLike[], xOffset: number, yOffset: number, width: number, height: number): number[] => {
+        const heatValues: { [key: string]: number} = {};
+        elements.forEach(element => {
+            let value = this.values[element.id]?.value;
+            if (isConnection(element)) {
+                const businessObject = getBusinessObject(element);
+                const inHeatValue =  this.values[businessObject.sourceRef.id]?.value;
+                const outHeatValue =  this.values[businessObject.targetRef.id]?.value;
+                value = Math.min(inHeatValue, outHeatValue);
+            }
+            heatValues[element.id] = value;
+        });
+
+        const heatMatrix = [];
+        for (let rowIndex = 0; rowIndex < height; rowIndex++) {
+            for (let columnIndex = 0; columnIndex < width; columnIndex++) {
+                const coordinateX = columnIndex + xOffset;
+                const coordinateY = rowIndex + yOffset
+
+                const distances = getDistances({ x: coordinateX, y: coordinateY }, elements);
+
+                const weigths = Object.fromEntries(elements.map(element => {
+                    const distance = distances[element.id];
+
+                    const maxInfluence = isConnection(element)
+                        ? 0.9
+                        : 1.8;
+                    const maxRange = isConnection(element)
+                        ? 12
+                        : calculateInfluenceMaxRange(element, { x: coordinateX, y: coordinateY }, 5);
+
+                    const distanceFactor = -(1 / Math.pow(maxRange, 2)) * Math.pow(distance, 2) + maxInfluence;
+                    const weight = Math.max(distanceFactor, 0);
+                    return [element.id, weight];
+                }));
+
+                const hasInfluence = Object.values(weigths).some(w => w > 0);
+
+                let heatValue = Number.NaN;
+                if (hasInfluence) {
+                    heatValue = elements
+                        .filter(element => !Number.isNaN(heatValues[element.id]))
+                        .map(element => weigths[element.id] * heatValues[element.id])
+                        .reduce((acc, cur) => acc + cur, 0);
+
+                    const weightsSum = Object.values(weigths).reduce((acc, cur) => acc + cur, 0);
+                    if (weightsSum >= 1) {
+                        heatValue /= weightsSum;
+                    }
+                }
+
+                heatMatrix[rowIndex * width + columnIndex] = heatValue;
+            }
+        }
+        return heatMatrix;
+    }
+
+    calculateContours = (heatMatrix: number[], width: number, height: number): ContourMultiPolygon[] => {
+        const contoursGenerator = contours().size([width, height]).thresholds(10);
+        const heatContours = contoursGenerator(heatMatrix);
+
+        const nonOverlappingHeatContours = [];
+        for (let i = 0; i < heatContours.length; i++) {
+            const c = heatContours[i];
+            const nextC = heatContours[i + 1];
+            if (nextC) {
+                const cleanedContur = difference(featureCollection([
+                    feature(c),
+                    feature(nextC),
+                ]));
+                if (cleanedContur) {
+                    const cleanedGeometry = { ...c, ...cleanedContur.geometry } as ContourMultiPolygon
+                    nonOverlappingHeatContours.push(cleanedGeometry);
+                }
+            } else {
+                nonOverlappingHeatContours.push(c);
+            }
+        }
+        return nonOverlappingHeatContours;
     }
 
     renderContoursToCanvas = (width: number, height: number, heatmapContours: ContourMultiPolygon[], color: (value: number) => string): HTMLElement => {

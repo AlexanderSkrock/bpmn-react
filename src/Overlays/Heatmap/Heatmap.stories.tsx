@@ -1,3 +1,5 @@
+import React from "react";
+
 import type { StoryObj, Meta } from "@storybook/react";
 
 import Heatmap from "./Heatmap";
