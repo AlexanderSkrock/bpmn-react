@@ -8,17 +8,24 @@
   "module": "dist/esm/index.js",
   "types": "dist/index.d.ts",
   "exports": {
-    "./*": {
-      "require": "./dist/cjs/*/index.js",
-      "import": "./dist/esm/*/index.js"
+    "./BpmnViewer": {
+      "require": "./dist/cjs/BpmnViewer/index.js",
+      "import": "./dist/esm/BpmnViewer/index.js",
+      "types": "./dist/types/BpmnViewer/index.d.ts"
+    },
+    "./Overlays": {
+      "require": "./dist/cjs/Overlays/index.js",
+      "import": "./dist/esm/Overlays/index.js",
+      "types": "./dist/types/Overlays/index.d.ts"
     },
     "./Control/*": {
-      "require": "./dist/cjs/Control*/index.js",
-      "import": "./dist/esm/Control/*/index.js"
+      "require": "./dist/cjs/Control/*/index.js",
+      "import": "./dist/esm/Control/*/index.js",
+      "types": "./dist/types/Control/*/index.d.ts"
     }
   },
   "scripts": {
-    "build": "rollup -c --bundleConfigAsCjs",
+    "build": "tsc && rollup -c --bundleConfigAsCjs",
     "build-storybook": "storybook build",
     "storybook": "storybook dev -p 6006",
     "test": "jest"
@@ -63,9 +70,10 @@
     "rollup": "^4.20.0",
     "rollup-plugin-dts": "^6.1.1",
     "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-typescript-2": "^0.8.1",
     "storybook": "^8.2.9",
-    "tslib": "^2.6.3",
-    "typescript": "^4.9.5"
+    "tslib": "^2.7.0",
+    "typescript": "^4.8.4"
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "^4.21.1"

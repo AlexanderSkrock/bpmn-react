@@ -1,8 +1,8 @@
 import type { StoryObj, Meta } from "@storybook/react";
 
-import HeatmapOverlayBuilder from ".";
+import Heatmap from "./Heatmap";
 
-import BpmnViewer from "../../BpmnViewer";
+import { BpmnViewer } from "../../BpmnViewer";
 
 const meta: Meta<typeof BpmnViewer> = {
     component: BpmnViewer,
@@ -24,7 +24,7 @@ export const SimpleSvgHeatmap: Story = {
     args: {
         process: {
             overlays: [
-                new HeatmapOverlayBuilder({
+                new Heatmap({
                     renderMode: "svg",
                     values: {
                         "StartEvent_1": 1,
@@ -56,7 +56,7 @@ export const SimpleCanvasHeatmap: Story = {
     args: {
         process: {
             overlays: [
-                new HeatmapOverlayBuilder({
+                new Heatmap({
                     renderMode: "canvas",
                     values: {
                         "StartEvent_1": 1,

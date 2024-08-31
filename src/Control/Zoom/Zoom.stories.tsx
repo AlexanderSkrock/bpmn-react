@@ -2,10 +2,11 @@ import { useState } from "react";
 
 import type { StoryObj, Meta } from "@storybook/react";
 
-import type { ProcessViewerProps } from "../../BpmnViewer/BpmnViewer.types";
+import { BpmnViewer } from "../../BpmnViewer";
+
+import type { ProcessViewerProps } from "../../BpmnViewer";
 import type { AttachedZoomOptions } from "./Zoom.types";
 
-import BpmnViewer from "../../BpmnViewer";
 import ZoomControlGroup from "./ZoomControlGroup";
 import BaseViewer from "bpmn-js/lib/BaseViewer";
 

@@ -1,1 +1,1 @@
-export { default as Heatmap } from "./HeatmapOverlayBuilder";
+export * as Heatmap from "./Heatmap";

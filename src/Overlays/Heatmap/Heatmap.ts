@@ -6,12 +6,12 @@ import { ElementLike } from "diagram-js/lib/model/Types";
 import { isConnection } from "diagram-js/lib/util/ModelUtil";
 
 import type { OverlayBuilderEnvironment, OverlayDefinitionsBuilder } from "../../BpmnViewer/BpmnViewer.types"
-import type { HeatDataPoint, HeatmapOverlayBuilderOptions } from "./HeatmapOverlayBuilder.types";
+import type { HeatDataPoint, HeatmapOptions } from "./Heatmap.types";
 
 import { calculateInfluenceMaxRange, getDistances } from "./util";
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 
-class HeatmapOverlayBuilder implements OverlayDefinitionsBuilder {
+class Heatmap implements OverlayDefinitionsBuilder {
 
     renderMode: "svg" | "canvas" = "svg";
     opacity: number = 0.25;
@@ -20,7 +20,7 @@ class HeatmapOverlayBuilder implements OverlayDefinitionsBuilder {
 
     color: (value: number) => string;
 
-    constructor(options: HeatmapOverlayBuilderOptions) {
+    constructor(options: HeatmapOptions) {
         if (options.renderMode) {
             this.renderMode = options.renderMode;
         }
@@ -227,4 +227,4 @@ class HeatmapOverlayBuilder implements OverlayDefinitionsBuilder {
     }
 }
 
-export default HeatmapOverlayBuilder;
+export default Heatmap;

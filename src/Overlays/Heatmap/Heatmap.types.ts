@@ -3,7 +3,7 @@ export interface HeatDataPoint {
     displayValue?: number | string,
 }
 
-export interface HeatmapOverlayBuilderOptions {
+export interface HeatmapOptions {
     values: { [key: string]: number | HeatDataPoint };
     opacity?: number,
     renderMode?: "svg" | "canvas";

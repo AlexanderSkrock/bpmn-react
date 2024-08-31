@@ -1,11 +1,13 @@
 import { dirname } from "path";
 
-import commonjs from "@rollup/plugin-commonjs";
-import resolve from "@rollup/plugin-node-resolve";
-import terser from "@rollup/plugin-terser";
-import typescript from "@rollup/plugin-typescript";
-import dts from "rollup-plugin-dts";
-import peerDepsExternal from "rollup-plugin-peer-deps-external";
+import typescript from "typescript";
+
+import commonjsPlugin from "@rollup/plugin-commonjs";
+import resolvePlugin from "@rollup/plugin-node-resolve";
+import terserPlugin from "@rollup/plugin-terser";
+import dtsPlugin from "rollup-plugin-dts";
+import peerDepsExternalPlugin from "rollup-plugin-peer-deps-external";
+import typescriptPlugin from "rollup-plugin-typescript-2";
 
 const packageJson = require("./package.json");
 
@@ -29,31 +31,21 @@ export default [
       },
     ],
     plugins: [
-      peerDepsExternal(),
-      resolve(),
-      commonjs(),
-      typescript({ tsconfig: "./tsconfig.json" }),
-      terser(),
+      peerDepsExternalPlugin(),
+      resolvePlugin(),
+      commonjsPlugin(),
+      typescriptPlugin({ typescript }),
+      terserPlugin(),
     ],
-    external: [
-      "@turf/turf",
-      "bpmn-js",
-      "d3",
-      "diagram-js",
-      "grommet-icons",
-      "react",
-      "react-dom",
-      "styled-components"
-    ]
   },
   {
-    input: "src/index.ts",
+    input: "dist/types/index.d.ts",
     output: [
       {
         file: packageJson.types,
         format: "es"
       }
     ],
-    plugins: [dts.default()],
+    plugins: [dtsPlugin.default()],
   },
 ];
