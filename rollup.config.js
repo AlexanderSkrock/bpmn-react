@@ -8,6 +8,7 @@ import terserPlugin from "@rollup/plugin-terser";
 import dtsPlugin from "rollup-plugin-dts";
 import peerDepsExternalPlugin from "rollup-plugin-peer-deps-external";
 import typescriptPlugin from "rollup-plugin-typescript-2";
+import webWorkerLoaderPlugin from 'rollup-plugin-web-worker-loader';
 
 const packageJson = require("./package.json");
 
@@ -36,6 +37,7 @@ export default [
       commonjsPlugin(),
       typescriptPlugin({ typescript }),
       terserPlugin(),
+      webWorkerLoaderPlugin(),
     ],
   },
   {

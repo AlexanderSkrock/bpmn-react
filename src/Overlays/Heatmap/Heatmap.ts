@@ -8,8 +8,10 @@ import { isConnection } from "diagram-js/lib/util/ModelUtil";
 import type { OverlayBuilderEnvironment, OverlayDefinitionsBuilder } from "../../BpmnViewer/BpmnViewer.types"
 import type { HeatDataPoint, HeatmapOptions } from "./Heatmap.types";
 
-import { calculateInfluenceMaxRange, getDistances } from "./util";
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
+
+// TODO make this work on production build
+import Worker from "./heatmapWorker.ts?worker";
 
 class Heatmap implements OverlayDefinitionsBuilder {
 
@@ -59,6 +61,8 @@ class Heatmap implements OverlayDefinitionsBuilder {
     }
 
     createHeatmapOverlayDefinition = (elements: ElementLike[], env: OverlayBuilderEnvironment) => {
+        const startTime = performance.now();
+
         const overlayOverflow = 30;
 
         const overlayWidth = env.canvas().viewbox().inner.width + overlayOverflow;
@@ -67,12 +71,19 @@ class Heatmap implements OverlayDefinitionsBuilder {
         const overlayOffsetX = env.canvas().viewbox().inner.x - overlayOverflow / 2;
         const overlayOffsetY = env.canvas().viewbox().inner.y - overlayOverflow / 2;
 
-        const heatMatrix = this.calculateHeatMatrix(elements, overlayOffsetX, overlayOffsetY, overlayWidth, overlayHeight);
-        const contours = this.calculateContours(heatMatrix, overlayWidth, overlayHeight);
+        const containerNode = document.createElement("div");
 
-        const renderFunction = this.renderMode === "canvas" ? this.renderContoursToCanvas : this.renderContoursToSvg;
-        const htmlElement = renderFunction(overlayWidth, overlayHeight, contours, this.color)
+        this.calculateHeatMatrix(elements, overlayOffsetX, overlayOffsetY, overlayWidth, overlayHeight).then(heatMatrix => {
+            const endHeatMatrix = performance.now();
+            console.info(`Duration for heat matrix generation: ${endHeatMatrix - startTime}`);
+            const contours = this.calculateContours(heatMatrix, overlayWidth, overlayHeight);
 
+            const renderFunction = this.renderMode === "canvas" ? this.renderContoursToCanvas : this.renderContoursToSvg;
+            const htmlElement = renderFunction(overlayWidth, overlayHeight, contours, this.color);
+
+            containerNode.appendChild(htmlElement);
+        });
+        
         return {
             type: "Overlay_Heatmap",
             interactive: false,
@@ -82,7 +93,7 @@ class Heatmap implements OverlayDefinitionsBuilder {
                     top: overlayOffsetY,
                     left: overlayOffsetX,
                 },
-                html: htmlElement,
+                html: containerNode,
             },
         };
     }
@@ -113,61 +124,70 @@ class Heatmap implements OverlayDefinitionsBuilder {
             });
     }
 
-    calculateHeatMatrix = (elements: ElementLike[], xOffset: number, yOffset: number, width: number, height: number): number[] => {
+    calculateHeatMatrix = (elements: ElementLike[], xOffset: number, yOffset: number, width: number, height: number): Promise<number[]> => {
         const heatValues: { [key: string]: number} = {};
-        elements.forEach(element => {
+    
+        elements.forEach(element => {    
             let value = this.values[element.id]?.value;
             if (isConnection(element)) {
                 const businessObject = getBusinessObject(element);
-                const inHeatValue =  this.values[businessObject.sourceRef.id]?.value;
+                const inHeatValue = this.values[businessObject.sourceRef.id]?.value;
                 const outHeatValue =  this.values[businessObject.targetRef.id]?.value;
                 value = Math.min(inHeatValue, outHeatValue);
             }
             heatValues[element.id] = value;
         });
 
-        const heatMatrix = [];
-        for (let rowIndex = 0; rowIndex < height; rowIndex++) {
-            for (let columnIndex = 0; columnIndex < width; columnIndex++) {
-                const coordinateX = columnIndex + xOffset;
-                const coordinateY = rowIndex + yOffset
+        return new Promise((resolve) => {
+            // TODO dynamic worker count
+            const workerCount = 4;
+            const workers: Worker[] = [];
 
-                const distances = getDistances({ x: coordinateX, y: coordinateY }, elements);
+            const chunks: { startX: number, endX: number, startY: number, endY: number, done?: boolean }[] = [];
+            const heatMatrix = new Array(width * height).fill(Number.NaN);
 
-                const weigths = Object.fromEntries(elements.map(element => {
-                    const distance = distances[element.id];
-
-                    const maxInfluence = isConnection(element)
-                        ? 0.9
-                        : 1.8;
-                    const maxRange = isConnection(element)
-                        ? 12
-                        : calculateInfluenceMaxRange(element, { x: coordinateX, y: coordinateY }, 5);
-
-                    const distanceFactor = -(1 / Math.pow(maxRange, 2)) * Math.pow(distance, 2) + maxInfluence;
-                    const weight = Math.max(distanceFactor, 0);
-                    return [element.id, weight];
-                }));
-
-                const hasInfluence = Object.values(weigths).some(w => w > 0);
-
-                let heatValue = Number.NaN;
-                if (hasInfluence) {
-                    heatValue = elements
-                        .filter(element => !Number.isNaN(heatValues[element.id]))
-                        .map(element => weigths[element.id] * heatValues[element.id])
-                        .reduce((acc, cur) => acc + cur, 0);
-
-                    const weightsSum = Object.values(weigths).reduce((acc, cur) => acc + cur, 0);
-                    if (weightsSum >= 1) {
-                        heatValue /= weightsSum;
+            for (let i = 0; i < workerCount; i++) {
+                workers[i] = new Worker();
+                workers[i].onmessage = function(event) {
+                    const { chunk: finishedChunk, heatMatrixChunk } = event.data;
+                    const { startX, endX, startY, endY } = finishedChunk;
+                
+                    for (let rowIndex = startY; rowIndex < endY; rowIndex++) {
+                        for (let columnIndex = startX; columnIndex < endX; columnIndex++) {
+                            heatMatrix[rowIndex * width + columnIndex] = heatMatrixChunk[rowIndex * width + columnIndex];
+                        }
                     }
-                }
 
-                heatMatrix[rowIndex * width + columnIndex] = heatValue;
+                    // Mark chunk as done
+                    const chunkReference = chunks.find(chunk => chunk.startX === finishedChunk.startX
+                        && chunk.endX === finishedChunk.endX
+                        && chunk.startY === finishedChunk.startY
+                        && chunk.endY === finishedChunk.endY);
+
+                    if (chunkReference) {
+                        chunkReference.done = true;
+                    }
+
+                    // Check if all workers are done
+                    if (chunks.every(chunk => chunk.done)) {
+                        resolve(heatMatrix);
+                    }
+                };
             }
-        }
-        return heatMatrix;
+
+            // Split the matrix into chunks
+            const chunkHeight = Math.ceil(height / workerCount);
+            for (let i = 0; i < workerCount; i++) {
+                const startRow = i * chunkHeight;
+                const endRow = Math.min(startRow + chunkHeight, height);
+                chunks.push({ startX: 0, endX: width, startY: startRow, endY: endRow, done: false });
+            }
+
+            // Distribute work to workers
+            chunks.forEach((chunk, index) => {
+                workers[index].postMessage({ values: heatValues, elements, xOffset, yOffset, width, height, chunk });
+            });
+        });
     }
 
     calculateContours = (heatMatrix: number[], width: number, height: number): ContourMultiPolygon[] => {

@@ -14,6 +14,16 @@ const config: StorybookConfig = {
     name: "@storybook/react-vite",
     options: {},
   },
+  viteFinal: async (config) => ({
+    ...config,
+    build: {
+      rollupOptions: {
+        output: {
+          format: "es",
+        },
+      },
+    },
+  }),
   staticDirs: [
     "../resources"
   ]
