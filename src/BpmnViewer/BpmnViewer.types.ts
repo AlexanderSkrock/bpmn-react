@@ -5,16 +5,16 @@ import Canvas from "diagram-js/lib/core/Canvas";
 import { OverlayAttrs } from "diagram-js/lib/features/overlays/Overlays";
 import BaseViewer, { ImportXMLError, ImportXMLResult, ModuleDeclaration } from "bpmn-js/lib/BaseViewer";
 
+export interface OverlayBuilderEnvironment {
+    rootElement: () => ElementLike,
+    canvas: () => Canvas,
+}
+
 export interface OverlayDefinition {
     type?: string;
     interactive?: boolean;
     element: string | Element;
     config: OverlayAttrs;
-}
-
-export interface OverlayBuilderEnvironment {
-    rootElement: () => ElementLike,
-    canvas: () => Canvas,
 }
 
 export interface OverlayDefinitionBuilder {
@@ -41,6 +41,12 @@ export function isOverlayDefinitionsBuilder(o: OverlayDefinition | OverlayDefini
     const multipleBuilder = o as OverlayDefinitionsBuilder;
     return !!multipleBuilder.buildDefinitions;
 }
+
+export function isAsyncOverlayDefinition(o: OverlayDefinition | OverlayDefinitionBuilder | OverlayDefinitionsBuilder): o is OverlayDefinition {
+    const overlay = o as OverlayDefinition;
+    return !!overlay.element && !!overlay.config;
+}
+
 
 export interface CalledBpmnElementDefinition {
     calledElement: string;

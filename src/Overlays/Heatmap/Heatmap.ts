@@ -9,6 +9,7 @@ import type { OverlayBuilderEnvironment, OverlayDefinitionsBuilder } from "../..
 import type { HeatDataPoint, HeatmapOptions, HeatmatrixJobResultData } from "./Heatmap.types";
 
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
+import { asyncHtmlElement } from "..";
 
 class Heatmap implements OverlayDefinitionsBuilder {
 
@@ -58,8 +59,6 @@ class Heatmap implements OverlayDefinitionsBuilder {
     }
 
     createHeatmapOverlayDefinition = (elements: ElementLike[], env: OverlayBuilderEnvironment) => {
-        const startTime = performance.now();
-
         const overlayOverflow = 30;
 
         const overlayWidth = env.canvas().viewbox().inner.width + overlayOverflow;
@@ -68,18 +67,12 @@ class Heatmap implements OverlayDefinitionsBuilder {
         const overlayOffsetX = env.canvas().viewbox().inner.x - overlayOverflow / 2;
         const overlayOffsetY = env.canvas().viewbox().inner.y - overlayOverflow / 2;
 
-        const containerNode = document.createElement("div");
-
-        this.calculateHeatMatrix(elements, overlayOffsetX, overlayOffsetY, overlayWidth, overlayHeight).then(heatMatrix => {
-            const endHeatMatrix = performance.now();
-            console.info(`Duration for heat matrix generation: ${endHeatMatrix - startTime}`);
-            const contours = this.calculateContours(heatMatrix, overlayWidth, overlayHeight);
-
-            const renderFunction = this.renderMode === "canvas" ? this.renderContoursToCanvas : this.renderContoursToSvg;
-            const htmlElement = renderFunction(overlayWidth, overlayHeight, contours, this.color);
-
-            containerNode.appendChild(htmlElement);
-        });
+        const futureHtmlElement = this.calculateHeatMatrix(elements, overlayOffsetX, overlayOffsetY, overlayWidth, overlayHeight)
+            .then(heatMatrix => this.calculateContours(heatMatrix, overlayWidth, overlayHeight))
+            .then(contours => {
+                const renderFunction = this.renderMode === "canvas" ? this.renderContoursToCanvas : this.renderContoursToSvg;
+                return renderFunction(overlayWidth, overlayHeight, contours, this.color);
+            });
         
         return {
             type: "Overlay_Heatmap",
@@ -90,7 +83,7 @@ class Heatmap implements OverlayDefinitionsBuilder {
                     top: overlayOffsetY,
                     left: overlayOffsetX,
                 },
-                html: containerNode,
+                html: asyncHtmlElement(futureHtmlElement),
             },
         };
     }
@@ -135,10 +128,9 @@ class Heatmap implements OverlayDefinitionsBuilder {
             heatValues[element.id] = value;
         });
 
-        // TODO Consider base class or helper function for async overlays
         return new Promise((resolve) => {
             // TODO dynamic worker count
-            const workerCount = 4;
+            const workerCount = 2;
             const workers: Worker[] = [];
 
             const chunks: { startX: number, endX: number, startY: number, endY: number, done?: boolean }[] = [];
@@ -152,7 +144,7 @@ class Heatmap implements OverlayDefinitionsBuilder {
                     const { chunk: finishedChunk, result } = message.data;
                     const { startX, endX, startY, endY } = finishedChunk;
                 
-                    // TODO Consider replacement via splice
+                    // TODO Consider more performant replacement
                     for (let rowIndex = startY; rowIndex < endY; rowIndex++) {
                         for (let columnIndex = startX; columnIndex < endX; columnIndex++) {
                             heatMatrix[rowIndex * width + columnIndex] = result[rowIndex * width + columnIndex];

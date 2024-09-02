@@ -21,10 +21,10 @@ function calculateHeatMatrixChunk(values: { [key: string]: number }, elements: E
             element
         );
     });
-    
+
     const heatMatrix = new Array(width * height).fill(Number.NaN);
-    for (let rowIndex = startY; rowIndex < height; rowIndex++) {
-        for (let columnIndex = startX; columnIndex < width; columnIndex++) {
+    for (let rowIndex = startY; rowIndex < endY; rowIndex++) {
+        for (let columnIndex = startX; columnIndex < endX; columnIndex++) {
             const coordinateX = columnIndex + xOffset;
             const coordinateY = rowIndex + yOffset;
 
@@ -67,5 +67,6 @@ function calculateHeatMatrixChunk(values: { [key: string]: number }, elements: E
             }
         }
     }
+
     return heatMatrix;
 }
