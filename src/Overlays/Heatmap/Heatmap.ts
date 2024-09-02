@@ -6,12 +6,9 @@ import { ElementLike } from "diagram-js/lib/model/Types";
 import { isConnection } from "diagram-js/lib/util/ModelUtil";
 
 import type { OverlayBuilderEnvironment, OverlayDefinitionsBuilder } from "../../BpmnViewer/BpmnViewer.types"
-import type { HeatDataPoint, HeatmapOptions } from "./Heatmap.types";
+import type { HeatDataPoint, HeatmapOptions, HeatmatrixJobResultData } from "./Heatmap.types";
 
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
-
-// TODO make this work on production build
-import Worker from "./heatmapWorker.ts?worker";
 
 class Heatmap implements OverlayDefinitionsBuilder {
 
@@ -138,6 +135,7 @@ class Heatmap implements OverlayDefinitionsBuilder {
             heatValues[element.id] = value;
         });
 
+        // TODO Consider base class or helper function for async overlays
         return new Promise((resolve) => {
             // TODO dynamic worker count
             const workerCount = 4;
@@ -147,35 +145,36 @@ class Heatmap implements OverlayDefinitionsBuilder {
             const heatMatrix = new Array(width * height).fill(Number.NaN);
 
             for (let i = 0; i < workerCount; i++) {
-                workers[i] = new Worker();
-                workers[i].onmessage = function(event) {
-                    const { chunk: finishedChunk, heatMatrixChunk } = event.data;
+                workers[i] = new Worker(new URL("./heatmap.worker", import.meta.url), {
+                    type: "module",
+                });
+                workers[i].onmessage = function(message: MessageEvent<HeatmatrixJobResultData>) {
+                    const { chunk: finishedChunk, result } = message.data;
                     const { startX, endX, startY, endY } = finishedChunk;
                 
+                    // TODO Consider replacement via splice
                     for (let rowIndex = startY; rowIndex < endY; rowIndex++) {
                         for (let columnIndex = startX; columnIndex < endX; columnIndex++) {
-                            heatMatrix[rowIndex * width + columnIndex] = heatMatrixChunk[rowIndex * width + columnIndex];
+                            heatMatrix[rowIndex * width + columnIndex] = result[rowIndex * width + columnIndex];
                         }
                     }
 
-                    // Mark chunk as done
                     const chunkReference = chunks.find(chunk => chunk.startX === finishedChunk.startX
                         && chunk.endX === finishedChunk.endX
                         && chunk.startY === finishedChunk.startY
                         && chunk.endY === finishedChunk.endY);
 
+                    // TODO terminate worker
                     if (chunkReference) {
                         chunkReference.done = true;
                     }
 
-                    // Check if all workers are done
                     if (chunks.every(chunk => chunk.done)) {
                         resolve(heatMatrix);
                     }
                 };
             }
 
-            // Split the matrix into chunks
             const chunkHeight = Math.ceil(height / workerCount);
             for (let i = 0; i < workerCount; i++) {
                 const startRow = i * chunkHeight;
@@ -183,7 +182,6 @@ class Heatmap implements OverlayDefinitionsBuilder {
                 chunks.push({ startX: 0, endX: width, startY: startRow, endY: endRow, done: false });
             }
 
-            // Distribute work to workers
             chunks.forEach((chunk, index) => {
                 workers[index].postMessage({ values: heatValues, elements, xOffset, yOffset, width, height, chunk });
             });

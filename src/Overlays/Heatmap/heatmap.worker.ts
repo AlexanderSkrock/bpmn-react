@@ -1,20 +1,19 @@
-import { ElementLike } from "diagram-js/lib/model/Types";
-import PointMap from "./Pointmap";
+import type { ElementLike } from "diagram-js/lib/model/Types";
 import Rectangle from "./Rectangle";
 import Point from "./Point";
 import { isConnection } from "diagram-js/lib/util/ModelUtil";
-import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 import { calculateInfluenceMaxRange, getDistances } from "./util";
-import { HeatDataPoint } from "./Heatmap.types";
+import type { HeatmatrixJobRequestData } from "./Heatmap.types";
+import PointMap from "./PointMap";
 
-self.onmessage = function(event) {
-    const { values, elements, chunk, xOffset, yOffset, width, height } = event.data;
+self.onmessage = function(message: MessageEvent<HeatmatrixJobRequestData>) {
+    const { values, elements, chunk, xOffset, yOffset, width, height } = message.data;
     const { startX, endX, startY, endY } = chunk;
-    const heatMatrixChunk = calculateHeatMatrixChunk(values, elements, xOffset, yOffset, width, height, startX, endX, startY, endY);
-    self.postMessage({ chunk, heatMatrixChunk });
+    const result = calculateHeatMatrixChunk(values, elements, xOffset, yOffset, width, height, startX, endX, startY, endY);
+    self.postMessage({ chunk, result });
 };
 
-function calculateHeatMatrixChunk(values: { [key: string]: HeatDataPoint }, elements: ElementLike[], xOffset: number, yOffset: number, width: number, height: number, startX: number, endX: number, startY: number, endY: number): number[] {
+function calculateHeatMatrixChunk(values: { [key: string]: number }, elements: ElementLike[], xOffset: number, yOffset: number, width: number, height: number, startX: number, endX: number, startY: number, endY: number): number[] {
     const pointMap = new PointMap<ElementLike>(new Rectangle(0, 0, width, height), 4);
     elements.forEach(element => {
         pointMap.insert(

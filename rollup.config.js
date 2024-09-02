@@ -5,16 +5,18 @@ import typescript from "typescript";
 import commonjsPlugin from "@rollup/plugin-commonjs";
 import resolvePlugin from "@rollup/plugin-node-resolve";
 import terserPlugin from "@rollup/plugin-terser";
-import dtsPlugin from "rollup-plugin-dts";
+import { dts as dtsPlugin } from "rollup-plugin-dts";
 import peerDepsExternalPlugin from "rollup-plugin-peer-deps-external";
 import typescriptPlugin from "rollup-plugin-typescript-2";
-import webWorkerLoaderPlugin from 'rollup-plugin-web-worker-loader';
 
 const packageJson = require("./package.json");
 
 export default [
   {
-    input: "src/index.ts",
+    input: [
+      "src/index.ts",
+      "src/Overlays/Heatmap/heatmap.worker.ts",
+    ],
     output: [
       {
         dir: dirname(packageJson.main),
@@ -37,7 +39,6 @@ export default [
       commonjsPlugin(),
       typescriptPlugin({ typescript }),
       terserPlugin(),
-      webWorkerLoaderPlugin(),
     ],
   },
   {
@@ -48,6 +49,8 @@ export default [
         format: "es"
       }
     ],
-    plugins: [dtsPlugin.default()],
+    plugins: [
+      dtsPlugin()
+    ],
   },
 ];

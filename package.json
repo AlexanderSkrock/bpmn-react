@@ -13,10 +13,10 @@
       "import": "./dist/esm/BpmnViewer/index.js",
       "types": "./dist/types/BpmnViewer/index.d.ts"
     },
-    "./Overlays": {
-      "require": "./dist/cjs/Overlays/index.js",
-      "import": "./dist/esm/Overlays/index.js",
-      "types": "./dist/types/Overlays/index.d.ts"
+    "./Overlays/*": {
+      "require": "./dist/cjs/Overlays/*/index.js",
+      "import": "./dist/esm/Overlays/*/index.js",
+      "types": "./dist/types/Overlays/*/index.d.ts"
     },
     "./Control/*": {
       "require": "./dist/cjs/Control/*/index.js",
