@@ -78,3 +78,45 @@ export const SimpleCanvasHeatmap: Story = {
         },
     },
 };
+
+export const HeatmapWithSubprocess: Story = {
+    loaders: [
+        async () => ({
+            process: {
+                xml: await (await fetch('root_process.bpmn')).text(),
+            },
+        }),
+    ],
+    args: {
+        loadProcess: (calledConfig) => {
+            if (calledConfig.calledElement === "Sub_Process") {
+                return fetch("sub_process.bpmn").then(response => response.text()).then(xml => ({
+                    xml,
+                    overlays: [
+                        new Heatmap({
+                            renderMode: "svg",
+                            values: {
+                                "StartEvent_1": 5,
+                                "Activity_01pdq87": 12,
+                                "Event_16fv82x": 1,
+                            },
+                        })
+                    ]
+                }));
+            }
+            return Promise.reject("unable to load called element");
+        },
+        process: {
+            overlays: [
+                new Heatmap({
+                    renderMode: "svg",
+                    values: {
+                        "StartEvent_1": 1,
+                        "Root_Process": 3,
+                        "Event_0iis7zc": 1,
+                    },
+                }),
+            ],
+        },
+    },
+};

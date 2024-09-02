@@ -2,7 +2,7 @@ import type { ElementLike } from "diagram-js/lib/model/Types";
 import Rectangle from "./Rectangle";
 import Point from "./Point";
 import { isConnection } from "diagram-js/lib/util/ModelUtil";
-import { calculateInfluenceMaxRange, getDistances } from "./util";
+import { calculateInfluenceMaxRange, getDistance } from "./util";
 import type { HeatmatrixJobRequestData } from "./Heatmap.types";
 import PointMap from "./PointMap";
 
@@ -28,12 +28,11 @@ function calculateHeatMatrixChunk(values: { [key: string]: number }, elements: E
             const coordinateX = columnIndex + xOffset;
             const coordinateY = rowIndex + yOffset;
 
-            const distances = getDistances({ x: coordinateX, y: coordinateY }, elements);
-
             // TODO Use dynamic value for rectangle to search in
-            const nearbyElements = pointMap.query(new Rectangle(coordinateX - 200, coordinateY - 200, 400, 400))
-            const weigths = nearbyElements.reduce((result, { value: element }) => {
-                const distance = distances[element.id];
+            // fix nearby elements to include connections and the right most event
+            // const nearbyElements = pointMap.query(new Rectangle(coordinateX - 200, coordinateY - 200, 400, 400))
+            const weigths = elements.reduce((result, element) => {
+                const distance = getDistance({ x: coordinateX, y: coordinateY }, element);
 
                 const maxInfluence = isConnection(element)
                     ? 0.9
@@ -51,7 +50,7 @@ function calculateHeatMatrixChunk(values: { [key: string]: number }, elements: E
 
             const hasInfluence = Object.values(weigths).some(w => w > 0);
             if (hasInfluence) {
-                const weightedSum = nearbyElements.reduce((acc, { value: element }) => {
+                const weightedSum = elements.reduce((acc, element) => {
                     if (!Number.isNaN(values[element.id])) {
                         acc.sum += weigths[element.id] * values[element.id];
                         acc.weightSum += weigths[element.id];

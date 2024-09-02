@@ -9,7 +9,7 @@ import type { OverlayBuilderEnvironment, OverlayDefinitionsBuilder } from "../..
 import type { HeatDataPoint, HeatmapOptions, HeatmatrixJobResultData } from "./Heatmap.types";
 
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
-import { asyncHtmlElement } from "..";
+import asyncHtmlElement from "../asyncHtmlElement";
 
 class Heatmap implements OverlayDefinitionsBuilder {
 
@@ -54,7 +54,7 @@ class Heatmap implements OverlayDefinitionsBuilder {
     buildDefinitions = (elements: ElementLike[], env: OverlayBuilderEnvironment) => {
         return [
             this.createHeatmapOverlayDefinition(elements, env),
-            ...this.createTooltipOverlayDefinitions(elements),
+            ...this.createTooltipOverlayDefinitions(elements, env),
         ];
     }
 
@@ -88,7 +88,7 @@ class Heatmap implements OverlayDefinitionsBuilder {
         };
     }
 
-    createTooltipOverlayDefinitions = (elements: ElementLike[]) => {
+    createTooltipOverlayDefinitions = (elements: ElementLike[], env: OverlayBuilderEnvironment) => {
         return elements
             .filter(element => this.values[element.id])
             .map(element => {
@@ -98,6 +98,8 @@ class Heatmap implements OverlayDefinitionsBuilder {
 
                 const heatDatapoint = this.values[element.id];
                 htmlElement.title = `${heatDatapoint.displayValue ?? heatDatapoint.value}`;
+
+                htmlElement.onclick = (event) => env.delegateEvent("element.click", event, element);
 
                 return {
                         type: "Overlay_Heatmap_Tooltip",

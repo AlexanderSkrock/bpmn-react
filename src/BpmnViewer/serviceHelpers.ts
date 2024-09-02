@@ -2,6 +2,7 @@ import Diagram from "diagram-js/lib/Diagram";
 import Canvas from "diagram-js/lib/core/Canvas";
 import ElementRegistry from "diagram-js/lib/core/ElementRegistry";
 import EventBus from "diagram-js/lib/core/EventBus";
+import InteractionEvents from "diagram-js/lib/features/interaction-events/InteractionEvents";
 import Overlays from "diagram-js/lib/features/overlays/Overlays";
 
 export const getCanvas = (diagram: Diagram): Canvas => {
@@ -14,6 +15,10 @@ export const getElementRegistry = (diagram: Diagram): ElementRegistry  => {
 
 export const getEventBus = (diagram: Diagram): EventBus => {
     return diagram.get("eventBus") as EventBus;
+}
+
+export const getInteractionEvents = (diagram: Diagram): InteractionEvents => {
+    return diagram.get("interactionEvents") as InteractionEvents;
 }
 
 export const getOverlays = (diagram: Diagram): Overlays => {

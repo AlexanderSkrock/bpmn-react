@@ -6,8 +6,9 @@ import { OverlayAttrs } from "diagram-js/lib/features/overlays/Overlays";
 import BaseViewer, { ImportXMLError, ImportXMLResult, ModuleDeclaration } from "bpmn-js/lib/BaseViewer";
 
 export interface OverlayBuilderEnvironment {
-    rootElement: () => ElementLike,
-    canvas: () => Canvas,
+    rootElement: () => ElementLike;
+    canvas: () => Canvas;
+    delegateEvent: (eventType: string, event: Event, element: ElementLike) => void;
 }
 
 export interface OverlayDefinition {

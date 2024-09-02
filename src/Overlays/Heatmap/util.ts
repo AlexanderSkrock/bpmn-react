@@ -7,21 +7,25 @@ export function getDistances(point: Point, elements: ElementLike[]): { [key: str
     const result: { [key: string]: number} = {};
 
     elements.forEach(element => {
-        const isLineElement = !element.width || !element.height
-        if (isLineElement) {
-            const lines: [Point, Point][] = [];
-            if (element.waypoints) {
-                for (let i = 0; i < element.waypoints.length - 1; i++) {
-                    lines.push([element.waypoints[i], element.waypoints[i + 1]]);
-                }
-            }
-            result[element.id] = pointLinesDistance(point, lines);
-        } else {
-            result[element.id] = pointDistance(point, center(element as ShapeLike));
-        }
+        result[element.id] = getDistance(point, element);
     });
 
     return result;
+}
+
+export function getDistance(point: Point, element: ElementLike): number {
+    const isLineElement = !element.width || !element.height
+    if (isLineElement) {
+        const lines: [Point, Point][] = [];
+        if (element.waypoints) {
+            for (let i = 0; i < element.waypoints.length - 1; i++) {
+                lines.push([element.waypoints[i], element.waypoints[i + 1]]);
+            }
+        }
+        return pointLinesDistance(point, lines);
+    } else {
+        return pointDistance(point, center(element as ShapeLike));
+    }
 }
 
 export function pointLinesDistance(point: Point, lines: [Point, Point][]): number {

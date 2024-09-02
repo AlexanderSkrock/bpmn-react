@@ -3,7 +3,8 @@ import { OverlayAttrs } from "diagram-js/lib/features/overlays/Overlays";
 import { useCallback, useEffect } from "react";
 
 import { isOverlayDefinition,isOverlayDefinitionBuilder, isOverlayDefinitionsBuilder, OverlayDefinition, OverlayDefinitionBuilder, OverlayDefinitionsBuilder } from "./BpmnViewer.types";
-import { getCanvas, getElementRegistry, getEventBus, getOverlays } from "./serviceHelpers";
+import { getCanvas, getElementRegistry, getEventBus, getInteractionEvents, getOverlays } from "./serviceHelpers";
+import { ElementLike } from "diagram-js/lib/model/Types";
 
 const wrapOverlay = (config: OverlayAttrs): OverlayAttrs => {
     const overlayContainer = document.createElement("div");
@@ -43,6 +44,17 @@ const useOverlays = (diagram: Diagram | null, overlays?: [ OverlayDefinition | O
             const builderEnv = ({
                 rootElement: () => getCanvas(diagram).getRootElement(),
                 canvas: () => getCanvas(diagram),
+                delegateEvent: (eventType: string, event: Event, targetElement: ElementLike) => {
+                    const eventResult = getEventBus(diagram).fire(eventType, {
+                        element: targetElement,
+                        originalEvent: event
+                    });
+                
+                    if (eventResult === false) {
+                        event.stopPropagation();
+                        event.preventDefault();
+                    }
+                }
             });
 
             const overlayDefinitions: OverlayDefinition[] = [];
