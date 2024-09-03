@@ -8,10 +8,10 @@
   "module": "dist/esm/index.js",
   "types": "dist/index.d.ts",
   "exports": {
-    "./BpmnViewer": {
-      "require": "./dist/cjs/BpmnViewer/index.js",
-      "import": "./dist/esm/BpmnViewer/index.js",
-      "types": "./dist/types/BpmnViewer/index.d.ts"
+    "./Viewer": {
+      "require": "./dist/cjs/Viewer/index.js",
+      "import": "./dist/esm/Viewer/index.js",
+      "types": "./dist/types/Viewer/index.d.ts"
     },
     "./Overlays/*": {
       "require": "./dist/cjs/Overlays/*/index.js",

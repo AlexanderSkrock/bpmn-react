@@ -1,10 +1,12 @@
-import Diagram from "diagram-js";
-import { OverlayAttrs } from "diagram-js/lib/features/overlays/Overlays";
 import { useCallback, useEffect } from "react";
 
-import { isOverlayDefinition,isOverlayDefinitionBuilder, isOverlayDefinitionsBuilder, OverlayDefinition, OverlayDefinitionBuilder, OverlayDefinitionsBuilder } from "./BpmnViewer.types";
-import { getCanvas, getElementRegistry, getEventBus, getInteractionEvents, getOverlays } from "./serviceHelpers";
+import type { OverlayAttrs } from "diagram-js/lib/features/overlays/Overlays";
+import Diagram from "diagram-js";
 import { ElementLike } from "diagram-js/lib/model/Types";
+
+import type { OverlayDefinition, OverlayDefinitionBuilder, OverlayDefinitionsBuilder } from "./DefaultViewer.types";
+import { isOverlayDefinition,isOverlayDefinitionBuilder, isOverlayDefinitionsBuilder } from "./DefaultViewer.types";
+import { getCanvas, getElementRegistry, getEventBus, getOverlays } from "../../../util/services";
 
 const wrapOverlay = (config: OverlayAttrs): OverlayAttrs => {
     const overlayContainer = document.createElement("div");

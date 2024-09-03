@@ -5,10 +5,10 @@ import styled from "styled-components";
 import type { EventBusEventCallback, ImportDoneEvent } from "bpmn-js/lib/BaseViewer";
 
 import type { BpmnViewerProps, ProcessViewerProps } from "./BpmnViewer.types";
-import { getCanvas } from "./serviceHelpers";
-import useOverlays from "./useOverlays";
+import { getCanvas } from "../util/services/diagram-js";
+import useOverlays from "./components/DefaultViewer/useOverlays";
 import useViewer from "./useViewer";
-import useEventHandler from "./useEventHandler";
+import useEventHandler from "./hooks/useEventHandler";
 import {getBusinessObject} from "bpmn-js/lib/util/ModelUtil";
 
 const BpmnViewerContainer = styled.div`

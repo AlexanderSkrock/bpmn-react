@@ -3,13 +3,14 @@ import React from "react";
 import { render } from "@testing-library/react";
 import { screen } from "@testing-library/dom";
 
-import BpmnViewer from "./BpmnViewer";
+import DefaultViewer from "./DefaultViewer";
+
 import processXml from "../../resources/process.bpmn";
 
-describe("BpmnChart", () => {
+describe("Viewer", () => {
   test("should render", () => {
-    render(<BpmnViewer process={ { xml: processXml } } />);
+    render(<DefaultViewer process={ { xml: processXml } } />);
 
-    expect(screen.getByTestId("bpmnChart")).toBeTruthy();
+    expect(screen.getByTestId("bpmnViewer")).toBeTruthy();
   });
 });

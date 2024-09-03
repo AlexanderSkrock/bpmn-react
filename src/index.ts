@@ -1,4 +1,4 @@
-export * as BpmnViewer from "./BpmnViewer";
+export * as Viewer from "./Viewer";
 export * as Control from "./Control";
 export * as Overlays from "./Overlays";
 

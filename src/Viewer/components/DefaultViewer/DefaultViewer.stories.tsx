@@ -1,17 +1,17 @@
+import React from "react";
+
 import type { StoryObj, Meta } from "@storybook/react";
 
-import { is } from "bpmn-js/lib/util/ModelUtil";
+import DefaultViewer from "./DefaultViewer";
 
-import BpmnViewer from "./BpmnViewer";
-
-const meta: Meta<typeof BpmnViewer> = {
-    component: BpmnViewer,
-    render: (args, { loaded: { process } }) => <BpmnViewer { ...args } process={ { ...args.process, ...process } } />,
-} as Meta<typeof BpmnViewer>;
+const meta: Meta<typeof DefaultViewer> = {
+    component: DefaultViewer,
+    render: (args, { loaded: { process } }) => <DefaultViewer { ...args } process={ { ...args.process, ...process } } />,
+} as Meta<typeof DefaultViewer>;
 
 export default meta;
 
-type Story = StoryObj<typeof BpmnViewer>;
+type Story = StoryObj<typeof DefaultViewer>;
 
 export const SimpleProcess: Story = {
     loaders: [
@@ -52,7 +52,7 @@ export const MailMarkerOverlay: Story = {
     args: {
         process: {
             overlays: [{
-                elementFilter: element => is(element, "bpmn:SendTask"),
+                elementFilter: element => element.type === "bpmn:SendTask",
                 buildDefinition: element => ({
                     element: element.id,
                     config: {

@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import Diagram from "diagram-js";
 import { EventBusEventCallback } from "diagram-js/lib/core/EventBus";
 
-import { getEventBus } from "./serviceHelpers";
+import { getEventBus } from "../../util/services/diagram-js";
 
 const useEventHandler = <T> (diagram: Diagram | null, eventName: string, handler: EventBusEventCallback<T>): void => {
     useEffect(() => {

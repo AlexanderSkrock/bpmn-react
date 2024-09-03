@@ -2,11 +2,11 @@ import { useCallback, useEffect } from "react";
 
 import Diagram from "diagram-js";
 
-import { getCanvas, getEventBus } from "../../BpmnViewer/serviceHelpers";
+import { getCanvas, getEventBus } from "../../util/services/diagram-js";
 
 import { AttachedZoomOptions } from "./Zoom.types";
 import useZoom from "./useZoom";
-import useEventHandler from "../../BpmnViewer/useEventHandler";
+import useEventHandler from "../../Viewer/hooks/useEventHandler";
 import { EventBusEventCallback } from "diagram-js/lib/core/EventBus";
 
 const useAttachedZoom = (diagram: Diagram | null, { initialFit, ...zoomOptions }: AttachedZoomOptions = {}): [number | "fit-viewport", () => void, () => void, () => void, (nextZoom: number | "fit-viewport") => void] => {
