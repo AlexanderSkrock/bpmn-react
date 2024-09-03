@@ -1,17 +1,12 @@
-import type { ElementLike, ShapeLike } from "diagram-js/lib/model/Types";
+import type { ElementLike } from "diagram-js/lib/model/Types";
 
-import { pointDistance, Point } from "diagram-js/lib/util/Geometry";
-import { center } from "diagram-js/lib/util/PositionUtil";
-
-export function getDistances(point: Point, elements: ElementLike[]): { [key: string]: number } {
-    const result: { [key: string]: number} = {};
-
-    elements.forEach(element => {
-        result[element.id] = getDistance(point, element);
-    });
-
-    return result;
-}
+import {
+    distancePointLine,
+    distancePointPoint,
+    Line,
+    Point,
+    Rectangle
+} from "../../util/geometry";
 
 export function getDistance(point: Point, element: ElementLike): number {
     const isLineElement = !element.width || !element.height
@@ -24,7 +19,8 @@ export function getDistance(point: Point, element: ElementLike): number {
         }
         return pointLinesDistance(point, lines);
     } else {
-        return pointDistance(point, center(element as ShapeLike));
+        const elementRectangle = new Rectangle(element.x, element.y, element.width, element.height);
+        return distancePointPoint(point, elementRectangle.center());
     }
 }
 
@@ -32,19 +28,8 @@ export function pointLinesDistance(point: Point, lines: [Point, Point][]): numbe
     if (lines.length <= 0) {
         return Number.POSITIVE_INFINITY;
     }
-    const distances = lines.map(([linePointA, linePointB]) => pointLineDistance(point, linePointA, linePointB));
+    const distances = lines.map(([linePointA, linePointB]) => distancePointLine(point, new Line(linePointA, linePointB)));
     return Math.min(...distances);
-}
-
-export function pointLineDistance(point: Point, linePointA: Point, linePointB: Point) {
-    // Calculate the distance to the line segment
-    const segmentLength = Math.sqrt((linePointB.x - linePointA.x) ** 2 + (linePointB.y - linePointA.y) ** 2);
-    const dotProduct = (point.x - linePointA.x) * (linePointB.x - linePointA.x) + (point.y - linePointA.y) * (linePointB.y - linePointA.y);
-    const t = Math.max(0, Math.min(1, dotProduct / (segmentLength * segmentLength)));
-    const closestPointX = linePointA.x + t * (linePointB.x - linePointA.x);
-    const closestPointY = linePointA.y + t * (linePointB.y - linePointA.y);
-
-    return Math.sqrt((point.x - closestPointX) ** 2 + (point.y - closestPointY) ** 2);
 }
 
 export function calculateInfluenceMaxRange(element: ElementLike, point: Point, borderRadius: number): number {

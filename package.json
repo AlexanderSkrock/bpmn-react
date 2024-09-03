@@ -22,6 +22,11 @@
       "require": "./dist/cjs/Control/*/index.js",
       "import": "./dist/esm/Control/*/index.js",
       "types": "./dist/types/Control/*/index.d.ts"
+    },
+    "./util/*": {
+      "require": "./dist/cjs/util/*/index.js",
+      "import": "./dist/esm/util/*/index.js",
+      "types": "./dist/types/util/*/index.d.ts"
     }
   },
   "scripts": {

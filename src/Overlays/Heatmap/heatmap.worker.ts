@@ -1,10 +1,11 @@
 import type { ElementLike } from "diagram-js/lib/model/Types";
-import Rectangle from "./Rectangle";
-import Point from "./Point";
-import { isConnection } from "diagram-js/lib/util/ModelUtil";
-import { calculateInfluenceMaxRange, getDistance } from "./util";
 import type { HeatmatrixJobRequestData } from "./Heatmap.types";
-import PointMap from "./PointMap";
+
+import { isConnection } from "diagram-js/lib/util/ModelUtil";
+
+import { GeometryMap, Line, Point, Rectangle } from "../../util/geometry";
+
+import { calculateInfluenceMaxRange, getDistance } from "./util";
 
 self.onmessage = function(message: MessageEvent<HeatmatrixJobRequestData>) {
     const { values, elements, chunk, xOffset, yOffset, width, height } = message.data;
@@ -14,12 +15,30 @@ self.onmessage = function(message: MessageEvent<HeatmatrixJobRequestData>) {
 };
 
 function calculateHeatMatrixChunk(values: { [key: string]: number }, elements: ElementLike[], xOffset: number, yOffset: number, width: number, height: number, startX: number, endX: number, startY: number, endY: number): number[] {
-    const pointMap = new PointMap<ElementLike>(new Rectangle(0, 0, width, height), 4);
+    const geometryMap = new GeometryMap<ElementLike>(new Rectangle(xOffset, yOffset, width + xOffset, height + yOffset), 4);
     elements.forEach(element => {
-        pointMap.insert(
-            new Point(element.x + (element.width / 2), element.y + (element.height / 2)),
-            element
-        );
+        if (isConnection(element)) {
+            const waypoints = element.waypoints;
+            for (let i = 0; i < waypoints.length - 1; i++) {
+                const current = waypoints[i];
+                const next = waypoints[i + 1];
+                geometryMap.insert(
+                    new Line(new Point(current.x, current.y), new Point(next.x, next.y)),
+                    element
+                );
+            }
+        } else {
+            if (element.id === "Event_1j8rpgs") {
+                console.log(geometryMap);
+            }
+            geometryMap.insert(
+                new Point(element.x + (element.width / 2), element.y + (element.height / 2)),
+                element
+            );
+            if (element.id === "Event_1j8rpgs") {
+                console.log(geometryMap);
+            }
+        }
     });
 
     const heatMatrix = new Array(width * height).fill(Number.NaN);
@@ -29,9 +48,8 @@ function calculateHeatMatrixChunk(values: { [key: string]: number }, elements: E
             const coordinateY = rowIndex + yOffset;
 
             // TODO Use dynamic value for rectangle to search in
-            // fix nearby elements to include connections and the right most event
-            // const nearbyElements = pointMap.query(new Rectangle(coordinateX - 200, coordinateY - 200, 400, 400))
-            const weigths = elements.reduce((result, element) => {
+            const nearbyElements = geometryMap.query(new Rectangle(coordinateX - 200, coordinateY - 200, 400, 400))
+            const weigths = nearbyElements.reduce((result, { value: element }) => {
                 const distance = getDistance({ x: coordinateX, y: coordinateY }, element);
 
                 const maxInfluence = isConnection(element)
@@ -43,14 +61,24 @@ function calculateHeatMatrixChunk(values: { [key: string]: number }, elements: E
 
                 const distanceFactor = -(1 / Math.pow(maxRange, 2)) * Math.pow(distance, 2) + maxInfluence;
                 const weight = Math.max(distanceFactor, 0);
-                
+
                 result[element.id] = weight;
                 return result;
             }, {} as { [elementId: string]: number});
 
+            if (coordinateX === 1242 && coordinateY === 209) {
+                console.log("------------------------------")
+                console.log(elements);
+                console.log("------------------------------")
+                console.log(geometryMap);
+                console.log("------------------------------")
+                console.log(nearbyElements);
+                console.log("------------------------------")
+            }
+
             const hasInfluence = Object.values(weigths).some(w => w > 0);
             if (hasInfluence) {
-                const weightedSum = elements.reduce((acc, element) => {
+                const weightedSum = nearbyElements.reduce((acc, { value: element }) => {
                     if (!Number.isNaN(values[element.id])) {
                         acc.sum += weigths[element.id] * values[element.id];
                         acc.weightSum += weigths[element.id];
