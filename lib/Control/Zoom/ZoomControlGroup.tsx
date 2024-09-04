@@ -7,16 +7,17 @@ import ZoomFitButton from "./ZoomFitButton";
 import ZoomInButton from "./ZoomInButton";
 import ZoomOutButton from "./ZoomOutButton";
 
-const HorizontalZoomControlContainer = styled.div`
+const ZoomControlContainer = styled.div`
     display: flex;
-    flex-direction: row;
     gap: 8px;
 `;
 
-const VerticalZoomControlContainer = styled.div`
-    display: flex;
+const HorizontalZoomControlContainer = styled(ZoomControlContainer)`
+    flex-direction: row;
+`;
+
+const VerticalZoomControlContainer = styled(ZoomControlContainer)`
     flex-direction: column;
-    gap: 8px;
 `;
 
 const ZoomControlGroup = ({ direction = "horizontal", diagram, options, zoomInTitle, zoomOutTitle, zoomFitTitle }: ZoomControlGroupProps) => {
