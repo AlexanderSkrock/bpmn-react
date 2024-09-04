@@ -2,9 +2,8 @@ import React from "react";
 
 import type { StoryObj, Meta } from "@storybook/react";
 
-import Heatmap from "./Heatmap";
-
-import { DefaultViewer } from "../../Viewer";
+import { DefaultViewer } from "../../../lib/Viewer";
+import { Heatmap } from "../../../lib/Overlays/Heatmap";
 
 const meta: Meta<typeof DefaultViewer> = {
     component: DefaultViewer,

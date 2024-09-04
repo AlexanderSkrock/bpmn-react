@@ -2,7 +2,7 @@ import React from "react";
 
 import type { StoryObj, Meta } from "@storybook/react";
 
-import DefaultViewer from "./DefaultViewer";
+import { DefaultViewer } from "../../lib/Viewer";
 
 const meta: Meta<typeof DefaultViewer> = {
     component: DefaultViewer,

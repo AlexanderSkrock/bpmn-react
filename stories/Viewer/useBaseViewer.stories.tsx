@@ -2,11 +2,12 @@ import React, { useEffect } from "react";
 
 import type { StoryObj, Meta } from "@storybook/react";
 
-import useViewer from "./useViewer";
+import { useBaseViewer } from "../../lib/Viewer";
+import CoreModule from 'bpmn-js/lib/core';
 
 const BpmnJsViewer = ({ xml }) => {
-    const [handleViewerRef, viewer] = useViewer({ height: "50vh" });
-    
+    const [handleViewerRef, viewer] = useBaseViewer({ height: "50vh", additionalModules: [ CoreModule ] });
+
     useEffect(() => {
         if (xml) {
             viewer?.importXML(xml);
