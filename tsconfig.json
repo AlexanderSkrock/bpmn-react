@@ -24,10 +24,9 @@
     "jsx": "react-jsx"
   },
   "include": [
-    "src/**/*"
+    "lib/**/*"
   ],
   "exclude": [
-    "**/*.stories.tsx",
     "**/*.test.tsx"
   ]
 }

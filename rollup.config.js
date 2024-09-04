@@ -11,24 +11,26 @@ import typescriptPlugin from "rollup-plugin-typescript-2";
 
 const packageJson = require("./package.json");
 
+const librarySourceRoot = "lib";
+
 export default [
   {
     input: [
-      "src/index.ts",
-      "src/Overlays/Heatmap/heatmap.worker.ts",
+      `${librarySourceRoot}/index.ts`,
+      `${librarySourceRoot}/Overlays/Heatmap/heatmap.worker.ts`,
     ],
     output: [
       {
         dir: dirname(packageJson.main),
         preserveModules: true,
-        preserveModulesRoot: "src",
+        preserveModulesRoot: librarySourceRoot,
         format: "cjs",
         sourcemap: true,
       },
       {
         dir: dirname(packageJson.module),
         preserveModules: true,
-        preserveModulesRoot: "src",
+        preserveModulesRoot: librarySourceRoot,
         format: "esm",
         sourcemap: true,
       },
