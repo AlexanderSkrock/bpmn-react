@@ -1,13 +1,14 @@
 import { useCallback, useEffect } from "react";
 
 import Diagram from "diagram-js";
+import { EventBusEventCallback } from "diagram-js/lib/core/EventBus";
 
-import { getCanvas, getEventBus } from "../../util/services/diagram-js";
+import useEventHandler from "../../Viewer/hooks/useEventHandler";
+import { useZoom } from "../../Components/Zoom";
+import { getCanvas } from "../../util/services";
 
 import { AttachedZoomOptions } from "./Zoom.types";
-import useZoom from "./useZoom";
-import useEventHandler from "../../Viewer/hooks/useEventHandler";
-import { EventBusEventCallback } from "diagram-js/lib/core/EventBus";
+
 
 const useAttachedZoom = (diagram: Diagram | null, { initialFit, ...zoomOptions }: AttachedZoomOptions = {}): [number | "fit-viewport", () => void, () => void, () => void, (nextZoom: number | "fit-viewport") => void] => {
     const [currentZoom, increaseZoom, decreaseZoom, setZoom] = useZoom(zoomOptions)

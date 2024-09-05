@@ -18,6 +18,11 @@
       "import": "./dist/esm/Overlays/*/index.js",
       "types": "./dist/types/Overlays/*/index.d.ts"
     },
+    "./Components/*": {
+      "require": "./dist/cjs/Components/*/index.js",
+      "import": "./dist/esm/Components/*/index.js",
+      "types": "./dist/types/Components/*/index.d.ts"
+    },
     "./Control/*": {
       "require": "./dist/cjs/Control/*/index.js",
       "import": "./dist/esm/Control/*/index.js",

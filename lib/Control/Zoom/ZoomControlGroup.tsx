@@ -1,11 +1,9 @@
 import styled from "styled-components";
 
-import useAttachedZoom from "./useAttachedZoom";
-import { ZoomControlGroupProps, ZoomControlProps } from "./Zoom.types";
+import { ZoomInButton, ZoomFitButton, ZoomOutButton } from "../../Components/Zoom";
 
-import ZoomFitButton from "./ZoomFitButton";
-import ZoomInButton from "./ZoomInButton";
-import ZoomOutButton from "./ZoomOutButton";
+import useAttachedZoom from "./useAttachedZoom";
+import type { ZoomControlGroupProps } from "./Zoom.types";
 
 const ZoomControlContainer = styled.div`
     display: flex;

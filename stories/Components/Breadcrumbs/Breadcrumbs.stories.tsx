@@ -3,8 +3,7 @@ import styled from "styled-components";
 
 import type { StoryObj, Meta } from "@storybook/react";
 
-import { breadcrumbClassName, Breadcrumbs, breadcrumbsClassName } from  "../../../lib/Control/Breadcrumbs";
-
+import { breadcrumbClassName, Breadcrumbs, breadcrumbsClassName } from  "../../../lib/Components/Breadcrumbs";
 
 const meta: Meta<typeof Breadcrumbs> = {
     component: Breadcrumbs,
