@@ -8,6 +8,7 @@ export interface PathEntry {
 export interface BreadcrumbProps {
     path: PathEntry;
     onClick?: (path: PathEntry) => void;
+    direction?: "horizontal" | "vertical";
     className?: string;
 }
 

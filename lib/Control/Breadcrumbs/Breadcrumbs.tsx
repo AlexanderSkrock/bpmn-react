@@ -24,9 +24,9 @@ export default ({ path, onClick, direction = "horizontal", className }: Breadcru
     const classNames = useMemo(() => joinClassNames(className, breadcrumbsClassName), [className]);
 
     const Container = direction === "horizontal" ? HorizontalBreadcrumbContainer : VerticalBreadcrumbContainer;
-    
+
     const breadcrumbs = useMemo(() => path.map((pathEntry, index) => (
-        <Breadcrumb key={ `Breadcrumbs_${index}` } path={ pathEntry } onClick={ onClick } />
+        <Breadcrumb key={ `Breadcrumbs_${pathEntry.key}` } path={ pathEntry } onClick={ onClick } direction={ direction } />
     )), [path, onClick]);
 
     return (

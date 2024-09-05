@@ -105,8 +105,7 @@ export const CustomBreadcrumbs: Story = {
                     align-items: baseline;
 
                     .${breadcrumbClassName} {
-                        background-color: green;
-                        border-radius: 10px;
+                        background-color: cornflowerblue;
                     }
                 }
             `;
