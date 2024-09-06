@@ -96,7 +96,7 @@ export const HeatmapWithSubprocess: Story = {
                             renderMode: "svg",
                             values: {
                                 "StartEvent_1": 5,
-                                "Activity_01pdq87": 12,
+                                "ManualTaskTask": 3,
                                 "Event_16fv82x": 1,
                             },
                         })
@@ -111,7 +111,7 @@ export const HeatmapWithSubprocess: Story = {
                     renderMode: "svg",
                     values: {
                         "StartEvent_1": 1,
-                        "Root_Process": 3,
+                        "CallSubprocessCallActivity": 12,
                         "Event_0iis7zc": 1,
                     },
                 }),
