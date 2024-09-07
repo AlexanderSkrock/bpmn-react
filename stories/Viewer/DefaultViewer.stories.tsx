@@ -2,6 +2,8 @@ import React from "react";
 
 import type { StoryObj, Meta } from "@storybook/react";
 
+import { is as isType } from "bpmn-js/lib/util/ModelUtil"
+
 import { DefaultViewer } from "../../lib/Viewer";
 
 const meta: Meta<typeof DefaultViewer> = {
@@ -80,7 +82,7 @@ export const MailMarkerOverlay: Story = {
     args: {
         process: {
             overlays: [{
-                elementFilter: element => element.type === "bpmn:SendTask",
+                elementFilter: element => isType(element, "bpmn:SendTask"),
                 buildDefinition: element => ({
                     element: element.id,
                     config: {

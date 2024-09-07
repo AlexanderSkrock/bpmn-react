@@ -8,6 +8,7 @@ import TranslateModule from "diagram-js/lib/i18n/translate";
 import MoveCanvasModule from 'diagram-js/lib/navigation/movecanvas';
 import CoreModule from "bpmn-js/lib/core";
 import { getPlaneIdFromShape } from "bpmn-js/lib/util/DrilldownUtil";
+import { is as isType, isAny as isAnyType } from "bpmn-js/lib/util/ModelUtil"
 
 import type { DefaultViewerProps, ModuleDeclaration, ProcessViewerProps } from "./DefaultViewer.types";
 import type { EventBusEventCallback, ImportDoneEvent, ImportParseCompleteEvent } from "bpmn-js/lib/BaseViewer";
@@ -73,7 +74,7 @@ export default ({ process, loadProcess, additionalModules, moddleExtensions, onV
         const elementRegistry = getElementRegistry(viewer);
 
         let parentPlane = canvas.findRoot(getPlaneIdFromShape(businessObject)) || canvas.findRoot(businessObject.id);
-        if (!parentPlane && parent.type === "bpmn:Process") {
+        if (!parentPlane && isType(parent, "bpmn:Process")) {
           const participant = elementRegistry.find(element => {
             const businessObject = getBusinessObject(element);
             return businessObject && businessObject.get('processRef') === businessObject;
@@ -94,7 +95,7 @@ export default ({ process, loadProcess, additionalModules, moddleExtensions, onV
   
             const reverseParents = [];
             for (let element = topLevelBusinessObject; element; element = element.$parent) {
-              if (element.$type === "bpmn:SubProcess" || element.$type === "bpmn:Process") {
+              if (isAnyType(element, ["bpmn:SubProcess", "bpmn:Process"])) {
                 reverseParents.push(element);
               }
             }
@@ -122,7 +123,7 @@ export default ({ process, loadProcess, additionalModules, moddleExtensions, onV
         const elementRegistry = getElementRegistry(viewer);
 
         let parentPlane = canvas.findRoot(getPlaneIdFromShape(nextBusinessObject)) || canvas.findRoot(nextBusinessObject.id);
-        if (!parentPlane && nextBusinessObject.type === "bpmn:Process") {
+        if (!parentPlane && isType(nextBusinessObject, "bpmn:Process")) {
           const participant = elementRegistry.find(element => {
             const businessObject = getBusinessObject(element);
             return businessObject && businessObject.get('processRef') === businessObject;
@@ -150,7 +151,7 @@ export default ({ process, loadProcess, additionalModules, moddleExtensions, onV
         const reverseParents = [];
       
         for (let element = businessObject; element; element = element.$parent) {
-          if (element.$type === "bpmn:SubProcess" || element.$type === "bpmn:Process") {
+          if (isAnyType(element, ["bpmn:SubProcess", "bpmn:Process"])) {
             reverseParents.push(element);
           }
         }
@@ -182,10 +183,7 @@ export default ({ process, loadProcess, additionalModules, moddleExtensions, onV
     useEventHandler(viewer, "element.changed", handleElementChanged);
 
     const handleParseComplete: EventBusEventCallback<ImportParseCompleteEvent> = useCallback((event: ImportParseCompleteEvent) => {
-        // TODO is $type really stable or is there a better way?
-        // probably the is-function of bpmn-js or diagram-js
-        // I should also have a look on all similar type checks
-        let processElement = event.definitions?.rootElements?.filter(element => element.$type === "bpmn:Process")?.[0];
+        let processElement = event.definitions?.rootElements?.filter(element => isType(element, "bpmn:Process"))?.[0];
         if (processElement) {
             setCurrentPath(currentPath => ([
                 ...currentPath,
@@ -216,23 +214,29 @@ export default ({ process, loadProcess, additionalModules, moddleExtensions, onV
     useEventHandler(viewer, "import.done", handleImportDone);
 
     const handleCallActivityClicked: EventBusEventCallback<any> = useCallback(({ element }: any) => {
-        if (element.type === "bpmn:CallActivity") {
-            const businessElement = getBusinessObject(element);
-            loadProcess?.(businessElement).then(calledProcess => {
-                setCurrentProcess(calledProcess);
-                setCurrentProcessStack(currentStack => [...currentStack, calledProcess]);
-            });
-        } else if (element.type === "bpmn:SubProcess") {
-            if (viewer) {
-                const nextRoot = getCanvas(viewer).findRoot(getPlaneIdFromShape(element));
-                if (nextRoot) {
-                    getCanvas(viewer).setRootElement(nextRoot);
-                }
-            }
+        if (!isType(element, "bpmn:CallActivity")) {
+            return;
+        }
+        const businessElement = getBusinessObject(element);
+        loadProcess?.(businessElement).then(calledProcess => {
+            setCurrentProcess(calledProcess);
+            setCurrentProcessStack(currentStack => [...currentStack, calledProcess]);
+        });
+    }, [loadProcess, setCurrentProcess]);
+    
+    useEventHandler(viewer, "element.click", handleCallActivityClicked);
+
+    const handleSubprocessClicked: EventBusEventCallback<any> = useCallback(({ element }: any) => {
+        if (!viewer || !isType(element, "bpmn:SubProcess")) {
+            return;
+        }
+        const nextRoot = getCanvas(viewer).findRoot(getPlaneIdFromShape(element));
+        if (nextRoot) {
+            getCanvas(viewer).setRootElement(nextRoot);
         }
     }, [viewer, loadProcess, setCurrentProcess]);
 
-    useEventHandler(viewer, "element.click", handleCallActivityClicked);
+    useEventHandler(viewer, "element.click", handleSubprocessClicked);
 
     useEffect(() => {
         if (currentProcess && currentProcess.xml) {
