@@ -13,6 +13,11 @@
       "import": "./dist/esm/Viewer/index.js",
       "types": "./dist/types/Viewer/index.d.ts"
     },
+    "./Modules/*": {
+      "require": "./dist/cjs/Modules/*/index.js",
+      "import": "./dist/esm/Modules/*/index.js",
+      "types": "./dist/types/Modules/*/index.d.ts"
+    },
     "./Overlays/*": {
       "require": "./dist/cjs/Overlays/*/index.js",
       "import": "./dist/esm/Overlays/*/index.js",
