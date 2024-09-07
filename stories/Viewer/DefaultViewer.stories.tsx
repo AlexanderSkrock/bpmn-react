@@ -23,11 +23,39 @@ export const SimpleProcess: Story = {
     ],
 };
 
-export const ProcessWithSubprocess: Story = {
+export const ProcessWithEmbeddedSubprocess: Story = {
+    loaders: [
+        async () => ({
+            process: {
+                xml: await (await fetch('collapsed_subprocess.bpmn')).text(),
+            },
+        }),
+    ],
+};
+
+export const ProcessWithCalledActivity: Story = {
     loaders: [
         async () => ({
             process: {
                 xml: await (await fetch('root_process.bpmn')).text(),
+            },
+        }),
+    ],
+    args: {
+        loadProcess: (calledConfig) => {
+            if (calledConfig.calledElement === "Sub_Process") {
+                return fetch("sub_process.bpmn").then(response => response.text()).then(xml => ({ xml }));
+            }
+            return Promise.reject("unable to load called element");
+        },
+    },
+};
+
+export const ProcessUsingCollaborationsWithCalledActivity: Story = {
+    loaders: [
+        async () => ({
+            process: {
+                xml: await (await fetch('root_process_with_collaboration.bpmn')).text(),
             },
         }),
     ],
