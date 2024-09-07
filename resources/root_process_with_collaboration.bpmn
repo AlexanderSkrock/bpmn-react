@@ -9,7 +9,7 @@
     <bpmn:endEvent id="Event_1w4y9fe">
       <bpmn:incoming>Flow_1rcobra</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:callActivity id="CallSubprocessCallActivity" name="Call subprocess" calledElement="Sub_Process">
+    <bpmn:callActivity id="CallSubprocessCallActivity" name="Call subprocess" calledElement="SubCollaborationProcess">
       <bpmn:incoming>Flow_17ie9p0</bpmn:incoming>
       <bpmn:outgoing>Flow_1rcobra</bpmn:outgoing>
     </bpmn:callActivity>

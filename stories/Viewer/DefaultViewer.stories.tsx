@@ -61,8 +61,8 @@ export const ProcessUsingCollaborationsWithCalledActivity: Story = {
     ],
     args: {
         loadProcess: (calledConfig) => {
-            if (calledConfig.calledElement === "Sub_Process") {
-                return fetch("sub_process.bpmn").then(response => response.text()).then(xml => ({ xml }));
+            if (calledConfig.calledElement === "SubCollaborationProcess") {
+                return fetch("sub_process_with_collaboration.bpmn").then(response => response.text()).then(xml => ({ xml }));
             }
             return Promise.reject("unable to load called element");
         },
