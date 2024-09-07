@@ -7,7 +7,7 @@ import SelectionModule from "diagram-js/lib/features/selection";
 import TranslateModule from "diagram-js/lib/i18n/translate";
 import MoveCanvasModule from 'diagram-js/lib/navigation/movecanvas';
 import CoreModule from "bpmn-js/lib/core";
-import { getBusinessObjectParentChain, getPlaneIdFromShape } from "bpmn-js/lib/util/DrilldownUtil";
+import { getPlaneIdFromShape } from "bpmn-js/lib/util/DrilldownUtil";
 
 import type { DefaultViewerProps, ModuleDeclaration, ProcessViewerProps } from "./DefaultViewer.types";
 import type { EventBusEventCallback, ImportDoneEvent, ImportParseCompleteEvent } from "bpmn-js/lib/BaseViewer";
@@ -18,20 +18,7 @@ import { getCanvas, getElementRegistry } from "../../../util/services";
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 import { Breadcrumbs } from "../../../Components/Breadcrumbs";
 import type { PathEntry } from '../../../Components/Breadcrumbs/Breadcrumb.types';
-
-function getBusinessObjectParentChain(child) {
-    var businessObject = getBusinessObject(child);
-  
-    var parents = [];
-  
-    for (var element = businessObject; element; element = element.$parent) {
-      if (element.$type === "bpmn:SubProcess" || element.$type === "bpmn:Process") {
-        parents.push(element);
-      }
-    }
-  
-    return parents.reverse();
-  }
+import { Element } from 'diagram-js/lib/model';
 
 const DEFAULT_MODULES = [
     CoreModule,
@@ -72,20 +59,6 @@ export default ({ process, loadProcess, additionalModules, moddleExtensions, onV
         setCurrentProcess(process);
     }, [process, setCurrentProcess]);
 
-    const handleNavigationEntryClicked = useCallback((nextPath: PathEntry) => {
-        const indexInPath = currentPath.findIndex(entry => entry.key === nextPath.key)
-        const nextProcess = currentProcessStack[indexInPath];
-
-        if (currentPath.slice(-1)[0].key === nextPath.key) {
-            return;
-        }
-
-        setCurrentProcessStack(currentStack => currentStack.slice(0, indexInPath + 1));
-        setCurrentPath(currentPath => currentPath.slice(0, indexInPath));
-
-        setCurrentProcess(nextProcess);
-    }, [currentPath, currentProcessStack, setCurrentPath, setCurrentProcessStack]);
-
     const [handleViewerRef, viewer] = useBaseViewer({
         additionalModules: withDefaultModules(additionalModules),
         moddleExtensions,
@@ -111,6 +84,35 @@ export default ({ process, loadProcess, additionalModules, moddleExtensions, onV
   
         return parentPlane ? [{ key: businessObject.id, name: businessObject.name ?? businessObject.id  }] : [];
     }), [viewer, currentBusinessObjectStack]);
+
+    const handleNavigationEntryClicked = useCallback((nextPath: PathEntry) => {
+        const indexInPath = currentPath.findIndex(entry => entry.key === nextPath.key)
+        const nextProcess = currentProcessStack[indexInPath];
+
+        if (currentPath.slice(-1)[0].key === nextPath.key) {
+            const topLevelBusinessObject = currentBusinessObjectStack.slice(-1)[0];
+  
+            const reverseParents = [];
+            for (let element = topLevelBusinessObject; element; element = element.$parent) {
+              if (element.$type === "bpmn:SubProcess" || element.$type === "bpmn:Process") {
+                reverseParents.push(element);
+              }
+            }
+          
+            const rootBusinessObject = reverseParents.slice(-1)[0];
+            if (viewer) {
+                const nextRoot = getCanvas(viewer).findRoot(getPlaneIdFromShape(rootBusinessObject));
+                if (nextRoot) {
+                    getCanvas(viewer).setRootElement(nextRoot);
+                }
+            }
+        } else {
+            setCurrentProcessStack(currentStack => currentStack.slice(0, indexInPath + 1));
+            setCurrentPath(currentPath => currentPath.slice(0, indexInPath));
+    
+            setCurrentProcess(nextProcess);
+        }
+    }, [viewer, currentPath, currentProcessStack, setCurrentPath, setCurrentProcessStack, currentBusinessObjectStack]);
 
     const handleInternalNavigationEntryClicked = useCallback((nextPath: PathEntry) => {
         const indexInPath = currentInternalPath.findIndex(entry => entry.key === nextPath.key)
@@ -143,8 +145,20 @@ export default ({ process, loadProcess, additionalModules, moddleExtensions, onV
     useOverlays(viewer, currentProcess?.overlays);
 
     const handleRootSet = useCallback(event => {
-        const businessObjectParents = getBusinessObjectParentChain(event.element);
-        setCurrentBusinessObjectStack(businessObjectParents);
+        const businessObject = getBusinessObject(event.element);
+  
+        const reverseParents = [];
+      
+        for (let element = businessObject; element; element = element.$parent) {
+          if (element.$type === "bpmn:SubProcess" || element.$type === "bpmn:Process") {
+            reverseParents.push(element);
+          }
+        }
+      
+        const parents = reverseParents.reverse();
+        const parentsWithoutRoot = parents.slice(1);
+        
+        setCurrentBusinessObjectStack(parentsWithoutRoot);
     }, [setCurrentBusinessObjectStack]);
 
     useEventHandler(viewer, "root.set", handleRootSet);
