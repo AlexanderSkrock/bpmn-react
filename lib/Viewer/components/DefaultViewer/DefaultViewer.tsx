@@ -19,7 +19,6 @@ import { getCanvas, getElementRegistry } from "../../../util/services";
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 import { Breadcrumbs } from "../../../Components/Breadcrumbs";
 import type { PathEntry } from '../../../Components/Breadcrumbs/Breadcrumb.types';
-import { Element } from 'diagram-js/lib/model';
 
 const DEFAULT_MODULES = [
     CoreModule,
@@ -46,17 +45,15 @@ const ViewerContainer = styled.div`
 `;
 
 export default ({ process, loadProcess, additionalModules, moddleExtensions, onViewerInitialized, onLoadingSuccess, onLoadingError, className }: DefaultViewerProps) => {
-    const [currentProcessStack, setCurrentProcessStack] = useState<ProcessViewerProps[]>([]);
-    const [currentPath, setCurrentPath] = useState<PathEntry[]>([]); 
+    const [currentProcessStack, setCurrentProcessStack] = useState<any[]>([]);
 
     const [currentBusinessObjectStack, setCurrentBusinessObjectStack] = useState([]);
 
     const [currentProcess, setCurrentProcess] = useState(process);
     useEffect(() => {
         // Fresh import => Reset navigation
-        setCurrentProcessStack([process]);
-        setCurrentPath([]);
-
+        setCurrentProcessStack([]);
+        setCurrentBusinessObjectStack([]);
         setCurrentProcess(process);
     }, [process, setCurrentProcess]);
 
@@ -64,6 +61,11 @@ export default ({ process, loadProcess, additionalModules, moddleExtensions, onV
         additionalModules: withDefaultModules(additionalModules),
         moddleExtensions,
     });
+
+    const currentPath = useMemo(() => currentProcessStack.map(processElement => ({
+        key: processElement.id,
+        name: processElement.name ?? processElement.id
+    })), [currentProcessStack]);
 
     const currentInternalPath = useMemo(() => currentBusinessObjectStack.flatMap(businessObject => {
         if (!viewer) {
@@ -77,7 +79,7 @@ export default ({ process, loadProcess, additionalModules, moddleExtensions, onV
         if (!parentPlane && isType(parent, "bpmn:Process")) {
           const participant = elementRegistry.find(element => {
             const businessObject = getBusinessObject(element);
-            return businessObject && businessObject.get('processRef') === businessObject;
+            return businessObject && businessObject.get("processRef") === businessObject;
           });
   
           parentPlane = participant && canvas.findRoot(participant.id);
@@ -88,9 +90,8 @@ export default ({ process, loadProcess, additionalModules, moddleExtensions, onV
 
     const handleNavigationEntryClicked = useCallback((nextPath: PathEntry) => {
         const indexInPath = currentPath.findIndex(entry => entry.key === nextPath.key)
-        const nextProcess = currentProcessStack[indexInPath];
 
-        if (currentPath.slice(-1)[0].key === nextPath.key) {
+        if (indexInPath + 1 >= currentPath.length) {
             const topLevelBusinessObject = currentBusinessObjectStack.slice(-1)[0];
   
             const reverseParents = [];
@@ -107,17 +108,27 @@ export default ({ process, loadProcess, additionalModules, moddleExtensions, onV
                     getCanvas(viewer).setRootElement(nextRoot);
                 }
             }
+        } else if (indexInPath === 0) {
+            setCurrentProcessStack([]);
+            setCurrentBusinessObjectStack([]);
+            setCurrentProcess(process);
         } else {
-            setCurrentProcessStack(currentStack => currentStack.slice(0, indexInPath + 1));
-            setCurrentPath(currentPath => currentPath.slice(0, indexInPath));
-    
-            setCurrentProcess(nextProcess);
+            const nextProcess = currentProcessStack[indexInPath];
+            loadProcess?.({ calledElement: nextProcess.id }).then(loadedProcess => {
+                setCurrentProcessStack(currentStack => currentStack.slice(0, indexInPath));
+                setCurrentBusinessObjectStack([]);
+                setCurrentProcess(loadedProcess);
+            });
         }
-    }, [viewer, currentPath, currentProcessStack, setCurrentPath, setCurrentProcessStack, currentBusinessObjectStack]);
+    }, [viewer, currentPath, currentProcessStack, currentBusinessObjectStack, setCurrentProcessStack, setCurrentBusinessObjectStack, setCurrentProcess, loadProcess]);
 
     const handleInternalNavigationEntryClicked = useCallback((nextPath: PathEntry) => {
         const indexInPath = currentInternalPath.findIndex(entry => entry.key === nextPath.key)
         const nextBusinessObject = currentBusinessObjectStack[indexInPath];
+
+        if (!viewer) {
+            return;
+        }
 
         const canvas = getCanvas(viewer);
         const elementRegistry = getElementRegistry(viewer);
@@ -132,8 +143,8 @@ export default ({ process, loadProcess, additionalModules, moddleExtensions, onV
           parentPlane = participant && canvas.findRoot(participant.id);
         }
 
-        if (viewer && parentPlane) {
-            getCanvas(viewer).setRootElement(parentPlane);
+        if (parentPlane) {
+            canvas.setRootElement(parentPlane);
         }
     }, [viewer, currentInternalPath, currentBusinessObjectStack]);
 
@@ -185,13 +196,7 @@ export default ({ process, loadProcess, additionalModules, moddleExtensions, onV
     const handleParseComplete: EventBusEventCallback<ImportParseCompleteEvent> = useCallback((event: ImportParseCompleteEvent) => {
         let processElement = event.definitions?.rootElements?.filter(element => isType(element, "bpmn:Process"))?.[0];
         if (processElement) {
-            setCurrentPath(currentPath => ([
-                ...currentPath,
-                {
-                    key: processElement.id,
-                    name: processElement.name ?? processElement.id,
-                }
-            ]));
+            setCurrentProcessStack(currentStack => [...currentStack, processElement]);
         }
     }, []);
     
@@ -220,7 +225,6 @@ export default ({ process, loadProcess, additionalModules, moddleExtensions, onV
         const businessElement = getBusinessObject(element);
         loadProcess?.(businessElement).then(calledProcess => {
             setCurrentProcess(calledProcess);
-            setCurrentProcessStack(currentStack => [...currentStack, calledProcess]);
         });
     }, [loadProcess, setCurrentProcess]);
     
