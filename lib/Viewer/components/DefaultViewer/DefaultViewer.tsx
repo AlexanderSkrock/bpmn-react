@@ -19,6 +19,7 @@ import { getCanvas, getElementRegistry } from "../../../util/services";
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 import { Breadcrumbs } from "../../../Components/Breadcrumbs";
 import type { PathEntry } from '../../../Components/Breadcrumbs/Breadcrumb.types';
+import { DynamicOverlaysModule } from "../../../Modules/DynamicOverlays";
 
 const DEFAULT_MODULES = [
     CoreModule,
@@ -26,6 +27,7 @@ const DEFAULT_MODULES = [
     TranslateModule,
     MoveCanvasModule,
     SelectionModule,
+    DynamicOverlaysModule,
 ];
 
 const withDefaultModules = (modules?: ModuleDeclaration[]) => {

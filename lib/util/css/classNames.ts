@@ -1,6 +1,10 @@
-export const joinClassNames = (...classNames: string[]): string => {
+export const joinClassNames = (...classNames: (string | undefined | null)[]): string => {
     if (!classNames) {
         return "";
     }
-    return classNames.reduce((acc, current) => acc ? `${current} ${acc}` : current, "");
+    const classNamesWithContent = classNames
+        .map(className => className?.trim())
+        .filter(className => !!className);
+
+    return classNamesWithContent.length > 0 ? classNamesWithContent.join("") : "";
 }

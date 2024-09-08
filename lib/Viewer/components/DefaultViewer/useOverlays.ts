@@ -1,118 +1,38 @@
 import { useCallback, useEffect } from "react";
 
-import type { OverlayAttrs } from "diagram-js/lib/features/overlays/Overlays";
 import Diagram from "diagram-js";
-import { ElementLike } from "diagram-js/lib/model/Types";
 
-import type { OverlayDefinition, OverlayDefinitionBuilder, OverlayDefinitionsBuilder } from "./DefaultViewer.types";
-import { isOverlayDefinition,isOverlayDefinitionBuilder, isOverlayDefinitionsBuilder } from "./DefaultViewer.types";
-import { getCanvas, getElementRegistry, getEventBus, getOverlays } from "../../../util/services";
+import type { OverlayDefinition, OverlayDefinitionBuilder, OverlayDefinitionsBuilder } from "../../../Modules/DynamicOverlays";
+import { getDynamicOverlays } from "../../../util/services";
+import { useEventHandler } from "../..";
 
-const wrapOverlay = (config: OverlayAttrs): OverlayAttrs => {
-    const overlayContainer = document.createElement("div");
-    if (typeof config.html === "string") {
-        overlayContainer.innerHTML = config.html;
-    } else {
-        overlayContainer.appendChild(config.html);
-    }
-
-    return {
-        ...config,
-        html: overlayContainer,
-    };
-};
-
-const wrapOverlayInteractive = (config: OverlayAttrs): OverlayAttrs => {
-    return wrapOverlay(config);
-}
-
-const wrapOverlayNonInteractive = (config: OverlayAttrs): OverlayAttrs => {
-    const wrappedOverlay = wrapOverlay(config);
-    if (typeof wrappedOverlay.html !== "string") {
-        wrappedOverlay.html.classList.add("non-interactive");
-    }
-    return wrappedOverlay;
-}
-
-const useOverlays = (diagram: Diagram | null, overlays?: [ OverlayDefinition | OverlayDefinitionBuilder | OverlayDefinitionsBuilder ]): void => {
+const useOverlays = (diagram: Diagram | null, overlays: [ OverlayDefinition | OverlayDefinitionBuilder | OverlayDefinitionsBuilder ]): void => {
     const initializeOverlays = useCallback(() => {
-        if (diagram) {
-            const overlayService = getOverlays(diagram);
-            overlayService.clear();
-            console.log("Removed all active overlays.");
-
-            const elementRegistry = getElementRegistry(diagram);
-
-            const builderEnv = ({
-                rootElement: () => getCanvas(diagram).getRootElement(),
-                canvas: () => getCanvas(diagram),
-                delegateEvent: (eventType: string, event: Event, targetElement: ElementLike) => {
-                    const eventResult = getEventBus(diagram).fire(eventType, {
-                        element: targetElement,
-                        originalEvent: event
-                    });
-                
-                    if (eventResult === false) {
-                        event.stopPropagation();
-                        event.preventDefault();
-                    }
-                }
-            });
-
-            const overlayDefinitions: OverlayDefinition[] = [];
-            overlays?.forEach(overlay => {
-                if (isOverlayDefinition(overlay)) {
-                    overlayDefinitions.push(overlay);
-                } else if (isOverlayDefinitionBuilder(overlay)) {
-                    const elementFilter = overlay.elementFilter;
-                    const elements = typeof elementFilter === 'string'
-                        ? elementRegistry.filter(element => elementFilter === element.id)
-                        : elementRegistry.filter(elementFilter);
-
-                    elements.forEach(element => {
-                        const buildResult = overlay.buildDefinition(element, builderEnv);
-                        overlayDefinitions.push(buildResult);
-                    })
-                } else if (isOverlayDefinitionsBuilder(overlay)) {
-                    const elements = overlay.elementFilter
-                        ? elementRegistry.filter(overlay.elementFilter)
-                        : elementRegistry.getAll();
-
-                    const buildResults = overlay.buildDefinitions(elements, builderEnv);
-                    buildResults.forEach(overlayDefinition => {
-                        overlayDefinitions.push(overlayDefinition);
-                    });
-                }
-            });
-
-            overlayDefinitions.forEach(({type, element, interactive, config}) => {
-                const overlayConfig = interactive
-                    ? wrapOverlayInteractive(config)
-                    : wrapOverlayNonInteractive(config);
-
-                if (type) {
-                    overlayService.add(element, type, overlayConfig);
-                } else {
-                    overlayService.add(element, overlayConfig);
-                }
-            });
-            console.log(`Registered ${overlayDefinitions.length} overlays.`);
+        if (!diagram) {
+            return [];
         }
+        
+        const overlayService = getDynamicOverlays(diagram);
+
+        overlayService.clear();
+        console.log("Removed all active overlays.");
+
+        const ids = overlays.flatMap(overlayService.add);
+        console.log(`Registered ${ids.length} overlays.`);
+
+        return ids;
     }, [diagram, overlays]);
 
-    useEffect(() => {
-        if (diagram) {
-            getEventBus(diagram).on('import.done', initializeOverlays);
-        }
-        return () => {
-            if (diagram) {
-                getEventBus(diagram).off('import.done', initializeOverlays);
-            }
-        }
-    }, [diagram, initializeOverlays]);
+    useEventHandler(diagram, "import.done", initializeOverlays);
 
     useEffect(() => {
-        initializeOverlays();
+        const ids = initializeOverlays();
+        return () => {
+            if (diagram) {
+                const overlayService = getDynamicOverlays(diagram);
+                ids.forEach(id => overlayService.remove({ id }));
+            }
+        }
     }, [initializeOverlays]);
 };
 
