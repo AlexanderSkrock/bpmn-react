@@ -1,4 +1,8 @@
-export type * from "./Zoom.types";
+export type {
+    AttachedZoomOptions,
+    ZoomControlProps,
+    ZoomControlGroupProps,
+} from "./Zoom.types";
 
 export { default as useAttachedZoom } from "./useAttachedZoom";
 

@@ -6,7 +6,7 @@ import type { OverlayDefinition, OverlayDefinitionBuilder, OverlayDefinitionsBui
 import { getDynamicOverlays } from "../../../util/services";
 import { useEventHandler } from "../..";
 
-const useOverlays = (diagram: Diagram | null, overlays: [ OverlayDefinition | OverlayDefinitionBuilder | OverlayDefinitionsBuilder ]): void => {
+const useOverlays = (diagram: Diagram | null, overlays: (OverlayDefinition | OverlayDefinitionBuilder | OverlayDefinitionsBuilder)[]): void => {
     const initializeOverlays = useCallback(() => {
         if (!diagram) {
             return [];

@@ -11,7 +11,7 @@ import { getPlaneIdFromShape } from "bpmn-js/lib/util/DrilldownUtil";
 import { is as isType, isAny as isAnyType } from "bpmn-js/lib/util/ModelUtil"
 
 import type { DefaultViewerProps, ModuleDeclaration, ProcessViewerProps } from "./DefaultViewer.types";
-import type { EventBusEventCallback, ImportDoneEvent, ImportParseCompleteEvent } from "bpmn-js/lib/BaseViewer";
+import { ModdleElement, type EventBusEventCallback, type ImportDoneEvent, type ImportParseCompleteEvent } from "bpmn-js/lib/BaseViewer";
 
 import { useBaseViewer, useEventHandler } from "../../hooks";
 import useOverlays from "./useOverlays";
@@ -47,11 +47,11 @@ const ViewerContainer = styled.div`
 `;
 
 export default ({ process, loadProcess, additionalModules, moddleExtensions, onViewerInitialized, onLoadingSuccess, onLoadingError, className }: DefaultViewerProps) => {
-    const [currentProcessStack, setCurrentProcessStack] = useState<any[]>([]);
+    const [currentProcessStack, setCurrentProcessStack] = useState<ModdleElement[]>([]);
 
-    const [currentBusinessObjectStack, setCurrentBusinessObjectStack] = useState([]);
+    const [currentBusinessObjectStack, setCurrentBusinessObjectStack] = useState<ModdleElement[]>([]);
 
-    const [currentProcess, setCurrentProcess] = useState(process);
+    const [currentProcess, setCurrentProcess] = useState<ProcessViewerProps>(process);
     useEffect(() => {
         // Fresh import => Reset navigation
         setCurrentProcessStack([]);
@@ -156,9 +156,12 @@ export default ({ process, loadProcess, additionalModules, moddleExtensions, onV
         }
     }, [viewer, onViewerInitialized]);
 
-    useOverlays(viewer, currentProcess?.overlays);
+    const currentOverlays: any[] = useMemo(() => {
+        return currentProcess?.overlays || [];
+    }, [currentProcess?.overlays]);
+    useOverlays(viewer, currentOverlays);
 
-    const handleRootSet = useCallback(event => {
+    const handleRootSet: EventBusEventCallback<any> = useCallback(event => {
         const businessObject = getBusinessObject(event.element);
   
         const reverseParents = [];
@@ -177,11 +180,11 @@ export default ({ process, loadProcess, additionalModules, moddleExtensions, onV
 
     useEventHandler(viewer, "root.set", handleRootSet);
 
-    const handleElementChanged = useCallback(event => {
+    const handleElementChanged: EventBusEventCallback<any> = useCallback(event => {
         const shape = event.element;
         const businessObject = getBusinessObject(shape);
     
-        var isPresent = businessObjectParents.find(element => {
+        var isPresent = currentBusinessObjectStack.find(element => {
           return element === businessObject;
         });
     
@@ -196,7 +199,7 @@ export default ({ process, loadProcess, additionalModules, moddleExtensions, onV
     useEventHandler(viewer, "element.changed", handleElementChanged);
 
     const handleParseComplete: EventBusEventCallback<ImportParseCompleteEvent> = useCallback((event: ImportParseCompleteEvent) => {
-        let processElement = event.definitions?.rootElements?.filter(element => isType(element, "bpmn:Process"))?.[0];
+        let processElement = event.definitions?.rootElements?.filter((element: ModdleElement) => isType(element, "bpmn:Process"))?.[0];
         if (processElement) {
             setCurrentProcessStack(currentStack => [...currentStack, processElement]);
         }

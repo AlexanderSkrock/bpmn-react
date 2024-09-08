@@ -1,6 +1,6 @@
 import Diagram from "diagram-js";
-import type { DynamicOverlayService } from "../../Modules/DynamicOverlays";
+import type { DynamicOverlays } from "../../Modules/DynamicOverlays";
 
-export const getDynamicOverlays = (diagram: Diagram): DynamicOverlayService => {
-    return diagram.get("dynamicOverlays") as DynamicOverlayService;
+export const getDynamicOverlays = (diagram: Diagram): DynamicOverlays => {
+    return diagram.get("dynamicOverlays") as DynamicOverlays;
 }

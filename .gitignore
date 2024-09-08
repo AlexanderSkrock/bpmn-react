@@ -3,6 +3,9 @@
 # dependencies
 /node_modules
 
+# generated
+/ts-docs
+
 # production
 /dist
 /storybook-static

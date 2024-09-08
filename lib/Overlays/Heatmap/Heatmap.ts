@@ -5,7 +5,7 @@ import { ContourMultiPolygon } from "d3-contour";
 import { ElementLike } from "diagram-js/lib/model/Types";
 import { isConnection } from "diagram-js/lib/util/ModelUtil";
 
-import type { OverlayBuilderEnvironment, OverlayDefinitionsBuilder } from "../../Viewer/BpmnViewer.types"
+import type { OverlayBuilderEnvironment, OverlayDefinitionsBuilder } from "../../Modules/DynamicOverlays"
 import type { HeatDataPoint, HeatmapOptions, HeatmatrixJobResultData } from "./Heatmap.types";
 
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";

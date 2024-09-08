@@ -1,4 +1,9 @@
-export type * from "./Zoom.types";
+export type {
+    ZoomOptions,
+    ZoomInButtonProps,
+    ZoomOutButtonProps,
+    ZoomFitButtonProps,
+} from "./Zoom.types";
 
 export { default as useZoom } from "./useZoom";
 

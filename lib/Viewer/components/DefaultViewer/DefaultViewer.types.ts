@@ -1,6 +1,8 @@
 import type BaseViewer from "bpmn-js/lib/BaseViewer";
 import type { ModdleExtensions, ModuleDeclaration, ImportXMLError, ImportXMLResult } from "bpmn-js/lib/BaseViewer";
 
+import type { OverlayDefinition, OverlayDefinitionBuilder, OverlayDefinitionsBuilder } from "../../../Modules/DynamicOverlays";
+
 export type { default as BaseViewer } from "bpmn-js/lib/BaseViewer";
 export type { ModdleExtensions, ModuleDeclaration, ImportXMLError, ImportXMLResult } from "bpmn-js/lib/BaseViewer";
 
@@ -15,7 +17,7 @@ export type DefaultViewerProps = {
     onLoadingSuccess?: (result: ImportXMLResult) => void;
     onLoadingError?: (error: ImportXMLError) => void;
 
-    className?: String;
+    className?: string;
 };
 
 export interface CalledBpmnElementDefinition {
