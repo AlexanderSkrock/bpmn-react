@@ -47,9 +47,3 @@ export function isOverlayDefinitionsBuilder(o: OverlayDefinition | OverlayDefini
   const multipleBuilder = o as OverlayDefinitionsBuilder;
   return !!multipleBuilder.buildDefinitions;
 }
-
-export interface DynamicOverlayService {
-  add: (overlay: OverlayDefinition | OverlayDefinitionBuilder | OverlayDefinitionsBuilder) => string[];
-  remove: (filter: OverlaysFilter) => void;
-  clear: () => void;
-}
