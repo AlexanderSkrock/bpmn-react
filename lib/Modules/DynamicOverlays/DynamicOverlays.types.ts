@@ -10,6 +10,12 @@ export type { ElementRegistryFilterCallback } from "diagram-js/lib/core/ElementR
 export type { default as Canvas } from "diagram-js/lib/core/Canvas";
 export type { OverlayAttrs, OverlaysFilter } from "diagram-js/lib/features/overlays/Overlays";
 
+export interface DynamicOverlayService {
+  add: (overlay: OverlayDefinition | OverlayDefinitionBuilder | OverlayDefinitionsBuilder) => string[];
+  remove: (filter: OverlaysFilter) => void;
+  clear: () => void;
+}
+
 export interface OverlayBuilderEnvironment {
   rootElement: () => ElementLike;
   canvas: () => Canvas;

@@ -1,11 +1,11 @@
 import ElementRegistry from "diagram-js/lib/core/ElementRegistry";
 import EventBus from "diagram-js/lib/core/EventBus";
 import Overlays, { Canvas, OverlaysFilter } from "diagram-js/lib/features/overlays/Overlays";
-import type { ElementLike, OverlayDefinition, OverlayDefinitionBuilder, OverlayDefinitionsBuilder } from "./DynamicOverlays.types";
+import type { DynamicOverlayService, ElementLike, OverlayDefinition, OverlayDefinitionBuilder, OverlayDefinitionsBuilder } from "./DynamicOverlays.types";
 import { isOverlayDefinition, isOverlayDefinitionBuilder, isOverlayDefinitionsBuilder } from "./DynamicOverlays.types";
 import { wrapOverlayInteractive, wrapOverlayNonInteractive } from "./utils";
 
-export default class DynamicOverlays {
+export default class DynamicOverlays implements DynamicOverlayService {
 
     static $inject = [
         "eventBus",
