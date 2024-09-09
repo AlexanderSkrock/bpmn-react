@@ -1,5 +1,5 @@
 {
-  "name": "@adagatiya/bpmn-react",
+  "name": "bpmn-react",
   "version": "0.1.0",
   "description": "Reactified implementation of bpmn-js",
   "license": "MIT",
