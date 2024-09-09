@@ -1,6 +1,8 @@
-import { Meta } from "@storybook/blocks";
+import { Meta, Story } from "@storybook/blocks";
 
-<Meta title="Modules/Process Navigation/Documentation" />
+import { DefaultStory } from "./ProcessNavigation.stories";
+
+<Meta title="Modules/ProcessNavigation/Documentation" />
 
 # Overview
 
@@ -38,4 +40,4 @@ const BaseViewer = ({ xml }) => {
 
 # Examples
 
-// TODO Example story for switching between embedded subprocesses and call activities
+<Story of={ DefaultStory } />
