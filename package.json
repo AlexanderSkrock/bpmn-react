@@ -7,6 +7,9 @@
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "./dist"
+  ],
   "exports": {
     "./Viewer": {
       "require": "./dist/cjs/Viewer/index.js",
