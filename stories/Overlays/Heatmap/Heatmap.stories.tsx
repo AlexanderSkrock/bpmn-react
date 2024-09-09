@@ -92,6 +92,20 @@ export const HeatmapWithSubprocess: Story = {
                         })
                     ]
                 }));
+            } else if (calledConfig.calledElement === "RootProcess") {
+                return fetch("root_process.bpmn").then(response => response.text()).then(xml => ({
+                    xml,
+                    overlays: [
+                        new Heatmap({
+                            renderMode: "svg",
+                            values: {
+                                "StartEvent_1": 1,
+                                "CallSubprocessCallActivity": 12,
+                                "Event_0iis7zc": 1,
+                            },
+                        })
+                    ]
+                }));
             }
             return Promise.reject("unable to load called element");
         },
