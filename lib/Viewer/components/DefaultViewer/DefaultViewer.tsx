@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import styled from "styled-components";
 
@@ -7,23 +7,14 @@ import SelectionModule from "diagram-js/lib/features/selection";
 import TranslateModule from "diagram-js/lib/i18n/translate";
 import MoveCanvasModule from 'diagram-js/lib/navigation/movecanvas';
 import CoreModule from "bpmn-js/lib/core";
-import { getPlaneIdFromShape } from "bpmn-js/lib/util/DrilldownUtil";
-import { is as isType, isAny as isAnyType, getBusinessObject } from "bpmn-js/lib/util/ModelUtil"
+import type { ModdleElement, EventBusEventCallback, ImportDoneEvent } from "bpmn-js/lib/BaseViewer";
 
-import type { DefaultViewerProps, ModuleDeclaration, ProcessViewerProps } from "./DefaultViewer.types";
-import { ModdleElement, type EventBusEventCallback, type ImportDoneEvent, type ImportParseCompleteEvent } from "bpmn-js/lib/BaseViewer";
-
+import type { DefaultViewerProps, ModuleDeclaration, Overlays } from "./DefaultViewer.types";
 import { useBaseViewer, useEventHandler } from "../../hooks";
 import useOverlays from "./useOverlays";
-import { getCanvas, getElementRegistry } from "../../../util/services";
-import { Breadcrumbs } from "../../../Components/Breadcrumbs";
-import type { PathEntry } from '../../../Components/Breadcrumbs';
 import { DynamicOverlaysModule } from "../../../Modules/DynamicOverlays";
 import { ZoomModule } from "../../../Modules/Zoom";
-import {
-    CalledElementLoader, CalledElementLoadResult,
-    ProcessNavigationModule
-} from "../../../Modules/ProcessNavigation";
+import { CalledElementLoader, CalledElementLoadResult, ProcessNavigationModule} from "../../../Modules/ProcessNavigation";
 
 const DEFAULT_MODULES = [
     CoreModule,
@@ -61,20 +52,18 @@ const DefaultViewerContainer = styled.div`
     gap: 8px;
 `;
 
-export default ({ process, loadProcess, additionalModules, moddleExtensions, onViewerInitialized, onLoadingSuccess, onLoadingError, className }: DefaultViewerProps) => {
-    const [currentProcess, setCurrentProcess] = useState<ProcessViewerProps>(process);
-    useEffect(() => {
-        setCurrentProcess(process);
-    }, [process, setCurrentProcess]);
-
-    const loadCalledElements = useCallback((calledElement: ModdleElement) => {
-        loadProcess(calledElement).then(processViewerResult => {
-            setCurrentProcess()
+export default ({ xml, overlays = [], loadCalledElement, additionalModules, moddleExtensions, onViewerInitialized, onLoadingSuccess, onLoadingError, className }: DefaultViewerProps) => {
+    const [currentOverlays, setCurrentOverlays] = useState<Overlays>(overlays);
+    
+    const handleLoadCalledElement = useCallback((calledElement: ModdleElement) => {
+        return loadCalledElement(calledElement).then(result => {
+            setCurrentOverlays(result.overlays || []);
+            return result;
         })
-    }, [loadProcess])
+    }, [loadCalledElement, setCurrentOverlays]);
 
     const [handleViewerRef, viewer] = useBaseViewer({
-        additionalModules: withLoaderModule(loadProcess, withDefaultModules(additionalModules)),
+        additionalModules: withLoaderModule(handleLoadCalledElement, withDefaultModules(additionalModules)),
         moddleExtensions,
     });
 
@@ -84,9 +73,6 @@ export default ({ process, loadProcess, additionalModules, moddleExtensions, onV
         }
     }, [viewer, onViewerInitialized]);
 
-    const currentOverlays: any[] = useMemo(() => {
-        return currentProcess?.overlays || [];
-    }, [currentProcess?.overlays]);
     useOverlays(viewer, currentOverlays);
 
     const handleImportDone: EventBusEventCallback<ImportDoneEvent> = useCallback((event: ImportDoneEvent) => {
@@ -97,21 +83,19 @@ export default ({ process, loadProcess, additionalModules, moddleExtensions, onV
         }
 
         return onLoadingSuccess?.({ warnings });
-    }, [viewer, onLoadingSuccess, onLoadingError]);
+    }, [onLoadingSuccess, onLoadingError]);
 
     useEventHandler(viewer, "import.done", handleImportDone);
 
     useEffect(() => {
-        if (currentProcess && currentProcess.xml) {
-            viewer?.importXML(currentProcess.xml);
+        if (viewer && xml) {
+            viewer.importXML(xml);
         }
-    }, [viewer, currentProcess])
+    }, [viewer, xml])
 
     // @ts-ignore
     return (
         <DefaultViewerContainer>
-            <Breadcrumbs path={ currentPath } onClick={ handleNavigationEntryClicked } />
-            <Breadcrumbs path={ currentInternalPath } onClick={ handleInternalNavigationEntryClicked } />
             <div data-testid="bpmnViewer" ref={ handleViewerRef } className={ className } />
         </DefaultViewerContainer>
     );

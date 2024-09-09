@@ -49,7 +49,7 @@ export default class ProcessNavigation implements ProcessNavigationService {
         insertAt(canvas.getContainer(), 0, navigationContainer);
         this._navigationRoot = createRoot(navigationContainer);
 
-        eventBus.on("import.parse.complete", this._handleParseStart);
+        eventBus.on("import.parse.start", this._handleParseStart);
         eventBus.on("import.parse.complete", this._handleParseComplete);
         eventBus.on("root.set", this._handleRootSet);
 
@@ -156,6 +156,9 @@ export default class ProcessNavigation implements ProcessNavigationService {
             onHistoryClick: nextPath => {
                 const indexInPath = this.processPath.findIndex(entry => entry.key === nextPath.key)
                 const nextBusinessObject = this.processHistory[indexInPath];
+
+                this.processHistory = this.processHistory.slice(0, indexInPath);
+
                 this._calledElementLoader.load({ calledElement: nextBusinessObject.id }).then(({ xml }) => {
                     this.currentlyLoadingXml = xml;
                     this._viewer.importXML(xml);
