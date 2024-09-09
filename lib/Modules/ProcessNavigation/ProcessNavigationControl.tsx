@@ -1,10 +1,14 @@
 import React from "react";
-import { createRoot } from "react-dom/client";
+import { Root } from "react-dom/client";
 
-import type { BreadcrumbsProps } from "../../Components/Breadcrumbs";
 import { Breadcrumbs } from "../../Components/Breadcrumbs";
+import { ProcessNavigationControlProps } from "./ProcessNavigation.types";
 
-export const renderProcessNavigation = (container: HTMLElement, props: BreadcrumbsProps) => {
-    const zoomRoot = createRoot(container);
-    zoomRoot.render(<Breadcrumbs { ...props } /> );
+export const renderProcessNavigation = (root: Root, { history, path, onHistoryClick, onPathClick }: ProcessNavigationControlProps) => {
+    root.render(
+        <>
+            <Breadcrumbs path={ history } onClick={ onHistoryClick } />
+            <Breadcrumbs path={ path } onClick={ onPathClick } />
+        </>
+    );
 }

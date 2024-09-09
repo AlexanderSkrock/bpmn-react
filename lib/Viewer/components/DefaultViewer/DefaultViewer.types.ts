@@ -1,14 +1,14 @@
 import type BaseViewer from "bpmn-js/lib/BaseViewer";
-import type { ModdleExtensions, ModuleDeclaration, ImportXMLError, ImportXMLResult } from "bpmn-js/lib/BaseViewer";
+import type { ModdleElement, ModdleExtensions, ModuleDeclaration, ImportXMLError, ImportXMLResult } from "bpmn-js/lib/BaseViewer";
 
 import type { OverlayDefinition, OverlayDefinitionBuilder, OverlayDefinitionsBuilder } from "../../../Modules/DynamicOverlays";
 
-export type { default as BaseViewer } from "bpmn-js/lib/BaseViewer";
+export type { default as BaseViewer, ModdleElement } from "bpmn-js/lib/BaseViewer";
 export type { ModdleExtensions, ModuleDeclaration, ImportXMLError, ImportXMLResult } from "bpmn-js/lib/BaseViewer";
 
 export type DefaultViewerProps = {
     process: ProcessViewerProps;
-    loadProcess?: (calledElement: CalledBpmnElementDefinition) => Promise<ProcessViewerProps>;
+    loadProcess?: (calledElement: ModdleElement) => Promise<ProcessViewerProps>;
 
     moddleExtensions?: ModdleExtensions;
     additionalModules?: ModuleDeclaration[];
