@@ -1,10 +1,21 @@
 import React from "react";
-import { createRoot } from "react-dom/client";
+import { Root } from "react-dom/client";
+import styled from "styled-components";
 
-import type { BreadcrumbsProps } from "../../Components/Breadcrumbs";
 import { Breadcrumbs } from "../../Components/Breadcrumbs";
+import { ProcessNavigationControlProps } from "./ProcessNavigation.types";
 
-export const renderProcessNavigation = (container: HTMLElement, props: BreadcrumbsProps) => {
-    const zoomRoot = createRoot(container);
-    zoomRoot.render(<Breadcrumbs { ...props } /> );
+const NavigationContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+`;
+
+export const renderProcessNavigation = (root: Root, { history, path, onHistoryClick, onPathClick }: ProcessNavigationControlProps) => {
+    root.render(
+        <NavigationContainer>
+            <Breadcrumbs path={ history } onClick={ onHistoryClick } />
+            <Breadcrumbs path={ path } onClick={ onPathClick } />
+        </NavigationContainer>
+    );
 }
