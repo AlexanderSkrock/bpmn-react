@@ -1,2 +1,3 @@
 export * as DynamicOverlaysModule from "./DynamicOverlays";
-import * as ZoomModule from "./Zoom";
+export * as ZoomModule from "./Zoom";
+export * as ProcessNavigationModule from "./ProcessNavigation";

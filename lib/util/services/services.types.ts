@@ -4,7 +4,10 @@ import EventBus from "diagram-js/lib/core/EventBus";
 import ElementRegistry from "diagram-js/lib/core/ElementRegistry";
 import Overlays from "diagram-js/lib/features/overlays/Overlays";
 import InteractionEvents from "diagram-js/lib/features/interaction-events/InteractionEvents";
-import {DynamicOverlays} from "../../Modules/DynamicOverlays";
+
+import { DynamicOverlays } from "../../Modules/DynamicOverlays";
+import { ProcessNavigation } from "../../Modules/ProcessNavigation";
+import { Zoom } from "../../Modules/Zoom";
 
 export type diagramServices = {
     // diagram-js
@@ -16,6 +19,8 @@ export type diagramServices = {
 
     // bpmn-react
     "dynamicOverlays": DynamicOverlays,
+    "processNavigation": ProcessNavigation,
+    "zoom": Zoom,
 };
 
 export type DiagramLike = Diagram | Partial<{ [Key in keyof diagramServices]: diagramServices[Key] }>;

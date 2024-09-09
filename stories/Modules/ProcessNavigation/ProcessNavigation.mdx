@@ -1,0 +1,41 @@
+import { Meta } from "@storybook/blocks";
+
+<Meta title="Modules/Process Navigation/Documentation" />
+
+# Overview
+
+This module extends the possibilities provided by the `OverlaysModule` from diagram-js. While this module already gives us the tooling to define overlays for each element, some more complex overlays might depend on the current root element, available elements and so on. Using this module overlays can be defined as builder functions that have access to additional information that are passed as `OverlayBuilderEnvironment`. This way, we try to reduce the neccessity to pass diagram instances around.
+
+// TODO api documentation for the interface OverlayBuilderEnvironment
+
+# Configuration
+
+The `Process Navigation Module` can be added to any `BaseViewer` instance via the `additionalModules` config property.
+
+```js
+import CoreModule from 'bpmn-js/lib/core';
+import { useBaseViewer } from "bpmn-react/Viewer"
+import { ProcessNavigationModule } from "bpmn-react/Modules/ProcessNavigation"
+
+const BaseViewer = ({ xml }) => {
+    const [handleViewerRef, viewer] = useBaseViewer({ additionalModules: [ CoreModule, ProcessNavigationModule ] });
+
+    useEffect(() => {
+        if (xml) {
+            viewer?.importXML(xml);
+        }
+    }, [viewer, xml])
+
+    return <div ref={ handleViewerRef } />
+}
+```
+
+// TODO update snippet when api call is clear to load the models  for called elements.
+
+# Usage
+
+// TODO write documentation after converting "element.click" handlers to interactive overlays
+
+# Examples
+
+// TODO Example story for switching between embedded subprocesses and call activities
