@@ -12,10 +12,12 @@ const BreadcrumbContainer = styled.div`
 
 const HorizontalBreadcrumbContainer = styled(BreadcrumbContainer)`
     flex-direction: row;
+    height: fit-content;
 `;
 
 const VerticalBreadcrumbContainer = styled(BreadcrumbContainer)`
     flex-direction: column;
+    width: fit-content;
 `;
 
 export const breadcrumbsClassName = "breadcrumbs";
