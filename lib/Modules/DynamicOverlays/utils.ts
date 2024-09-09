@@ -1,5 +1,7 @@
 import { OverlayAttrs } from "./DynamicOverlays.types";
 
+export const nonInteractiveClassName = "non-interactive";
+
 const wrapOverlay = (config: OverlayAttrs): OverlayAttrs => {
     const overlayContainer = document.createElement("div");
     if (typeof config.html === "string") {
@@ -21,7 +23,7 @@ export const wrapOverlayInteractive = (config: OverlayAttrs): OverlayAttrs => {
 export const wrapOverlayNonInteractive = (config: OverlayAttrs): OverlayAttrs => {
     const wrappedOverlay = wrapOverlay(config);
     if (typeof wrappedOverlay.html !== "string") {
-        wrappedOverlay.html.classList.add("non-interactive");
+        wrappedOverlay.html.classList.add(nonInteractiveClassName);
     }
     return wrappedOverlay;
 }

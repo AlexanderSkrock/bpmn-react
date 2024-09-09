@@ -40,12 +40,6 @@ const DefaultViewerContainer = styled.div`
     gap: 8px;
 `;
 
-const ViewerContainer = styled.div`
-    .djs-overlay:has(.non-interactive) {
-        pointer-events: none;
-    }
-`;
-
 export default ({ process, loadProcess, additionalModules, moddleExtensions, onViewerInitialized, onLoadingSuccess, onLoadingError, className }: DefaultViewerProps) => {
     const [currentProcessStack, setCurrentProcessStack] = useState<ModdleElement[]>([]);
 
@@ -83,10 +77,10 @@ export default ({ process, loadProcess, additionalModules, moddleExtensions, onV
             const businessObject = getBusinessObject(element);
             return businessObject && businessObject.get("processRef") === businessObject;
           });
-  
+
           parentPlane = participant && canvas.findRoot(participant.id);
         }
-  
+
         return parentPlane ? [{ key: businessObject.id, name: businessObject.name ?? businessObject.id  }] : [];
     }), [viewer, currentBusinessObjectStack]);
 
@@ -95,14 +89,14 @@ export default ({ process, loadProcess, additionalModules, moddleExtensions, onV
 
         if (indexInPath + 1 >= currentPath.length) {
             const topLevelBusinessObject = currentBusinessObjectStack.slice(-1)[0];
-  
+
             const reverseParents = [];
             for (let element = topLevelBusinessObject; element; element = element.$parent) {
               if (isAnyType(element, ["bpmn:SubProcess", "bpmn:Process"])) {
                 reverseParents.push(element);
               }
             }
-          
+
             const rootBusinessObject = reverseParents.slice(-1)[0];
             if (viewer) {
                 const nextRoot = getCanvas(viewer).findRoot(getPlaneIdFromShape(rootBusinessObject));
@@ -141,7 +135,7 @@ export default ({ process, loadProcess, additionalModules, moddleExtensions, onV
             const businessObject = getBusinessObject(element);
             return businessObject && businessObject.get('processRef') === businessObject;
           });
-  
+
           parentPlane = participant && canvas.findRoot(participant.id);
         }
 
@@ -163,18 +157,18 @@ export default ({ process, loadProcess, additionalModules, moddleExtensions, onV
 
     const handleRootSet: EventBusEventCallback<any> = useCallback(event => {
         const businessObject = getBusinessObject(event.element);
-  
+
         const reverseParents = [];
-      
+
         for (let element = businessObject; element; element = element.$parent) {
           if (isAnyType(element, ["bpmn:SubProcess", "bpmn:Process"])) {
             reverseParents.push(element);
           }
         }
-      
+
         const parents = reverseParents.reverse();
         const parentsWithoutRoot = parents.slice(1);
-        
+
         setCurrentBusinessObjectStack(parentsWithoutRoot);
     }, [setCurrentBusinessObjectStack]);
 
@@ -183,11 +177,11 @@ export default ({ process, loadProcess, additionalModules, moddleExtensions, onV
     const handleElementChanged: EventBusEventCallback<any> = useCallback(event => {
         const shape = event.element;
         const businessObject = getBusinessObject(shape);
-    
+
         var isPresent = currentBusinessObjectStack.find(element => {
           return element === businessObject;
         });
-    
+
         if (isPresent) {
             // Force recalculation
             setCurrentBusinessObjectStack(currentStack => [...currentStack]);
@@ -204,7 +198,7 @@ export default ({ process, loadProcess, additionalModules, moddleExtensions, onV
             setCurrentProcessStack(currentStack => [...currentStack, processElement]);
         }
     }, []);
-    
+
     useEventHandler(viewer, "import.parse.complete", handleParseComplete);
 
     const handleImportDone: EventBusEventCallback<ImportDoneEvent> = useCallback((event: ImportDoneEvent) => {
@@ -232,7 +226,7 @@ export default ({ process, loadProcess, additionalModules, moddleExtensions, onV
             setCurrentProcess(calledProcess);
         });
     }, [loadProcess, setCurrentProcess]);
-    
+
     useEventHandler(viewer, "element.click", handleCallActivityClicked);
 
     const handleSubprocessClicked: EventBusEventCallback<any> = useCallback(({ element }: any) => {
@@ -258,7 +252,7 @@ export default ({ process, loadProcess, additionalModules, moddleExtensions, onV
         <DefaultViewerContainer>
             <Breadcrumbs path={ currentPath } onClick={ handleNavigationEntryClicked } />
             <Breadcrumbs path={ currentInternalPath } onClick={ handleInternalNavigationEntryClicked } />
-            <ViewerContainer data-testid="bpmnViewer" ref={ handleViewerRef } className={ className } />
+            <div data-testid="bpmnViewer" ref={ handleViewerRef } className={ className } />
         </DefaultViewerContainer>
     );
 }

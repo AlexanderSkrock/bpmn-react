@@ -3,7 +3,12 @@ import EventBus from "diagram-js/lib/core/EventBus";
 import Overlays, { Canvas, OverlaysFilter } from "diagram-js/lib/features/overlays/Overlays";
 import type { DynamicOverlayService, ElementLike, OverlayDefinition, OverlayDefinitionBuilder, OverlayDefinitionsBuilder } from "./DynamicOverlays.types";
 import { isOverlayDefinition, isOverlayDefinitionBuilder, isOverlayDefinitionsBuilder } from "./DynamicOverlays.types";
-import { wrapOverlayInteractive, wrapOverlayNonInteractive } from "./utils";
+import {
+    nonInteractiveClassName,
+    wrapOverlayInteractive,
+    wrapOverlayNonInteractive
+} from "./utils";
+import { applyCustomStyle } from "../../util/css";
 
 export default class DynamicOverlays implements DynamicOverlayService {
 
@@ -24,27 +29,26 @@ export default class DynamicOverlays implements DynamicOverlayService {
         this._canvas = canvas;
         this._elementRegistry = elementRegistry;
         this._overlays = overlays;
-    
-        /*
-        Add styling to djs-overlay
-    
-        this._overlays._overlayRoot
-        .djs-overlay:has(.non-interactive) {
-            pointer-events: none;
-        }
-        */
+
+        applyCustomStyle(
+            `
+            .djs-overlay:has(.${nonInteractiveClassName}) {
+                pointer-events: none;
+            }
+            `
+        );
     };
 
     add = (overlay: OverlayDefinition | OverlayDefinitionBuilder | OverlayDefinitionsBuilder): string[] => {
         const overlayDefinitions = this._toOverlayDefinitions(overlay);
-    
+
         const ids: string[] = [];
-    
+
         overlayDefinitions.forEach(({ type, element, interactive, config }: OverlayDefinition) => {
             const overlayConfig = interactive
                 ? wrapOverlayInteractive(config)
                 : wrapOverlayNonInteractive(config);
-    
+
             if (type) {
                 const addedId = this._overlays.add(element, type, overlayConfig);
                 ids.push(addedId);
@@ -53,7 +57,7 @@ export default class DynamicOverlays implements DynamicOverlayService {
                 ids.push(addedId);
             }
         });
-    
+
         return ids;
     }
 
@@ -73,13 +77,13 @@ export default class DynamicOverlays implements DynamicOverlayService {
             const elements = typeof elementFilter === 'string'
                 ? this._elementRegistry.filter(element => elementFilter === element.id)
                 : this._elementRegistry.filter(elementFilter);
-    
+
             return elements.map(element => overlay.buildDefinition(element, this._builderEnv()));
         } else if (isOverlayDefinitionsBuilder(overlay)) {
             const elements = overlay.elementFilter
                 ? this._elementRegistry.filter(overlay.elementFilter)
                 : this._elementRegistry.getAll();
-    
+
             return overlay.buildDefinitions(elements, this._builderEnv());
         } else {
             return [];
@@ -94,7 +98,7 @@ export default class DynamicOverlays implements DynamicOverlayService {
                 element: targetElement,
                 originalEvent: event
             });
-        
+
             if (eventResult === false) {
                 event.stopPropagation();
                 event.preventDefault();

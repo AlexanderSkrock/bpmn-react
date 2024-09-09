@@ -28,16 +28,10 @@ function calculateHeatMatrixChunk(values: { [key: string]: number }, elements: E
                 );
             }
         } else {
-            if (element.id === "Event_1j8rpgs") {
-                console.log(geometryMap);
-            }
             geometryMap.insert(
                 new Point(element.x + (element.width / 2), element.y + (element.height / 2)),
                 element
             );
-            if (element.id === "Event_1j8rpgs") {
-                console.log(geometryMap);
-            }
         }
     });
 
@@ -65,16 +59,6 @@ function calculateHeatMatrixChunk(values: { [key: string]: number }, elements: E
                 result[element.id] = weight;
                 return result;
             }, {} as { [elementId: string]: number});
-
-            if (coordinateX === 1242 && coordinateY === 209) {
-                console.log("------------------------------")
-                console.log(elements);
-                console.log("------------------------------")
-                console.log(geometryMap);
-                console.log("------------------------------")
-                console.log(nearbyElements);
-                console.log("------------------------------")
-            }
 
             const hasInfluence = Object.values(weigths).some(w => w > 0);
             if (hasInfluence) {
