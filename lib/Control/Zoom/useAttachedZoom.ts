@@ -1,43 +1,43 @@
 import { useCallback, useEffect } from "react";
 
-import Diagram from "diagram-js";
 import { EventBusEventCallback } from "diagram-js/lib/core/EventBus";
 
 import useEventHandler from "../../Viewer/hooks/useEventHandler";
 import { useZoom } from "../../Components/Zoom";
-import { getCanvas } from "../../util/services";
+import { DiagramLike, getCanvas } from "../../util/services";
 
 import { AttachedZoomOptions } from "./Zoom.types";
 
 
-const useAttachedZoom = (diagram: Diagram | null, { initialFit, ...zoomOptions }: AttachedZoomOptions = {}): [number | "fit-viewport", () => void, () => void, () => void, (nextZoom: number | "fit-viewport") => void] => {
+const useAttachedZoom = (diagramLike: DiagramLike | null, { initialFit, ...zoomOptions }: AttachedZoomOptions = {}): [number, () => void, () => void, () => void, (nextZoom: number) => void] => {
     const [currentZoom, increaseZoom, decreaseZoom, setZoom] = useZoom(zoomOptions)
 
     const zoom = useCallback((zoomValue: number | "fit-viewport") => {
-        if (diagram) {
-            const nextZoom = getCanvas(diagram).zoom(zoomValue);
+        if (diagramLike) {
+            const nextZoom = getCanvas(diagramLike).zoom(zoomValue);
             setZoom(nextZoom);
         }
-    }, [diagram, setZoom])
+    }, [diagramLike, setZoom])
 
     const fitZoom = useCallback(() => {
         zoom("fit-viewport");
-    }, [diagram]);
+    }, [zoom]);
 
     useEffect(() => {
         zoom(currentZoom);
-    }, [diagram, currentZoom]);
+    }, [zoom, currentZoom]);
 
-    useEffect(() => {
-        if (diagram && initialFit) {
+    const handleRootSet: EventBusEventCallback<any> = useCallback(() => {
+        if (initialFit) {
             fitZoom();
         }
-    }, [diagram, initialFit]);
+    }, [initialFit, fitZoom]);
+    useEventHandler(diagramLike, "root.set", handleRootSet);
 
     const handleScaleChanged: EventBusEventCallback<any> = useCallback(event => {
         setZoom(event.viewbox.scale);
     }, [setZoom]);
-    useEventHandler(diagram, "canvas.viewbox.changed", handleScaleChanged);
+    useEventHandler(diagramLike, "canvas.viewbox.changed", handleScaleChanged);
 
     return [currentZoom, increaseZoom, decreaseZoom, fitZoom, setZoom];
 };

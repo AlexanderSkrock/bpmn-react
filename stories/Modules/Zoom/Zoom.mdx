@@ -1,0 +1,45 @@
+import { Meta, Story } from "@storybook/blocks";
+
+import { DefaultStory } from "./Zoom.stories";
+
+<Meta title="Modules/Zoom/Documentation" />
+
+# Overview
+
+This module extends the interface with additional controls to modify the current scaling.
+
+# Configuration
+
+The `Zoom Module` can be added to any `Diagram` instance via the `additionalModules` config property.
+
+```js
+import CoreModule from 'bpmn-js/lib/core';
+import { useBaseViewer } from "bpmn-react/Viewer"
+import { ZoomModule } from "bpmn-react/Modules/Zoom"
+
+const BaseViewer = ({ xml }) => {
+    const [handleViewerRef, viewer] = useBaseViewer({ additionalModules: [ CoreModule, ZoomModule ] });
+
+    useEffect(() => {
+        if (xml) {
+            viewer?.importXML(xml);
+        }
+    }, [viewer, xml])
+
+    return <div ref={ handleViewerRef } />
+}
+```
+
+Currently it is not possible to configure the appearance of the zoom toolbar, but it might be scope of a later change.
+
+# Usage
+
+When the `DynamicOverlaysModule` is configured properly, a toolbar will appear on the top-right corner which provides three actions:
+
+- **Zoom In** to zoom closer to the diagram
+- **Zoom Fit** to reduce zoom as much as needed to fit the diagram into the current viewport
+- **Zoom Out** to zoom farther away from the diagram
+
+# Example
+
+<Story of={ DefaultStory } />

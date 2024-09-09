@@ -8,7 +8,7 @@ import TranslateModule from "diagram-js/lib/i18n/translate";
 import MoveCanvasModule from 'diagram-js/lib/navigation/movecanvas';
 import CoreModule from "bpmn-js/lib/core";
 import { getPlaneIdFromShape } from "bpmn-js/lib/util/DrilldownUtil";
-import { is as isType, isAny as isAnyType } from "bpmn-js/lib/util/ModelUtil"
+import { is as isType, isAny as isAnyType, getBusinessObject } from "bpmn-js/lib/util/ModelUtil"
 
 import type { DefaultViewerProps, ModuleDeclaration, ProcessViewerProps } from "./DefaultViewer.types";
 import { ModdleElement, type EventBusEventCallback, type ImportDoneEvent, type ImportParseCompleteEvent } from "bpmn-js/lib/BaseViewer";
@@ -16,10 +16,10 @@ import { ModdleElement, type EventBusEventCallback, type ImportDoneEvent, type I
 import { useBaseViewer, useEventHandler } from "../../hooks";
 import useOverlays from "./useOverlays";
 import { getCanvas, getElementRegistry } from "../../../util/services";
-import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 import { Breadcrumbs } from "../../../Components/Breadcrumbs";
-import type { PathEntry } from '../../../Components/Breadcrumbs/Breadcrumb.types';
+import type { PathEntry } from '../../../Components/Breadcrumbs';
 import { DynamicOverlaysModule } from "../../../Modules/DynamicOverlays";
+import { ZoomModule } from "../../../Modules/Zoom";
 
 const DEFAULT_MODULES = [
     CoreModule,
@@ -28,6 +28,7 @@ const DEFAULT_MODULES = [
     MoveCanvasModule,
     SelectionModule,
     DynamicOverlaysModule,
+    ZoomModule,
 ];
 
 const withDefaultModules = (modules?: ModuleDeclaration[]) => {

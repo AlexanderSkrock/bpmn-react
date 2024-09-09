@@ -7,6 +7,7 @@ import { breadcrumbClassName, Breadcrumbs, breadcrumbsClassName } from  "../../.
 
 const meta: Meta<typeof Breadcrumbs> = {
     component: Breadcrumbs,
+    tags: [ "autodocs" ],
 } as Meta<typeof Breadcrumbs>;
 
 export default meta;

@@ -1,21 +1,20 @@
 import { useEffect } from "react";
 
-import Diagram from "diagram-js";
 import { EventBusEventCallback } from "diagram-js/lib/core/EventBus";
 
-import { getEventBus } from "../../util/services/diagram-js";
+import {DiagramLike, getEventBus} from "../../util/services";
 
-const useEventHandler = <T> (diagram: Diagram | null, eventName: string, handler: EventBusEventCallback<T>): void => {
+const useEventHandler = <T> (diagramLike: DiagramLike | null, eventName: string, handler: EventBusEventCallback<T>): void => {
     useEffect(() => {
-        if (diagram) {
-            getEventBus(diagram).on(eventName, handler);
+        if (diagramLike) {
+            getEventBus(diagramLike).on(eventName, handler);
         }
         return () => {
-            if (diagram) {
-                getEventBus(diagram).off(eventName, handler);
+            if (diagramLike) {
+                getEventBus(diagramLike).off(eventName, handler);
             }
         }
-    }, [diagram, eventName, handler]);
+    }, [diagramLike, eventName, handler]);
 };
 
 export default useEventHandler;

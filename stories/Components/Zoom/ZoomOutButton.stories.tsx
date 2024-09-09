@@ -6,6 +6,7 @@ import { ZoomOutButton } from "../../../lib/Components/Zoom";
 
 const meta: Meta<typeof ZoomOutButton> = {
     component: ZoomOutButton,
+    tags: [ "autodocs" ],
 } as Meta<typeof ZoomOutButton>;
 
 export default meta;

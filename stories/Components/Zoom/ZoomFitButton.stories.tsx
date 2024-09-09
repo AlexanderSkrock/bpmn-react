@@ -6,6 +6,7 @@ import { ZoomFitButton } from "../../../lib/Components/Zoom";
 
 const meta: Meta<typeof ZoomFitButton> = {
     component: ZoomFitButton,
+    tags: [ "autodocs" ],
 } as Meta<typeof ZoomFitButton>;
 
 export default meta;
