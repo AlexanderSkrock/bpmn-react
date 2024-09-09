@@ -5,8 +5,7 @@ export type {
     ImportXMLError,
     ImportXMLResult,
     DefaultViewerProps,
-    CalledBpmnElementDefinition,
-    ProcessViewerProps,
+    Overlays,
 } from "./DefaultViewer.types";
 
 export { default as DefaultViewer } from "./DefaultViewer";
