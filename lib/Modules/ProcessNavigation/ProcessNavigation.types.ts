@@ -9,6 +9,11 @@ export interface CalledElementLoader {
     load: (calledElement: ModdleElement) => Promise<CalledElementLoadResult>;
 }
 
+export interface ProcessNavigationControlRenderer {
+    init: (container: HTMLElement) => void;
+    render: (props: ProcessNavigationControlProps) => void;
+}
+
 export interface ProcessNavigationService {
 
 }

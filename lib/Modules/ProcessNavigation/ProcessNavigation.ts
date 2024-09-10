@@ -1,5 +1,5 @@
 import {
-    CalledElementLoader,
+    CalledElementLoader, ProcessNavigationControlRenderer,
     ProcessNavigationService,
 } from "./ProcessNavigation.types";
 import EventBus from "diagram-js/lib/core/EventBus";
@@ -9,10 +9,8 @@ import BaseViewer, { ImportParseCompleteEvent, ImportParseStartEvent, ModdleElem
 import { getBusinessObject, is as isType, isAny as isAnyType } from "bpmn-js/lib/util/ModelUtil";
 import { getPlaneIdFromShape } from "bpmn-js/lib/util/DrilldownUtil";
 
-import { renderProcessNavigation } from "./ProcessNavigationControl";
 import { PathEntry } from "../../Components/Breadcrumbs";
 import { insertAt } from "../../util/html";
-import { createRoot, Root } from "react-dom/client";
 
 export default class ProcessNavigation implements ProcessNavigationService {
 
@@ -22,14 +20,14 @@ export default class ProcessNavigation implements ProcessNavigationService {
         "canvas",
         "elementRegistry",
         "eventBus",
+        "processNavigationControlRenderer",
     ];
 
     _viewer: BaseViewer;
     _calledElementLoader: CalledElementLoader;
     _canvas: Canvas;
     _elementRegistry: ElementRegistry;
-
-    _navigationRoot: Root;
+    _processNavigationControlRenderer: ProcessNavigationControlRenderer;
 
     processHistory: ModdleElement[] = [];
     processPath: PathEntry[] = [];
@@ -38,16 +36,16 @@ export default class ProcessNavigation implements ProcessNavigationService {
 
     currentlyLoadingXml?: string;
 
-    constructor(viewer: BaseViewer, calledElementLoader: CalledElementLoader, canvas: Canvas, elementRegistry: ElementRegistry, eventBus: EventBus) {
+    constructor(viewer: BaseViewer, calledElementLoader: CalledElementLoader, canvas: Canvas, elementRegistry: ElementRegistry, eventBus: EventBus, processNavigationControlRenderer: ProcessNavigationControlRenderer) {
         this._viewer = viewer;
         this._calledElementLoader = calledElementLoader;
         this._canvas = canvas;
         this._elementRegistry = elementRegistry;
+        this._processNavigationControlRenderer = processNavigationControlRenderer;
 
         const navigationContainer = document.createElement("div");
-        navigationContainer.style.padding = "8px";
         insertAt(canvas.getContainer(), 0, navigationContainer);
-        this._navigationRoot = createRoot(navigationContainer);
+        this._processNavigationControlRenderer.init(navigationContainer)
 
         eventBus.on("import.parse.start", this._handleParseStart);
         eventBus.on("import.parse.complete", this._handleParseComplete);
@@ -150,7 +148,7 @@ export default class ProcessNavigation implements ProcessNavigationService {
     }
 
     _renderNavigation = (): void => {
-        renderProcessNavigation(this._navigationRoot, {
+        this._processNavigationControlRenderer.render({
             history: this.processPath,
             path: this.currentPath,
             onHistoryClick: nextPath => {

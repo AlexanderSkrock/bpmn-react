@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, {useEffect, useMemo} from "react";
 import { Meta, StoryObj } from "@storybook/react";
 
 import MoveCanvasModule from "diagram-js/lib/navigation/movecanvas";
@@ -6,8 +6,15 @@ import CoreModule from "bpmn-js/lib/core";
 import {ModdleElement, ModuleDeclaration} from "bpmn-js/lib/BaseViewer";
 
 import { useBaseViewer } from "../../../lib/Viewer";
-import { ProcessNavigationModule } from "../../../lib/Modules/ProcessNavigation";
+import {
+    ProcessNavigationControlRenderer,
+    ProcessNavigationModule
+} from "../../../lib/Modules/ProcessNavigation";
 import type { CalledElementLoader } from "../../../lib/Modules/ProcessNavigation";
+import {createRoot, Root} from "react-dom/client";
+import {
+    ProcessNavigationControlProps
+} from "../../../lib/Modules/ProcessNavigation/ProcessNavigation.types";
 
 const LoaderModule: ModuleDeclaration = {
     calledElementLoader: [
@@ -27,8 +34,16 @@ const LoaderModule: ModuleDeclaration = {
     ],
 };
 
-const ViewerWithProcessNavigationModule = ({ xml }: { xml: string }) => {
-    const [ handleViewerRef, viewer ] = useBaseViewer({ additionalModules: [CoreModule, MoveCanvasModule, ProcessNavigationModule, LoaderModule]});
+const ViewerWithProcessNavigationModule = ({ xml, additionalModules }: { xml: string, additionalModules?: ModuleDeclaration[] }) => {
+    const modules = useMemo(() => {
+        const result = [CoreModule, MoveCanvasModule, ProcessNavigationModule, LoaderModule];
+        if (additionalModules) {
+            result.push(additionalModules);
+        }
+        return result;
+    }, [additionalModules]);
+
+    const [ handleViewerRef, viewer ] = useBaseViewer({ additionalModules: modules});
     useEffect(() => {
         if (viewer && xml) {
             viewer.importXML(xml);
@@ -53,4 +68,41 @@ export const DefaultStory: Story = {
             xml: await (await fetch("process_navigation/root.bpmn")).text(),
         }),
     ],
+};
+
+export const CustomRendererStory: Story = {
+    loaders: [
+        async () => ({
+            xml: await (await fetch("process_navigation/root.bpmn")).text(),
+        }),
+    ],
+    args: {
+        additionalModules: [{
+            processNavigationControlRenderer: [
+                "type",
+                class ProcessNavigationControlRendererImpl implements ProcessNavigationControlRenderer {
+
+                    root?: Root;
+
+                    init = (container: HTMLElement) => {
+                        container.style.padding = "8px";
+                        this.root = createRoot(container);
+                    }
+
+                    render = ({ history, path, onHistoryClick, onPathClick }: ProcessNavigationControlProps) => {
+                        const entries = [
+                            ...history.map(({ key, name }) => ({ key, name, onClick: onHistoryClick })),
+                            ...path.slice(1).map(({ key, name }) => ({ key, name, onClick: onPathClick })),
+                        ];
+
+                        const buttons = entries.map(({ key, name, onClick }) => {
+                            return <button key={ key } onClick={ () => onClick({ key, name}) }>{ name }</button>;
+                        })
+
+                        this.root?.render(buttons);
+                    }
+                }
+            ],
+        }]
+    }
 };
