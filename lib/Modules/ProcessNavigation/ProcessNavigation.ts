@@ -53,11 +53,11 @@ export default class ProcessNavigation implements ProcessNavigationService {
 
         eventBus.on("element.changed", this._handleElementChanged);
 
-        eventBus.on("element.click", this._handleCallActivityCliked);
+        eventBus.on("element.click", this._handleCallActivityClicked);
         eventBus.on("element.click", this._handleSubprocessClicked);
     }
 
-    _handleCallActivityCliked = (event: any): void => {
+    _handleCallActivityClicked = (event: any): void => {
         if (!isType(event.element, "bpmn:CallActivity")) {
             return;
         }
