@@ -11,6 +11,10 @@ import { getPlaneIdFromShape } from "bpmn-js/lib/util/DrilldownUtil";
 
 import { PathEntry } from "../../Components/Breadcrumbs";
 import { insertAt } from "../../util/html";
+import {
+    NAVIGATE_CALL_ACTIVITY_EVENT,
+    NAVIGATE_SUBPROCESS_EVENT
+} from "./events";
 
 export default class ProcessNavigation implements ProcessNavigationService {
 
@@ -53,11 +57,11 @@ export default class ProcessNavigation implements ProcessNavigationService {
 
         eventBus.on("element.changed", this._handleElementChanged);
 
-        eventBus.on("element.click", this._handleCallActivityClicked);
-        eventBus.on("element.click", this._handleSubprocessClicked);
+        eventBus.on(NAVIGATE_CALL_ACTIVITY_EVENT, this._navigateToCallActivity);
+        eventBus.on(NAVIGATE_SUBPROCESS_EVENT, this._navigateToSubprocess);
     }
 
-    _handleCallActivityClicked = (event: any): void => {
+    _navigateToCallActivity = (event: any): void => {
         if (!isType(event.element, "bpmn:CallActivity")) {
             return;
         }
@@ -69,7 +73,7 @@ export default class ProcessNavigation implements ProcessNavigationService {
         });
     }
 
-    _handleSubprocessClicked = (event: any): void => {
+    _navigateToSubprocess = (event: any): void => {
         if (!isType(event.element, "bpmn:SubProcess")) {
             return;
         }

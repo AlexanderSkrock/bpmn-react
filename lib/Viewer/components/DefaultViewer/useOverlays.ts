@@ -4,14 +4,14 @@ import Diagram from "diagram-js";
 
 import type { OverlayDefinition, OverlayDefinitionBuilder, OverlayDefinitionsBuilder } from "../../../Modules/DynamicOverlays";
 import { getDynamicOverlays } from "../../../util/services";
-import { useEventHandler } from "../..";
+import useEventHandler from "../../hooks/useEventHandler";
 
 const useOverlays = (diagram: Diagram | null, overlays: (OverlayDefinition | OverlayDefinitionBuilder | OverlayDefinitionsBuilder)[]): void => {
     const initializeOverlays = useCallback(() => {
         if (!diagram) {
             return [];
         }
-        
+
         const overlayService = getDynamicOverlays(diagram);
 
         overlayService.clear();

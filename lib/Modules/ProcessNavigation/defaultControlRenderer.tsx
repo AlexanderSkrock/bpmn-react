@@ -1,4 +1,3 @@
-import React from "react";
 import { createRoot, Root } from "react-dom/client";
 import styled from "styled-components";
 
@@ -25,7 +24,7 @@ const NavigationContainer = styled.div`
     }
 `;
 
-export default class DefaultProcessNavigationControlRenderer implements ProcessNavigationControlRenderer {
+export default class DefaultControlRenderer implements ProcessNavigationControlRenderer {
 
     navigationRoot?: Root
 

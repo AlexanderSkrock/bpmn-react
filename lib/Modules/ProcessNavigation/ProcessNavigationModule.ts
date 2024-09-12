@@ -1,16 +1,24 @@
 import { ModuleDeclaration } from "diagram-js/lib/Diagram";
 import SelectionModule from "diagram-js/lib/features/selection";
 
+import { DynamicOverlaysModule } from "../DynamicOverlays";
 import ProcessNavigation from "./ProcessNavigation";
-import defaultProcessNavigationControlRenderer from "./defaultProcessNavigationControlRenderer";
+import defaultControlRenderer from "./defaultControlRenderer";
+import defaultOverlayRenderer from "./defaultOverlayRenderer";
 import defaultCalledElementLoader from "./defaultCalledElementLoader";
+import ProcessNavigationOverlayBehaviour
+    from "./ProcessNavigationOverlayBehaviour";
 
 const moduleDeclaration: ModuleDeclaration = {
-    __depends__: [ SelectionModule ],
-    __init__: [ "processNavigation" ],
+    __depends__: [ SelectionModule, DynamicOverlaysModule ],
+    __init__: [ "processNavigation", "processNavigationOverlayBehaviour" ],
+    // Core
     processNavigation: [ "type", ProcessNavigation ],
+    processNavigationOverlayBehaviour: [ "type", ProcessNavigationOverlayBehaviour ],
+    // Customization
+    processNavigationOverlayRenderer: [ "type", defaultOverlayRenderer ],
+    processNavigationControlRenderer: [ "type", defaultControlRenderer ],
     calledElementLoader: [ "type", defaultCalledElementLoader ],
-    processNavigationControlRenderer: [ "type", defaultProcessNavigationControlRenderer ],
 };
 
 export default moduleDeclaration;

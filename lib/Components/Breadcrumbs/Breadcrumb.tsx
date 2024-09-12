@@ -3,8 +3,7 @@ import styled from "styled-components";
 
 import { BreadcrumbProps } from "./Breadcrumb.types";
 import { joinClassNames } from "../../util/css";
-
-export const breadcrumbClassName = "breadcrumb";
+import { breadcrumbClassName } from "./classNames";
 
 const arrowSize = "10px";
 

@@ -13,8 +13,12 @@ import {
 import type { CalledElementLoader } from "../../../lib/Modules/ProcessNavigation";
 import {createRoot, Root} from "react-dom/client";
 import {
-    ProcessNavigationControlProps
+    ProcessNavigationControlProps, ProcessNavigationOverlayRenderer
 } from "../../../lib/Modules/ProcessNavigation/ProcessNavigation.types";
+import ProcessNavigationOverlayBehaviour
+    from "../../../lib/Modules/ProcessNavigation/ProcessNavigationOverlayBehaviour";
+import {OverlayAttrs} from "diagram-js/lib/features/overlays/Overlays";
+import {ElementLike} from "diagram-js/lib/model/Types";
 
 const LoaderModule: ModuleDeclaration = {
     calledElementLoader: [
@@ -38,7 +42,7 @@ const ViewerWithProcessNavigationModule = ({ xml, additionalModules }: { xml: st
     const modules = useMemo(() => {
         const result = [CoreModule, MoveCanvasModule, ProcessNavigationModule, LoaderModule];
         if (additionalModules) {
-            result.push(additionalModules);
+            result.push(...additionalModules);
         }
         return result;
     }, [additionalModules]);
@@ -70,7 +74,7 @@ export const DefaultStory: Story = {
     ],
 };
 
-export const CustomRendererStory: Story = {
+export const CustomControlRendererStory: Story = {
     loaders: [
         async () => ({
             xml: await (await fetch("process_navigation/root.bpmn")).text(),
@@ -101,6 +105,51 @@ export const CustomRendererStory: Story = {
 
                         this.root?.render(buttons);
                     }
+                }
+            ],
+        }]
+    }
+};
+
+export const CustomOverlayRendererStory: Story = {
+    loaders: [
+        async () => ({
+            xml: await (await fetch("process_navigation/root.bpmn")).text(),
+        }),
+    ],
+    args: {
+        additionalModules: [{
+            processNavigationOverlayRenderer: [
+                "type",
+                class ProcessNavigationOverlayRendererImpl implements ProcessNavigationOverlayRenderer {
+                    renderCallActivityOverlay(element: ElementLike, navigateToCallActivity: () => void): OverlayAttrs {
+                        const overlayElement = document.createElement("button");
+                        overlayElement.onclick = navigateToCallActivity;
+                        overlayElement.style.padding = "2px";
+                        overlayElement.innerHTML = "Navigate";
+                        return {
+                            position: {
+                                bottom: -8,
+                                right: -8,
+                            },
+                            html: overlayElement,
+                        };
+                    }
+
+                    renderSubprocessOverlay(element: ElementLike, navigateToSubprocess: () => void): OverlayAttrs {
+                        const overlayElement = document.createElement("button");
+                        overlayElement.onclick = navigateToSubprocess;
+                        overlayElement.style.padding = "2px";
+                        overlayElement.innerHTML = "Navigate";
+                        return {
+                            position: {
+                                bottom: -8,
+                                right: -8,
+                            },
+                            html: overlayElement,
+                        };
+                    }
+
                 }
             ],
         }]

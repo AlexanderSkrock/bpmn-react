@@ -3,5 +3,10 @@ export type {
     PathEntry,
 } from "./Breadcrumb.types";
 
-export { default as Breadcrumbs, breadcrumbsClassName } from "./Breadcrumbs";
-export { default as Breadcrumb, breadcrumbClassName } from "./Breadcrumb";
+export {
+    breadcrumbClassName,
+    breadcrumbsClassName,
+} from "./classNames";
+
+export { default as Breadcrumbs } from "./Breadcrumbs";
+export { default as Breadcrumb } from "./Breadcrumb";

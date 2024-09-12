@@ -1,9 +1,10 @@
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import styled from "styled-components";
 
 import type { BreadcrumbsProps } from "./Breadcrumb.types";
 import Breadcrumb from "./Breadcrumb";
 import { joinClassNames } from "../../util/css";
+import { breadcrumbsClassName } from "./classNames";
 
 const BreadcrumbContainer = styled.div`
     display: flex;
@@ -19,8 +20,6 @@ const VerticalBreadcrumbContainer = styled(BreadcrumbContainer)`
     flex-direction: column;
     width: fit-content;
 `;
-
-export const breadcrumbsClassName = "breadcrumbs";
 
 export default ({ path, onClick, direction = "horizontal", className }: BreadcrumbsProps) => {
     const classNames = useMemo(() => joinClassNames(className, breadcrumbsClassName), [className]);
