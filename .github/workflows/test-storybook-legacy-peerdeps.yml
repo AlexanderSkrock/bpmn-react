@@ -17,6 +17,7 @@ jobs:
       matrix:
         react-version:
           - ^16.14.0
+          - ^17.0.0
 
     env:
       REACT_VERSION: ${{ matrix.react-version }}

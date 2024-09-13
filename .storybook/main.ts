@@ -10,7 +10,9 @@ const config: StorybookConfig = {
   ],
   framework: {
     name: "@storybook/react-vite",
-    options: {},
+    options: {
+      legacyRootApi: true,
+    },
   },
   addons: [
     "@storybook/addon-essentials",
