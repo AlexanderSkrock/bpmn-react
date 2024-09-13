@@ -1,4 +1,4 @@
-import { createRoot, Root } from "react-dom/client";
+import { render } from "react-dom";
 import styled from "styled-components";
 
 import {
@@ -26,11 +26,11 @@ const NavigationContainer = styled.div`
 
 export default class DefaultControlRenderer implements ProcessNavigationControlRenderer {
 
-    navigationRoot?: Root
+    container?: HTMLElement;
 
     init = (container: HTMLElement) => {
         container.style.padding = "8px";
-        this.navigationRoot = createRoot(container);
+        this.container = container;
     }
 
     render = ({ history, path, onHistoryClick, onPathClick }: ProcessNavigationControlProps) => {
@@ -47,10 +47,13 @@ export default class DefaultControlRenderer implements ProcessNavigationControlR
             })),
         ];
 
-        this.navigationRoot?.render(
-            <NavigationContainer>
-                <Breadcrumbs path={ entries } />
-            </NavigationContainer>
-        );
+        if (this.container) {
+            render(
+                <NavigationContainer>
+                    <Breadcrumbs path={ entries } />
+                </NavigationContainer>,
+                this.container
+            );
+        }
     }
 }
