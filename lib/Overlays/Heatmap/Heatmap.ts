@@ -8,7 +8,7 @@ import { isConnection } from "diagram-js/lib/util/ModelUtil";
 import type { OverlayBuilderEnvironment, OverlayDefinitionsBuilder } from "../../Modules/DynamicOverlays"
 import type { HeatDataPoint, HeatmapOptions, HeatmatrixJobResultData } from "./Heatmap.types";
 
-import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
+import { getBusinessObject, isAny as isAnyType } from "bpmn-js/lib/util/ModelUtil";
 import asyncHtmlElement from "../asyncHtmlElement";
 
 class Heatmap implements OverlayDefinitionsBuilder {
@@ -73,7 +73,7 @@ class Heatmap implements OverlayDefinitionsBuilder {
                 const renderFunction = this.renderMode === "canvas" ? this.renderContoursToCanvas : this.renderContoursToSvg;
                 return renderFunction(overlayWidth, overlayHeight, contours, this.color);
             });
-        
+
         return {
             type: "Overlay_Heatmap",
             interactive: false,
@@ -118,8 +118,8 @@ class Heatmap implements OverlayDefinitionsBuilder {
 
     calculateHeatMatrix = (elements: ElementLike[], xOffset: number, yOffset: number, width: number, height: number): Promise<number[]> => {
         const heatValues: { [key: string]: number} = {};
-    
-        elements.forEach(element => {    
+
+        elements.forEach(element => {
             let value = this.values[element.id]?.value;
             if (isConnection(element)) {
                 const businessObject = getBusinessObject(element);
@@ -145,7 +145,7 @@ class Heatmap implements OverlayDefinitionsBuilder {
                 workers[i].onmessage = function(message: MessageEvent<HeatmatrixJobResultData>) {
                     const { chunk: finishedChunk, result } = message.data;
                     const { startX, endX, startY, endY } = finishedChunk;
-                
+
                     // TODO Consider more performant replacement
                     for (let rowIndex = startY; rowIndex < endY; rowIndex++) {
                         for (let columnIndex = startX; columnIndex < endX; columnIndex++) {

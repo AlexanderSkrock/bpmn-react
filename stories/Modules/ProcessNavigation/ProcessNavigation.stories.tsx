@@ -1,6 +1,9 @@
 import React, {useEffect, useMemo} from "react";
+import { render } from "react-dom";
 import { Meta, StoryObj } from "@storybook/react";
 
+import { ElementLike } from "diagram-js/lib/model/Types";
+import { OverlayAttrs } from "diagram-js/lib/features/overlays/Overlays";
 import MoveCanvasModule from "diagram-js/lib/navigation/movecanvas";
 import CoreModule from "bpmn-js/lib/core";
 import {ModdleElement, ModuleDeclaration} from "bpmn-js/lib/BaseViewer";
@@ -8,10 +11,7 @@ import {ModdleElement, ModuleDeclaration} from "bpmn-js/lib/BaseViewer";
 import { useBaseViewer } from "../../../lib/Viewer";
 import { ProcessNavigationControlRenderer, ProcessNavigationModule } from "../../../lib/Modules/ProcessNavigation";
 import type { CalledElementLoader } from "../../../lib/Modules/ProcessNavigation";
-import { createRoot, Root } from "react-dom/client";
 import { ProcessNavigationControlProps, ProcessNavigationOverlayRenderer } from "../../../lib/Modules/ProcessNavigation/ProcessNavigation.types";
-import { OverlayAttrs } from "diagram-js/lib/features/overlays/Overlays";
-import { ElementLike } from "diagram-js/lib/model/Types";
 
 const LoaderModule: ModuleDeclaration = {
     calledElementLoader: [
@@ -79,11 +79,11 @@ export const CustomControlRendererStory: Story = {
                 "type",
                 class ProcessNavigationControlRendererImpl implements ProcessNavigationControlRenderer {
 
-                    root?: Root;
+                    container?: HTMLElement;
 
                     init = (container: HTMLElement) => {
                         container.style.padding = "8px";
-                        this.root = createRoot(container);
+                        this.container = container;
                     }
 
                     render = ({ history, path, onHistoryClick, onPathClick }: ProcessNavigationControlProps) => {
@@ -96,7 +96,9 @@ export const CustomControlRendererStory: Story = {
                             return <button key={ key } onClick={ () => onClick({ key, name}) }>{ name }</button>;
                         })
 
-                        this.root?.render(buttons);
+                        if (this.container) {
+                            render(buttons, this.container);
+                        }
                     }
                 }
             ],

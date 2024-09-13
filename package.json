@@ -12,39 +12,38 @@
   ],
   "exports": {
     "./Viewer": {
+      "types": "./dist/types/Viewer/index.d.ts",
       "require": "./dist/cjs/Viewer/index.js",
-      "import": "./dist/esm/Viewer/index.js",
-      "types": "./dist/types/Viewer/index.d.ts"
+      "import": "./dist/esm/Viewer/index.js"
     },
     "./Modules/*": {
+      "types": "./dist/types/Modules/*/index.d.ts",
       "require": "./dist/cjs/Modules/*/index.js",
-      "import": "./dist/esm/Modules/*/index.js",
-      "types": "./dist/types/Modules/*/index.d.ts"
+      "import": "./dist/esm/Modules/*/index.js"
     },
     "./Overlays/*": {
+      "types": "./dist/types/Overlays/*/index.d.ts",
       "require": "./dist/cjs/Overlays/*/index.js",
-      "import": "./dist/esm/Overlays/*/index.js",
-      "types": "./dist/types/Overlays/*/index.d.ts"
+      "import": "./dist/esm/Overlays/*/index.js"
     },
     "./Components/*": {
+      "types": "./dist/types/Components/*/index.d.ts",
       "require": "./dist/cjs/Components/*/index.js",
-      "import": "./dist/esm/Components/*/index.js",
-      "types": "./dist/types/Components/*/index.d.ts"
+      "import": "./dist/esm/Components/*/index.js"
     },
     "./Control/*": {
+      "types": "./dist/types/Control/*/index.d.ts",
       "require": "./dist/cjs/Control/*/index.js",
-      "import": "./dist/esm/Control/*/index.js",
-      "types": "./dist/types/Control/*/index.d.ts"
+      "import": "./dist/esm/Control/*/index.js"
     },
     "./util/*": {
+      "types": "./dist/types/util/*/index.d.ts",
       "require": "./dist/cjs/util/*/index.js",
-      "import": "./dist/esm/util/*/index.js",
-      "types": "./dist/types/util/*/index.d.ts"
+      "import": "./dist/esm/util/*/index.js"
     }
   },
   "scripts": {
     "build": "tsc && rollup -c --bundleConfigAsCjs",
-    "test": "jest",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "test-storybook": "test-storybook"
@@ -55,15 +54,11 @@
     "d3": ">=7.5.0",
     "diagram-js": "^14.8.0",
     "grommet-icons": ">=1.0.0",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "styled-components": "^6.1.12"
   },
   "devDependencies": {
-    "@babel/core": "^7.25.2",
-    "@babel/preset-env": "^7.25.3",
-    "@babel/preset-react": "^7.24.7",
-    "@babel/preset-typescript": "^7.24.7",
     "@rollup/plugin-commonjs": "^26.0.1",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-terser": "^0.4.4",
@@ -78,16 +73,12 @@
     "@storybook/react-vite": "^8.2.9",
     "@storybook/test": "^8.2.9",
     "@storybook/test-runner": "^0.19.1",
-    "@testing-library/dom": "^10.4.0",
-    "@testing-library/react": "^16.0.0",
     "@types/d3": "^7.4.3",
-    "@types/jest": "^29.5.12",
-    "@types/react": "^18.3.3",
+    "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
-    "babel-jest": "^29.7.0",
-    "jest": "^29.7.0",
-    "jest-environment-jsdom": "^29.7.0",
     "path": "^0.12.7",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "rollup": "^4.20.0",
     "rollup-plugin-dts": "^6.1.1",
     "rollup-plugin-peer-deps-external": "^2.2.4",
