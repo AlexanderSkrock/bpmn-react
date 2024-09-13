@@ -6,19 +6,12 @@ import CoreModule from "bpmn-js/lib/core";
 import {ModdleElement, ModuleDeclaration} from "bpmn-js/lib/BaseViewer";
 
 import { useBaseViewer } from "../../../lib/Viewer";
-import {
-    ProcessNavigationControlRenderer,
-    ProcessNavigationModule
-} from "../../../lib/Modules/ProcessNavigation";
+import { ProcessNavigationControlRenderer, ProcessNavigationModule } from "../../../lib/Modules/ProcessNavigation";
 import type { CalledElementLoader } from "../../../lib/Modules/ProcessNavigation";
-import {createRoot, Root} from "react-dom/client";
-import {
-    ProcessNavigationControlProps, ProcessNavigationOverlayRenderer
-} from "../../../lib/Modules/ProcessNavigation/ProcessNavigation.types";
-import ProcessNavigationOverlayBehaviour
-    from "../../../lib/Modules/ProcessNavigation/ProcessNavigationOverlayBehaviour";
-import {OverlayAttrs} from "diagram-js/lib/features/overlays/Overlays";
-import {ElementLike} from "diagram-js/lib/model/Types";
+import { createRoot, Root } from "react-dom/client";
+import { ProcessNavigationControlProps, ProcessNavigationOverlayRenderer } from "../../../lib/Modules/ProcessNavigation/ProcessNavigation.types";
+import { OverlayAttrs } from "diagram-js/lib/features/overlays/Overlays";
+import { ElementLike } from "diagram-js/lib/model/Types";
 
 const LoaderModule: ModuleDeclaration = {
     calledElementLoader: [
