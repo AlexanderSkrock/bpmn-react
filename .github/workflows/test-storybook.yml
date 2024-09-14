@@ -1,7 +1,7 @@
 name: Test Storybook
 
 on:
-  workflow_call
+  workflow_call:
   pull_request:
     branches:
       - main
