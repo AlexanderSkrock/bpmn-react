@@ -1,9 +1,6 @@
 name: Test Storybook (Legacy Peer Dependencies)
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
