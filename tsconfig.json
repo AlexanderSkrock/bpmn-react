@@ -7,7 +7,6 @@
       "dom.iterable",
       "esnext"
     ],
-    "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -19,14 +18,15 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "declaration": true,
-    "emitDeclarationOnly": true,
     "declarationDir": "dist/types",
     "jsx": "react-jsx"
   },
   "include": [
-    "lib/**/*"
+    "lib/**/*.ts",
+    "lib/**/*.tsx"
   ],
   "exclude": [
+    "**/*.test.ts",
     "**/*.test.tsx"
   ],
 }

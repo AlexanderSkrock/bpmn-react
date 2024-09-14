@@ -5,9 +5,8 @@ import typescript from "typescript";
 import commonjsPlugin from "@rollup/plugin-commonjs";
 import resolvePlugin from "@rollup/plugin-node-resolve";
 import terserPlugin from "@rollup/plugin-terser";
-import { dts as dtsPlugin } from "rollup-plugin-dts";
 import peerDepsExternalPlugin from "rollup-plugin-peer-deps-external";
-import typescriptPlugin from "rollup-plugin-typescript-2";
+import typescriptPlugin from "rollup-plugin-typescript2";
 
 const packageJson = require("./package.json");
 
@@ -39,20 +38,14 @@ export default [
       peerDepsExternalPlugin(),
       resolvePlugin(),
       commonjsPlugin(),
-      typescriptPlugin({ typescript }),
+      typescriptPlugin({
+        typescript,
+        // currently we can neither use preserveModulesRoot for typings
+        // nor define the output directory here with dirname(packageJson.types),
+        // thus it remains within the tsconfig.json
+        useTsconfigDeclarationDir: true
+      }),
       terserPlugin(),
-    ],
-  },
-  {
-    input: "dist/types/index.d.ts",
-    output: [
-      {
-        file: packageJson.types,
-        format: "es"
-      }
-    ],
-    plugins: [
-      dtsPlugin()
     ],
   },
 ];
