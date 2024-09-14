@@ -1,0 +1,16 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+    bundle:
+        uses: ./build-library.yml
+
+    test-storybook:
+        uses: ./test-storybook.yml
+
+    test-storybook-legacy-peer-deps:
+        uses: ./test-storybook-legacy-peerdeps.yml        

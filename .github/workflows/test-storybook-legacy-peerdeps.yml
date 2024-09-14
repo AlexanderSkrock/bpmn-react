@@ -1,6 +1,7 @@
 name: Test Storybook (Legacy Peer Dependencies)
 
 on:
+  workflow_call:
   pull_request:
     branches:
       - main

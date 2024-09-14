@@ -4,7 +4,8 @@ name: NPM Publish
 
 on:
   release:
-    types: [created]
+    types:
+      - created
 
 jobs:
   publish-npm:
