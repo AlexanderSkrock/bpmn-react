@@ -9,7 +9,6 @@ import { calculateInfluenceMaxRange, getDistance } from "./util";
 
 self.onmessage = function(message: MessageEvent<HeatmatrixJobRequestData>) {
     const { values, elements, chunk, xOffset, yOffset, width, height } = message.data;
-    console.debug(`Chunk: ${JSON.stringify(chunk)}`);
     const { startX, endX, startY, endY } = chunk;
 
     const workerStart = performance.now();

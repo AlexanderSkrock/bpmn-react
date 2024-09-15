@@ -10,3 +10,4 @@ export * from "./lines";
 export * from "./distance";
 export * from "./contains";
 export * from "./intersections";
+export * from "./contours";
