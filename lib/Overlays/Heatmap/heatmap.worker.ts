@@ -9,6 +9,7 @@ import { calculateInfluenceMaxRange, getDistance } from "./util";
 
 self.onmessage = function(message: MessageEvent<HeatmatrixJobRequestData>) {
     const { values, elements, chunk, xOffset, yOffset, width, height } = message.data;
+    console.debug(`Chunk: ${JSON.stringify(chunk)}`);
     const { startX, endX, startY, endY } = chunk;
 
     const workerStart = performance.now();
@@ -21,6 +22,8 @@ self.onmessage = function(message: MessageEvent<HeatmatrixJobRequestData>) {
 };
 
 function calculateHeatMatrixChunk(values: { [key: string]: number }, elements: ElementLike[], xOffset: number, yOffset: number, width: number, height: number, startX: number, endX: number, startY: number, endY: number): number[] {
+    const preGeometryMap = performance.now();
+    
     const geometryMap = new GeometryMap<ElementLike>(new Rectangle(xOffset, yOffset, width + xOffset, height + yOffset), 4);
     elements.forEach(element => {
         if (isConnection(element)) {
@@ -40,6 +43,9 @@ function calculateHeatMatrixChunk(values: { [key: string]: number }, elements: E
             );
         }
     });
+
+    const postGeometryMap = performance.now();
+    console.debug(`Geometry map calculation duration: ${postGeometryMap - preGeometryMap}`)
 
     const heatMatrix = new Array(width * height).fill(Number.NaN);
     for (let rowIndex = startY; rowIndex < endY; rowIndex++) {
@@ -84,6 +90,9 @@ function calculateHeatMatrixChunk(values: { [key: string]: number }, elements: E
             }
         }
     }
+
+    const postHeatMatrix = performance.now();
+    console.debug(`Heatmatrix calculation duration: ${postHeatMatrix - postGeometryMap}`)
 
     return heatMatrix;
 }
