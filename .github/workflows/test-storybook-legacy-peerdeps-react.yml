@@ -1,4 +1,4 @@
-name: Test Storybook (Legacy Peer Dependencies)
+name: Test Storybook (Legacy React Peer Dependencies)
 
 on:
   workflow_call:
@@ -13,24 +13,17 @@ jobs:
         react-version:
           - ^16.14.0
           - ^17.0.0
-        includes:
-          - diagram-js-version: ^13.2.0
-            bpmn-js-version: ^16.0.0
-          - diagram-js-version: ^14.1.0
-            bpmn-js-version: ^17.0.0
 
     env:
       REACT_VERSION: ${{ matrix.react-version }}
       REACT_DOM_VERSION: ${{ matrix.react-version }}
-      DIAGRAM_JS_VERSION: ${{ matrix.diagram-js-version }}
-      BPMN_JS_VERSION: ${{ matrix.bpmn-js-version }}
 
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
 
       - name: Install legacy versions of peer dependencies
-        run: npm i react-dom@${REACT_DOM_VERSION} react@${REACT_DOM_VERSION} diagram-js@${DIAGRAM_JS_VERSION} bpmn-js@${BPMN_JS_VERSION}
+        run: npm i react-dom@${REACT_DOM_VERSION} react@${REACT_DOM_VERSION}
       - run: npx playwright install --with-deps
 
       - run: npm run build-storybook --quiet
