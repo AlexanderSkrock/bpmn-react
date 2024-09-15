@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   verify-storybook:
-    uses: ./.github/workflows/test-storybook
+    uses: ./.github/workflows/test-storybook.yml
 
   deploy:
     needs:
