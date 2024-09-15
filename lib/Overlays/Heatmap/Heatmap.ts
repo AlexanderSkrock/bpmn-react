@@ -10,6 +10,7 @@ import type { HeatDataPoint, HeatmapOptions, HeatmatrixJobResultData } from "./H
 
 import { getBusinessObject, isAny as isAnyType } from "bpmn-js/lib/util/ModelUtil";
 import asyncHtmlElement from "../asyncHtmlElement";
+import { clamp } from "../../util/math";
 
 class Heatmap implements OverlayDefinitionsBuilder {
 
@@ -67,11 +68,22 @@ class Heatmap implements OverlayDefinitionsBuilder {
         const overlayOffsetX = env.canvas().viewbox().inner.x - overlayOverflow / 2;
         const overlayOffsetY = env.canvas().viewbox().inner.y - overlayOverflow / 2;
 
+        const heatmapStart = performance.now();
+
         const futureHtmlElement = this.calculateHeatMatrix(elements, overlayOffsetX, overlayOffsetY, overlayWidth, overlayHeight)
-            .then(heatMatrix => this.calculateContours(heatMatrix, overlayWidth, overlayHeight))
+            .then(heatMatrix => {
+                const heatmapPreContours = performance.now();
+                console.debug(`Heatmatrix calculation duration: ${heatmapPreContours - heatmapStart}`);
+                const result = this.calculateContours(heatMatrix, overlayWidth, overlayHeight)
+                console.debug(`Heatmap contours calculation duration: ${performance.now() - heatmapPreContours}`);
+                return result;
+            })
             .then(contours => {
                 const renderFunction = this.renderMode === "canvas" ? this.renderContoursToCanvas : this.renderContoursToSvg;
-                return renderFunction(overlayWidth, overlayHeight, contours, this.color);
+                const heatmapPreRender = performance.now();
+                const result = renderFunction(overlayWidth, overlayHeight, contours, this.color);
+                console.debug(`Heatmap render duration: ${performance.now() - heatmapPreRender}`);
+                return result;
             });
 
         return {
