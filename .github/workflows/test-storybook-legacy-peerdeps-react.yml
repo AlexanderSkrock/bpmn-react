@@ -1,4 +1,4 @@
-name: Test Storybook (Legacy Peer Dependencies)
+name: Test Storybook (Legacy React Peer Dependencies)
 
 on:
   workflow_call:

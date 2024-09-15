@@ -49,13 +49,15 @@
     "test-storybook": "test-storybook"
   },
   "peerDependencies": {
+    "bpmn-js": "^16.0.0 || ^17.0.0",
+    "diagram-js": "^13.2.0 || ^14.1.0",
+    "react": "^16.0.0 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.0.0 || ^17.0.0 || ^18.0.0"
+  },
+  "dependencies": {
     "@turf/turf": "^7.1.0",
-    "bpmn-js": "^17.9.2",
-    "d3": ">=7.5.0",
-    "diagram-js": "^14.8.0",
-    "grommet-icons": ">=1.0.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "d3": "^7.5.0",
+    "grommet-icons": "^4.12.1",
     "styled-components": "^6.1.12"
   },
   "devDependencies": {
@@ -76,6 +78,8 @@
     "@types/d3": "^7.4.3",
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
+    "bpmn-js": "^17.9.2",
+    "diagram-js": "^14.8.0",
     "path": "^0.12.7",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

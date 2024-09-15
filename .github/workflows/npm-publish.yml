@@ -14,8 +14,11 @@ jobs:
   verify-storybook-tests:
     uses: ./.github/workflows/test-storybook.yml
 
-  verify-storybook-tests-legacy-peerdeps:
-    uses: ./.github/workflows/test-storybook-legacy-peerdeps.yml
+  verify-storybook-legacy-peerdeps-react:
+    uses: ./.github/workflows/test-storybook-legacy-peerdeps-react.yml
+    
+  verify-storybook-legacy-peerdeps-bpmn-io:
+    uses: ./.github/workflows/test-storybook-legacy-peerdeps-bpmn-io.yml
 
   publish-npm:
     needs:
