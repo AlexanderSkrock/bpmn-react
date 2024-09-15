@@ -8,15 +8,31 @@ on:
       - created
 
 jobs:
+  verify-build:
+    uses: ./.github/workflows/build-library.yml
+
+  verify-storybook-tests:
+    uses: ./.github/workflows/test-storybook.yml
+
+  verify-storybook-tests-legacy-peerdeps:
+    uses: ./.github/workflows/test-storybook-legacy-peerdeps.yml
+
   publish-npm:
+    needs:
+      - verify-build
+      - verify-storybook-tests
+      - verify-storybook-tests-legacy-peerdeps
+
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           registry-url: https://registry.npmjs.org/
+
       - run: npm ci
       - run: npm run build
+      
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}

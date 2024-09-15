@@ -2,9 +2,6 @@ name: Test Storybook (Legacy Peer Dependencies)
 
 on:
   workflow_call:
-  pull_request:
-    branches:
-      - main
 
 jobs:
   test:
@@ -22,20 +19,14 @@ jobs:
       REACT_DOM_VERSION: ${{ matrix.react-version }}
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup node
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
 
       - name: Install legacy versions of peer dependencies
         run: npm i react-dom@${REACT_DOM_VERSION} react@${REACT_DOM_VERSION}
+      - run: npx playwright install --with-deps
 
-      - name: Install Playwright
-        run: npx playwright install --with-deps
-
-      - name: Build Storybook
-        run: npm run build-storybook --quiet
+      - run: npm run build-storybook --quiet
 
       - name: Serve Storybook and run tests
         run: |

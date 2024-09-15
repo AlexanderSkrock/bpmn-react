@@ -1,18 +1,14 @@
-name: Bundle
+name: Build
 
 on:
   workflow_call:
-  pull_request:
-    branches:
-      - main
 
 jobs:
-  bundle:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with:
-          registry-url: https://registry.npmjs.org/
+      
       - run: npm ci
       - run: npm run build
