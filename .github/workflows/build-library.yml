@@ -1,13 +1,10 @@
-name: Bundle
+name: Build
 
 on:
   workflow_call:
-  pull_request:
-    branches:
-      - main
 
 jobs:
-  bundle:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
