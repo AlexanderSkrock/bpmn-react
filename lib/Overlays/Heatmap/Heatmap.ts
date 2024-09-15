@@ -143,8 +143,7 @@ class Heatmap implements OverlayDefinitionsBuilder {
         });
 
         return new Promise((resolve) => {
-            // TODO dynamic worker count
-            const workerCount = 2;
+            const workerCount = clamp((width * height) / 200000, 1, 8);
             const workers: Worker[] = [];
 
             const chunks: { startX: number, endX: number, startY: number, endY: number, done?: boolean }[] = [];
