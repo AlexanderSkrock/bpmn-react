@@ -13,17 +13,11 @@ jobs:
         react-version:
           - ^16.14.0
           - ^17.0.0
-        diagram-js-version:
-          - ^13.2.0
-          - ^14.1.0
-        bpmn-js-version:
-          - ^16.0.0
-          - ^17.0.0
-        exclude:
+        includes:
           - diagram-js-version: ^13.2.0
-            bpmn-js-version: ^17.0.0
-          - diagram-js-version: ^14.1.0
             bpmn-js-version: ^16.0.0
+          - diagram-js-version: ^14.1.0
+            bpmn-js-version: ^17.0.0
 
     env:
       REACT_VERSION: ${{ matrix.react-version }}
