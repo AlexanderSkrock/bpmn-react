@@ -144,15 +144,20 @@ class Heatmap implements OverlayDefinitionsBuilder {
             worker.onmessage = function(message: MessageEvent<HeatmatrixJobResultData>) {
                 const { result } = message.data;
 
+                const preContours = performance.now();
                 const contours = nonOverlappingContours(result, width, height, 10);
+                console.debug(`Contours calculation: ${performance.now() - preContours}`);
+              
+                const preRender = performance.now();
                 contours.forEach(c => {
                     renderer.render(c, { color: colorFunc(c.value), opacity: opacity });
                 });
+                console.debug(`Rendering: ${performance.now() - preRender}`);
             }
             workers.push(worker);
         }
 
-        const chunks = chunks2D({ width, height, chunkWidth: 500, chunkHeight: 500 });
+        const chunks = chunks2D({ width, height, chunkWidth: 1000, chunkHeight: 1000 });
         chunks.forEach((chunk, index) => {
             workers[index % workerCount].postMessage({ values: heatValues, elements, xOffset, yOffset, width, height, chunk });
         });

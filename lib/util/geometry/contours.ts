@@ -2,7 +2,7 @@ import { difference, feature, featureCollection } from "@turf/turf";
 import { contours as contoursD3, ContourMultiPolygon } from "d3";
 
 export const contours = (values: number[], width: number, height: number, thresholds: number): ContourMultiPolygon[] => {
-    const contoursGenerator = contoursD3().size([width, height]).thresholds(10);
+    const contoursGenerator = contoursD3().size([width, height]).thresholds(thresholds);
     return contoursGenerator(values);
 }
 

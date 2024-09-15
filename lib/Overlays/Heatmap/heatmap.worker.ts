@@ -46,7 +46,7 @@ function calculateHeatMatrixChunk(values: { [key: string]: number }, elements: E
     const postGeometryMap = performance.now();
     console.debug(`Geometry map calculation duration: ${postGeometryMap - preGeometryMap}`)
 
-    const heatMatrix = new Array(width * height).fill(Number.NaN);
+    const heatMatrix = new Float32Array(width * height).fill(Number.NaN);
     for (let rowIndex = startY; rowIndex < endY; rowIndex++) {
         for (let columnIndex = startX; columnIndex < endX; columnIndex++) {
             const coordinateX = columnIndex + xOffset;
