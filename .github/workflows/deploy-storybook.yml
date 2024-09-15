@@ -1,13 +1,9 @@
 name: Deploy Storybook
 
 on:
-  workflow_run:
-    workflows:
-      - CI
+  push:
     branches:
       - main
-    types: 
-      - completed
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
