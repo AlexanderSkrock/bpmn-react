@@ -8,7 +8,21 @@ on:
       - created
 
 jobs:
+  verify-build:
+    uses: ./.github/workflows/build-library.yml
+
+  verify-storybook-tests:
+    uses: ./.github/workflows/test-storybook.yml
+
+  verify-storybook-tests-legacy-peerdeps:
+    uses: ./.github/workflows/test-storybook-legacy-peerdeps.yml
+
   publish-npm:
+    needs:
+      - verify-build
+      - verify-storybook-tests
+      - verify-storybook-tests-legacy-peerdeps
+
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
