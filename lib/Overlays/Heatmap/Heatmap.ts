@@ -11,6 +11,8 @@ import type { HeatDataPoint, HeatmapOptions, HeatmatrixJobResultData } from "./H
 import { getBusinessObject, isAny as isAnyType } from "bpmn-js/lib/util/ModelUtil";
 import asyncHtmlElement from "../asyncHtmlElement";
 import { clamp } from "../../util/math";
+import CanvasRenderer from "./CanvasRenderer";
+import SvgRenderer from "./SvgRenderer";
 
 class Heatmap implements OverlayDefinitionsBuilder {
 
@@ -217,44 +219,26 @@ class Heatmap implements OverlayDefinitionsBuilder {
         return nonOverlappingHeatContours;
     }
 
-    renderContoursToCanvas = (width: number, height: number, heatmapContours: ContourMultiPolygon[], color: (value: number) => string): HTMLElement => {
-        const canvas = create("canvas")
-            .attr("width", `${width}px`)
-            .attr("height", `${height}px`)
-            .node() as HTMLCanvasElement;
-        const renderContext = canvas.getContext("2d") as CanvasRenderingContext2D;
-        renderContext.globalAlpha = this.opacity;
-
-        const path = geoPath().projection(geoIdentity().scale(1)).context(renderContext);
+    renderContoursToCanvas = (width: number, height: number, heatmapContours: ContourMultiPolygon[], color: (value: number) => string): Element => {
+        const renderer = new CanvasRenderer();
+        renderer.init({ width, height });
 
         heatmapContours.forEach(c => {
-            renderContext.fillStyle = color(c.value);
-
-            renderContext.beginPath();
-            path(c);
-            renderContext.fill();
-            renderContext.closePath();
+            renderer.render(c, { color: color(c.value), opacity: this.opacity });
         });
 
-        return canvas;
+        return renderer.element();
     }
 
-    renderContoursToSvg = (width: number, height: number, heatmapContours: ContourMultiPolygon[], color: (value: number) => string): HTMLElement => {
-        const svg = create("svg")
-            .attr("width", `${width}px`)
-            .attr("height", `${height}px`);
+    renderContoursToSvg = (width: number, height: number, heatmapContours: ContourMultiPolygon[], color: (value: number) => string): Element => {
+        const renderer = new SvgRenderer();
+        renderer.init({ width, height });
 
-        const path = geoPath().projection(geoIdentity().scale(1));
+        heatmapContours.forEach(c => {
+            renderer.render(c, { color: color(c.value), opacity: this.opacity });
+        });
 
-        svg.append("g")
-            .selectAll()
-            .data(heatmapContours)
-            .join("path")
-            .attr("d", c => path(c))
-            .attr("fill", c => color(c.value))
-            .attr("fill-opacity", this.opacity);
-
-        return svg.node() as unknown as HTMLElement;
+        return renderer.element();
     }
 }
 
