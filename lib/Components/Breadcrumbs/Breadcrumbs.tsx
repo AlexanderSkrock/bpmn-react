@@ -21,7 +21,7 @@ const VerticalBreadcrumbContainer = styled(BreadcrumbContainer)`
     width: fit-content;
 `;
 
-export default ({ path, onClick, direction = "horizontal", className }: BreadcrumbsProps) => {
+const Breadcrumbs = ({ path, onClick, direction = "horizontal", className }: BreadcrumbsProps) => {
     const classNames = useMemo(() => joinClassNames(className, breadcrumbsClassName), [className]);
 
     const Container = direction === "horizontal" ? HorizontalBreadcrumbContainer : VerticalBreadcrumbContainer;
@@ -35,4 +35,6 @@ export default ({ path, onClick, direction = "horizontal", className }: Breadcru
             { breadcrumbs }
         </Container>
     );
-}
+};
+
+export default Breadcrumbs;

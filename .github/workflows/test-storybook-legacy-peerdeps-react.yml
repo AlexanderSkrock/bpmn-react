@@ -23,7 +23,7 @@ jobs:
       - uses: actions/setup-node@v4
 
       - name: Install legacy versions of peer dependencies
-        run: npm i react-dom@${REACT_DOM_VERSION} react@${REACT_DOM_VERSION}
+        run: npm i react-dom@${REACT_DOM_VERSION} react@${REACT_VERSION}
       - run: npx playwright install --with-deps
 
       - run: npm run build-storybook --quiet

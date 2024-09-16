@@ -1,12 +1,13 @@
 import { useCallback, useEffect } from "react";
 
 import { EventBusEventCallback } from "diagram-js/lib/core/EventBus";
+import { ElementLike } from "diagram-js/lib/model/Types";
 
 import useEventHandler from "../../Viewer/hooks/useEventHandler";
 import { useZoom } from "../../Components/Zoom";
 import { DiagramLike, getCanvas } from "../../util/services";
 
-import { AttachedZoomOptions } from "./Zoom.types";
+import type { AttachedZoomOptions } from "./Zoom.types";
 
 
 const useAttachedZoom = (diagramLike: DiagramLike | null, { initialFit, ...zoomOptions }: AttachedZoomOptions = {}): [number, () => void, () => void, () => void, (nextZoom: number) => void] => {
@@ -27,14 +28,14 @@ const useAttachedZoom = (diagramLike: DiagramLike | null, { initialFit, ...zoomO
         zoom(currentZoom);
     }, [zoom, currentZoom]);
 
-    const handleRootSet: EventBusEventCallback<any> = useCallback(() => {
+    const handleRootSet: EventBusEventCallback<{ element: ElementLike}> = useCallback(() => {
         if (initialFit) {
             fitZoom();
         }
     }, [initialFit, fitZoom]);
     useEventHandler(diagramLike, "root.set", handleRootSet);
 
-    const handleScaleChanged: EventBusEventCallback<any> = useCallback(event => {
+    const handleScaleChanged: EventBusEventCallback<{ viewbox: { scale: number }}> = useCallback(event => {
         setZoom(event.viewbox.scale);
     }, [setZoom]);
     useEventHandler(diagramLike, "canvas.viewbox.changed", handleScaleChanged);

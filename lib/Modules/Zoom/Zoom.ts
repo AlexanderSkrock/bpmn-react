@@ -1,10 +1,10 @@
 import EventBus from "diagram-js/lib/core/EventBus";
 import Canvas from "diagram-js/lib/core/Canvas";
 
-import type { ZoomControlRenderer, ZoomService } from "./Zoom.types";
+import type { ZoomControlRenderer } from "./Zoom.types";
 import DefaultControlRenderer from "./defaultControlRenderer";
 
-export default class Zoom implements ZoomService {
+export default class Zoom {
 
     static $inject = [
         "canvas",

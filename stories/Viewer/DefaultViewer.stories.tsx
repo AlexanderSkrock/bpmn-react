@@ -5,6 +5,7 @@ import type { StoryObj, Meta } from "@storybook/react";
 import { is as isType } from "bpmn-js/lib/util/ModelUtil"
 
 import { DefaultViewer } from "../../lib/Viewer";
+import { ModdleElement } from "bpmn-js/lib/model/Types";
 
 const meta: Meta<typeof DefaultViewer> = {
     component: DefaultViewer,
@@ -29,6 +30,14 @@ export const ProcessWithEmbeddedSubprocess: Story = {
             xml: await (await fetch('collapsed_subprocess.bpmn')).text(),
         }),
     ],
+    args: {
+        loadCalledElement: (calledConfig: ModdleElement) => {
+            if (calledConfig.calledElement === "Process_0vsi1d5") {
+                return fetch("collapsed_subprocess.bpmn").then(respnse => respnse.text()).then(xml => ({ xml }));
+            }
+            return Promise.reject("unable to load called element");
+        },
+    }
 };
 
 export const ProcessWithCalledActivity: Story = {
@@ -38,11 +47,13 @@ export const ProcessWithCalledActivity: Story = {
         }),
     ],
     args: {
-        loadCalledElement: (calledConfig) => {
-            if (calledConfig.calledElement === "Sub_Process") {
-                return fetch("sub_process.bpmn").then(response => response.text()).then(xml => ({ xml }));
-            }
-            return Promise.reject("unable to load called element");
+        loadCalledElement: (calledConfig: ModdleElement) => {
+            const filePathMapping: { [key: string]: string } = {
+                "RootProcess": "root_process.bpmn",
+                "Sub_Process": "sub_process.bpmn",
+            };
+            const path = filePathMapping[calledConfig.calledElement];
+            return fetch(path).then(response => response.text()).then(xml => ({ xml }));
         },
     },
 };
@@ -54,11 +65,13 @@ export const ProcessUsingCollaborationsWithCalledActivity: Story = {
         }),
     ],
     args: {
-        loadCalledElement: (calledConfig) => {
-            if (calledConfig.calledElement === "SubCollaborationProcess") {
-                return fetch("sub_process_with_collaboration.bpmn").then(response => response.text()).then(xml => ({ xml }));
-            }
-            return Promise.reject("unable to load called element");
+        loadCalledElement: (calledConfig: ModdleElement) => {
+            const filePathMapping: { [key: string]: string } = {
+                "RootCollaborationProcess": "root_process_with_collaboration.bpmn",
+                "SubCollaborationProcess": "sub_process_with_collaboration.bpmn",
+            };
+            const path = filePathMapping[calledConfig.calledElement];
+            return fetch(path).then(response => response.text()).then(xml => ({ xml }));
         },
     },
 };

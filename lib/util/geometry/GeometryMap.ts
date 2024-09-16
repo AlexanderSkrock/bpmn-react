@@ -1,11 +1,7 @@
-import Point from "./Point";
 import Rectangle from "./Rectangle";
-import {Geometry} from "./geometry.types";
-import {contains} from "./contains";
-import {
-    intersectsRectangleLine,
-    intersectsRectangleRectangle
-} from "./intersections";
+import { Geometry } from "./geometry.types";
+import { contains } from "./contains";
+import { intersectsRectangleRectangle } from "./intersections";
 
 export default class PointMap<T> {
 

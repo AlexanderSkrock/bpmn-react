@@ -4,10 +4,10 @@ import type BaseViewer from "bpmn-js/lib/BaseViewer";
 import type { BaseViewerOptions } from "bpmn-js/lib/BaseViewer";
 import { UseBpmnJsViewerOptions, UseBpmnJsViewerResult } from './hooks.types';
 
-export default <V extends BaseViewer, O extends BaseViewerOptions>({ factory, options }: UseBpmnJsViewerOptions<V, O>): UseBpmnJsViewerResult<V, O> => {
+export default <V extends BaseViewer, O extends BaseViewerOptions>({ factory, options }: UseBpmnJsViewerOptions<V, O>): UseBpmnJsViewerResult<V> => {
     const [viewer, setViewer] = useState<V | null>(null);
 
-    const handleRef = useCallback((ref: any) => {
+    const handleRef = useCallback((ref: HTMLElement | null) => {
         if (viewer) {
             if (ref) {
                 viewer.attachTo(ref)
@@ -17,7 +17,7 @@ export default <V extends BaseViewer, O extends BaseViewerOptions>({ factory, op
         } else if (ref) {
             setViewer(factory({
                 ...options,
-                container: ref.current,
+                container: ref,
             }));
         }
     }, [viewer, setViewer]);

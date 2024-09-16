@@ -23,7 +23,7 @@ const VerticalBreadcrumbContainer = styled(BreadcrumbContainer)`
   clip-path: polygon(0 0, 50% ${arrowSize}, 100% 0, 100% calc(100% - ${arrowSize}), 50% 100%, 0% calc(100% - ${arrowSize}));
 `;
 
-export default ({ path, onClick, direction = "horizontal", className }: BreadcrumbProps) => {
+const Breadcrumb = ({ path, onClick, direction = "horizontal", className }: BreadcrumbProps) => {
     const classNames = useMemo(() => joinClassNames(className, breadcrumbClassName), [className]);
 
     const Container = direction === "horizontal" ? HorizontalBreadcrumbContainer : VerticalBreadcrumbContainer;
@@ -38,4 +38,6 @@ export default ({ path, onClick, direction = "horizontal", className }: Breadcru
             { path.name ?? path.key }
         </Container>
     );
-}
+};
+
+export default Breadcrumb;

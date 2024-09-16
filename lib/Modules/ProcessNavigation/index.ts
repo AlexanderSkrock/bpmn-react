@@ -1,4 +1,6 @@
 export type {
+    NavigateToCalledElementEvent,
+    NavigateToSubprocessEvent,
     ProcessNavigationService,
     CalledElementLoader,
     CalledElementLoadResult,

@@ -43,6 +43,7 @@
     }
   },
   "scripts": {
+    "lint": "eslint lib stories",
     "build": "rollup -c --bundleConfigAsCjs",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
@@ -61,6 +62,7 @@
     "styled-components": "^6.1.12"
   },
   "devDependencies": {
+    "@eslint/js": "^9.10.0",
     "@rollup/plugin-commonjs": "^26.0.1",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-terser": "^0.4.4",
@@ -80,6 +82,9 @@
     "@types/react-dom": "^18.3.0",
     "bpmn-js": "^17.9.2",
     "diagram-js": "^14.8.0",
+    "eslint": "^9.10.0",
+    "eslint-plugin-react": "^7.36.1",
+    "globals": "^15.9.0",
     "path": "^0.12.7",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -88,7 +93,8 @@
     "rollup-plugin-typescript2": "^0.36.0",
     "storybook": "^8.2.9",
     "tslib": "^2.7.0",
-    "typescript": "^5.6.2"
+    "typescript": "^5.6.2",
+    "typescript-eslint": "^8.6.0"
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "^4.21.1",

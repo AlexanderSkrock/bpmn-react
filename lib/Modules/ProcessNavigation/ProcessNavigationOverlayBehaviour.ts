@@ -1,11 +1,10 @@
 import Canvas from "diagram-js/lib/core/Canvas";
-import ElementRegistry from "diagram-js/lib/core/ElementRegistry";
 import EventBus from "diagram-js/lib/core/EventBus";
 
-import {getBusinessObject, is as isType} from "bpmn-js/lib/util/ModelUtil";
+import { getBusinessObject, is as isType } from "bpmn-js/lib/util/ModelUtil";
 import { getPlaneIdFromShape } from "bpmn-js/lib/util/DrilldownUtil";
-import {ElementLike} from "diagram-js/lib/model/Types";
-import { DynamicOverlayService, OverlayBuilderEnvironment, OverlayDefinition, OverlayDefinitionBuilder } from "../DynamicOverlays/DynamicOverlays.types";
+import { ElementLike } from "diagram-js/lib/model/Types";
+import { DynamicOverlayService, OverlayDefinition, OverlayDefinitionBuilder } from "../DynamicOverlays/DynamicOverlays.types";
 import { ProcessNavigationOverlayRenderer } from "./ProcessNavigation.types";
 import { NAVIGATE_CALL_ACTIVITY_EVENT, NAVIGATE_SUBPROCESS_EVENT } from "./events";
 
@@ -15,7 +14,6 @@ export default class ProcessNavigationOverlayBehaviour {
 
     static $inject = [
         "canvas",
-        "elementRegistry",
         "eventBus",
         "dynamicOverlays",
         "processNavigationOverlayRenderer",
@@ -26,16 +24,14 @@ export default class ProcessNavigationOverlayBehaviour {
     _subprocessOverlayBuilder: OverlayDefinitionBuilder;
     _callActivityOverlayBuilder: OverlayDefinitionBuilder;
 
-    constructor(canvas: Canvas, elementRegistry: ElementRegistry, eventBus: EventBus, dynamicOverlays: DynamicOverlayService, overlayRenderer: ProcessNavigationOverlayRenderer) {
+    constructor(canvas: Canvas, eventBus: EventBus, dynamicOverlays: DynamicOverlayService, overlayRenderer: ProcessNavigationOverlayRenderer) {
         this._dynamicOverlays = dynamicOverlays;
 
         this._subprocessOverlayBuilder = {
-            elementFilter(element: ElementLike): any {
-                return isType(element, "bpmn:SubProcess") && canvas.findRoot(getPlaneIdFromShape(element));
+            elementFilter(element: ElementLike): boolean {
+                return isType(element, "bpmn:SubProcess") && !!canvas.findRoot(getPlaneIdFromShape(element));
             },
-            buildDefinition(element: ElementLike, env: OverlayBuilderEnvironment): OverlayDefinition {
-                const overlayElement = document.createElement("button");
-                overlayElement.innerHTML = "SUB PROCESS";
+            buildDefinition(element: ElementLike): OverlayDefinition {
                 return {
                     element: element.id,
                     interactive: true,
@@ -46,12 +42,10 @@ export default class ProcessNavigationOverlayBehaviour {
         };
 
         this._callActivityOverlayBuilder = {
-            elementFilter(element: ElementLike): any {
+            elementFilter(element: ElementLike): boolean {
                 return isType(element, "bpmn:CallActivity") && !!getBusinessObject(element).calledElement;
             },
-            buildDefinition(element: ElementLike, env: OverlayBuilderEnvironment): OverlayDefinition {
-                const overlayElement = document.createElement("button");
-                overlayElement.innerHTML = "CALL ACTIVITY PROCESS";
+            buildDefinition(element: ElementLike): OverlayDefinition {
                 return {
                     element: element.id,
                     interactive: true,
@@ -62,7 +56,7 @@ export default class ProcessNavigationOverlayBehaviour {
         }
 
         eventBus.on("import.render.start", this._handleImportRenderStart);
-        eventBus.on("import.render.complete", this._handleImportRenderComplete);
+        eventBus.on("import.done", this._handleImportRenderComplete);
     }
 
     _handleImportRenderStart = () => {

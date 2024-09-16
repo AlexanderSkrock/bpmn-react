@@ -1,7 +1,3 @@
-import {
-    CalledElementLoader, ProcessNavigationControlRenderer,
-    ProcessNavigationService,
-} from "./ProcessNavigation.types";
 import EventBus from "diagram-js/lib/core/EventBus";
 import Canvas from "diagram-js/lib/core/Canvas";
 import ElementRegistry from "diagram-js/lib/core/ElementRegistry";
@@ -9,12 +5,12 @@ import BaseViewer, { ImportParseCompleteEvent, ImportParseStartEvent, ModdleElem
 import { getBusinessObject, is as isType, isAny as isAnyType } from "bpmn-js/lib/util/ModelUtil";
 import { getPlaneIdFromShape } from "bpmn-js/lib/util/DrilldownUtil";
 
+import type { CalledElementLoader, NavigateToCalledElementEvent, NavigateToSubprocessEvent, ProcessNavigationControlRenderer,  ProcessNavigationService } from "./ProcessNavigation.types";
+
 import { PathEntry } from "../../Components/Breadcrumbs";
 import { insertAt } from "../../util/html";
-import {
-    NAVIGATE_CALL_ACTIVITY_EVENT,
-    NAVIGATE_SUBPROCESS_EVENT
-} from "./events";
+import { ElementLike } from 'diagram-js/lib/model/Types';
+import { NAVIGATE_CALL_ACTIVITY_EVENT, NAVIGATE_SUBPROCESS_EVENT } from "./events";
 
 export default class ProcessNavigation implements ProcessNavigationService {
 
@@ -57,30 +53,38 @@ export default class ProcessNavigation implements ProcessNavigationService {
 
         eventBus.on("element.changed", this._handleElementChanged);
 
-        eventBus.on(NAVIGATE_CALL_ACTIVITY_EVENT, this._navigateToCallActivity);
-        eventBus.on(NAVIGATE_SUBPROCESS_EVENT, this._navigateToSubprocess);
+        eventBus.on(NAVIGATE_CALL_ACTIVITY_EVENT, this._handleNavigateToCallActivityEvent);
+        eventBus.on(NAVIGATE_SUBPROCESS_EVENT, this._handleNavigateToSubprocessEvent);
     }
 
-    _navigateToCallActivity = (event: any): void => {
-        if (!isType(event.element, "bpmn:CallActivity")) {
+    navigateToCalledElement = (element: ElementLike): void => {
+        if (!isType(element, "bpmn:CallActivity")) {
             return;
         }
 
-        const businessElement = getBusinessObject(event.element);
+        const businessElement = getBusinessObject(element);
         this._calledElementLoader.load(businessElement).then(({ xml }) => {
             this.currentlyLoadingXml = xml;
             this._viewer.importXML(xml);
         });
     }
 
-    _navigateToSubprocess = (event: any): void => {
-        if (!isType(event.element, "bpmn:SubProcess")) {
+    navigateToSubprocess = (element: ElementLike): void => {
+        if (!isType(element, "bpmn:SubProcess")) {
             return;
         }
-        const nextRoot = this._canvas.findRoot(getPlaneIdFromShape(event.element));
+        const nextRoot = this._canvas.findRoot(getPlaneIdFromShape(element));
         if (nextRoot) {
             this._canvas.setRootElement(nextRoot);
         }
+    }
+
+    _handleNavigateToCallActivityEvent = ({ element }: NavigateToCalledElementEvent): void => {
+        this.navigateToCalledElement(element)
+    }
+
+    _handleNavigateToSubprocessEvent = ({ element }: NavigateToSubprocessEvent): void => {
+        this.navigateToSubprocess(element)
     }
 
     _handleParseStart = (event: ImportParseStartEvent) => {
@@ -91,15 +95,15 @@ export default class ProcessNavigation implements ProcessNavigationService {
     }
 
     _handleParseComplete = (event: ImportParseCompleteEvent) => {
-        let processElement = event.definitions?.rootElements?.filter((element: ModdleElement) => isType(element, "bpmn:Process"))?.[0];
+        const processElement = event.definitions?.rootElements?.filter((element: ModdleElement) => isType(element, "bpmn:Process"))?.[0];
         if (processElement) {
             this.processHistory.push(processElement);
             this._updateProcessPath();
         }
     }
 
-    _handleRootSet = (event: any): void => {
-        const businessObject = getBusinessObject(event.element);
+    _handleRootSet = ({ element }: { element: ElementLike}): void => {
+        const businessObject = getBusinessObject(element);
 
         const reverseParents = [];
 
@@ -116,7 +120,7 @@ export default class ProcessNavigation implements ProcessNavigationService {
         this._updatePath();
     }
 
-    _handleElementChanged = (event: any) => {
+    _handleElementChanged = () => {
         // TODO check and update navigation if ids or names changed
     }
 

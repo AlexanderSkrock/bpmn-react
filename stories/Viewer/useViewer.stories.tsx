@@ -4,7 +4,7 @@ import type { StoryObj, Meta } from "@storybook/react";
 
 import { useViewer } from "../../lib/Viewer";
 
-const BpmnJsViewer = ({ xml }) => {
+const BpmnJsViewer = ({ xml }: { xml: string }) => {
     const [handleViewerRef, viewer] = useViewer({ height: "50vh" });
 
     useEffect(() => {
@@ -13,7 +13,6 @@ const BpmnJsViewer = ({ xml }) => {
         }
     }, [viewer, xml])
 
-    // @ts-ignore
     return <div ref={ handleViewerRef } />
 }
 
