@@ -7,6 +7,7 @@ export { default as Rectangle } from "./Rectangle";
 export { default as GeometryMap } from "./GeometryMap";
 
 export * from "./lines";
+export * from "./areas";
 export * from "./distance";
 export * from "./contains";
 export * from "./intersections";
