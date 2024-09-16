@@ -32,8 +32,6 @@ export default class ProcessNavigationOverlayBehaviour {
                 return isType(element, "bpmn:SubProcess") && !!canvas.findRoot(getPlaneIdFromShape(element));
             },
             buildDefinition(element: ElementLike): OverlayDefinition {
-                const overlayElement = document.createElement("button");
-                overlayElement.innerHTML = "SUB PROCESS";
                 return {
                     element: element.id,
                     interactive: true,
@@ -48,8 +46,6 @@ export default class ProcessNavigationOverlayBehaviour {
                 return isType(element, "bpmn:CallActivity") && !!getBusinessObject(element).calledElement;
             },
             buildDefinition(element: ElementLike): OverlayDefinition {
-                const overlayElement = document.createElement("button");
-                overlayElement.innerHTML = "CALL ACTIVITY PROCESS";
                 return {
                     element: element.id,
                     interactive: true,
@@ -60,7 +56,7 @@ export default class ProcessNavigationOverlayBehaviour {
         }
 
         eventBus.on("import.render.start", this._handleImportRenderStart);
-        eventBus.on("import.render.complete", this._handleImportRenderComplete);
+        eventBus.on("import.done", this._handleImportRenderComplete);
     }
 
     _handleImportRenderStart = () => {

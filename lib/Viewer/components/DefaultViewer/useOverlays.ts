@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import Diagram from "diagram-js";
 
@@ -7,6 +7,8 @@ import { getDynamicOverlays } from "../../../util/services";
 import useEventHandler from "../../hooks/useEventHandler";
 
 const useOverlays = (diagram: Diagram | null, overlays: (OverlayDefinition | OverlayDefinitionBuilder | OverlayDefinitionsBuilder)[]): void => {
+    const [overlayIds, setOverlayIds] = useState<string[]>([]);
+
     const initializeOverlays = useCallback(() => {
         if (!diagram) {
             return [];
@@ -14,10 +16,11 @@ const useOverlays = (diagram: Diagram | null, overlays: (OverlayDefinition | Ove
 
         const overlayService = getDynamicOverlays(diagram);
 
-        overlayService.clear();
+        overlayIds.forEach(id => overlayService.remove({ id }));
         console.log("Removed all active overlays.");
 
         const ids = overlays.flatMap(overlayService.add);
+        setOverlayIds(ids);
         console.log(`Registered ${ids.length} overlays.`);
 
         return ids;
