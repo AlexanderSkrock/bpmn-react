@@ -19,9 +19,9 @@ const NavigateToSubprocessSvg = `
 
 export default class DefaultOverlayRenderer implements ProcessNavigationOverlayRenderer {
 
-    renderCallActivityOverlay(element: ElementLike, navigateToCallActivity: () => void): OverlayAttrs {
+    renderCallActivityOverlay(element: ElementLike, navigateToCalledElement: () => void): OverlayAttrs {
         const overlayElement = document.createElement("div");
-        overlayElement.onclick = navigateToCallActivity;
+        overlayElement.onclick = navigateToCalledElement;
         overlayElement.style.width = "24px";
         overlayElement.style.height = "24px";
         overlayElement.style.padding = "2px";

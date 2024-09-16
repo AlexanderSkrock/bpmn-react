@@ -52,7 +52,7 @@ const DefaultViewerContainer = styled.div`
     gap: 8px;
 `;
 
-export default ({ xml, overlays = [], loadCalledElement, additionalModules, moddleExtensions, onViewerInitialized, onLoadingSuccess, onLoadingError, className }: DefaultViewerProps) => {
+const DefaultViewer = ({ xml, overlays = [], loadCalledElement, additionalModules, moddleExtensions, onViewerInitialized, onLoadingSuccess, onLoadingError, className }: DefaultViewerProps) => {
     const [currentOverlays, setCurrentOverlays] = useState<Overlays>(overlays);
     
     const handleLoadCalledElement = useCallback((calledElement: ModdleElement) => {
@@ -93,10 +93,11 @@ export default ({ xml, overlays = [], loadCalledElement, additionalModules, modd
         }
     }, [viewer, xml])
 
-    // @ts-ignore
     return (
         <DefaultViewerContainer>
             <div data-testid="bpmnViewer" ref={ handleViewerRef } className={ className } />
         </DefaultViewerContainer>
     );
 }
+
+export default DefaultViewer;

@@ -1,8 +1,9 @@
-import useAttachedZoom from "./useAttachedZoom";
-
-import { ZoomOutButton } from "../../Components/Zoom";
+import React from "react";
 
 import type { ZoomControlProps } from "./Zoom.types";
+import useAttachedZoom from "./useAttachedZoom";
+import { ZoomOutButton } from "../../Components/Zoom";
+
 
 const ZoomOutControl = ({ diagram, options, title }: ZoomControlProps) => {
     const [,, decreaseZoom] = useAttachedZoom(diagram, options);

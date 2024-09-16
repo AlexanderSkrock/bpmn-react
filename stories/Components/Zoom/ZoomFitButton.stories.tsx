@@ -1,5 +1,3 @@
-import React from "react";
-
 import type { StoryObj, Meta } from "@storybook/react";
 
 import { ZoomFitButton } from "../../../lib/Components/Zoom";

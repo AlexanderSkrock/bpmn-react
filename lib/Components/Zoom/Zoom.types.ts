@@ -1,5 +1,3 @@
-import type Diagram from "diagram-js/lib/Diagram";
-
 export interface ZoomOptions {
     initialZoom?: number;
     step?: number;

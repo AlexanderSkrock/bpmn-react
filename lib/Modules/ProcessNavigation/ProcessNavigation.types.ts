@@ -3,14 +3,6 @@ import {PathEntry} from "../../Components/Breadcrumbs";
 import {OverlayAttrs} from "diagram-js/lib/features/overlays/Overlays";
 import {ElementLike} from "diagram-js/lib/model/Types";
 
-export interface NavigateCalledElementEvent {
-    calledElement: ModdleElement;
-}
-
-export interface NavigateSubprocessEvent {
-    subprocess: ModdleElement;
-}
-
 export interface CalledElementLoadResult {
     xml: string,
 }
@@ -21,7 +13,7 @@ export interface CalledElementLoader {
 
 export interface ProcessNavigationOverlayRenderer {
     renderSubprocessOverlay: (element: ElementLike, navigateToSubprocess: () => void) => OverlayAttrs;
-    renderCallActivityOverlay: (element: ElementLike, navigateToCallActivity: () => void) => OverlayAttrs;
+    renderCallActivityOverlay: (element: ElementLike, navigateToCalledElement: () => void) => OverlayAttrs;
 }
 
 export interface ProcessNavigationControlRenderer {
@@ -30,7 +22,16 @@ export interface ProcessNavigationControlRenderer {
 }
 
 export interface ProcessNavigationService {
+    navigateToCalledElement: (element: ElementLike) => void;
+    navigateToSubprocess: (element: ElementLike) => void;
+}
 
+export interface NavigateToCalledElementEvent {
+    element: ElementLike;
+}
+
+export interface NavigateToSubprocessEvent {
+    element: ElementLike;
 }
 
 export interface ProcessNavigationControlProps {

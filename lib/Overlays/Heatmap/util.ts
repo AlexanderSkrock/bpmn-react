@@ -85,7 +85,7 @@ export function calculateInfluenceMaxRange(element: ElementLike, point: Point, b
     }
 
     // Check intersection with rectangle edges
-    let intersections = [];
+    const intersections = [];
 
     // Left edge
     let y = m * x1 + b;

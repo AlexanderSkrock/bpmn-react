@@ -1,8 +1,9 @@
-import useAttachedZoom from "./useAttachedZoom";
+import React from "react";
 
-import { ZoomFitButton } from "../../Components/Zoom";
 
 import type { ZoomControlProps } from "./Zoom.types";
+import useAttachedZoom from "./useAttachedZoom";
+import { ZoomFitButton } from "../../Components/Zoom";
 
 const ZoomFitControl = ({ diagram, options, title }: ZoomControlProps) => {
     const [,,, fitZoom] = useAttachedZoom(diagram, options);
