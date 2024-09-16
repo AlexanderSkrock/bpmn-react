@@ -1,3 +1,4 @@
+import { ContourMultiPolygon } from "d3";
 import { ElementLike } from "diagram-js/lib/model/Types";
 
 export interface HeatDataPoint {
@@ -24,11 +25,27 @@ export interface HeatmatrixJobRequestData {
     xOffset: number;
     yOffset: number;
     width: number;
-    height: number; 
+    height: number;
     chunk: HeatmatrixChunk;
 }
 
 export interface HeatmatrixJobResultData {
     chunk: HeatmatrixChunk;
     result: number[];
+}
+
+export interface Renderer {
+    init: (options: RendererInitOptions) => void;
+    render: (contour: ContourMultiPolygon, options: RendererRenderOptions) => void;
+    element: () => HTMLElement;
+}
+
+export interface RendererInitOptions {
+    width: number;
+    height: number;
+}
+
+export interface RendererRenderOptions {
+    color: string;
+    opacity: number;
 }

@@ -1,15 +1,15 @@
-import { difference, feature, featureCollection } from "@turf/turf";
-import { contours, create, geoPath, geoIdentity, scaleSequential, interpolateRgbBasis } from "d3";
-import { ContourMultiPolygon } from "d3-contour";
+import { scaleSequential, interpolateRgbBasis } from "d3";
 
 import { ElementLike } from "diagram-js/lib/model/Types";
 import { isConnection } from "diagram-js/lib/util/ModelUtil";
+import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 
-import type { OverlayBuilderEnvironment, OverlayDefinitionsBuilder } from "../../Modules/DynamicOverlays"
-import type { HeatDataPoint, HeatmapOptions, HeatmatrixJobResultData } from "./Heatmap.types";
-
-import { getBusinessObject, isAny as isAnyType } from "bpmn-js/lib/util/ModelUtil";
-import asyncHtmlElement from "../asyncHtmlElement";
+import type { OverlayBuilderEnvironment, OverlayDefinition, OverlayDefinitionsBuilder } from "../../Modules/DynamicOverlays"
+import type { HeatDataPoint, HeatmapOptions, HeatmatrixJobResultData, Renderer } from "./Heatmap.types";
+import { chunks2D, clamp } from "../../util/math";
+import CanvasRenderer from "./CanvasRenderer";
+import SvgRenderer from "./SvgRenderer";
+import { nonOverlappingContours } from "../../util/geometry";
 
 class Heatmap implements OverlayDefinitionsBuilder {
 
@@ -39,8 +39,6 @@ class Heatmap implements OverlayDefinitionsBuilder {
         });
         this.values = cleanedValues;
 
-
-
         const minValue = Math.min(...Object.values(this.values).map(dataPoint => dataPoint.value));
         const maxValue = Math.max(...Object.values(this.values).map(dataPoint => dataPoint.value));
         this.color = scaleSequential(interpolateRgbBasis(["green", "yellow", "red"])).domain([minValue, maxValue]);
@@ -58,7 +56,7 @@ class Heatmap implements OverlayDefinitionsBuilder {
         ];
     }
 
-    createHeatmapOverlayDefinition = (elements: ElementLike[], env: OverlayBuilderEnvironment) => {
+    createHeatmapOverlayDefinition = (elements: ElementLike[], env: OverlayBuilderEnvironment): OverlayDefinition => {
         const overlayOverflow = 30;
 
         const overlayWidth = env.canvas().viewbox().inner.width + overlayOverflow;
@@ -67,12 +65,9 @@ class Heatmap implements OverlayDefinitionsBuilder {
         const overlayOffsetX = env.canvas().viewbox().inner.x - overlayOverflow / 2;
         const overlayOffsetY = env.canvas().viewbox().inner.y - overlayOverflow / 2;
 
-        const futureHtmlElement = this.calculateHeatMatrix(elements, overlayOffsetX, overlayOffsetY, overlayWidth, overlayHeight)
-            .then(heatMatrix => this.calculateContours(heatMatrix, overlayWidth, overlayHeight))
-            .then(contours => {
-                const renderFunction = this.renderMode === "canvas" ? this.renderContoursToCanvas : this.renderContoursToSvg;
-                return renderFunction(overlayWidth, overlayHeight, contours, this.color);
-            });
+        const renderer = this.renderMode === "canvas" ? new CanvasRenderer() : new SvgRenderer();
+        renderer.init({ width: overlayWidth, height: overlayHeight });
+        this.renderHeatMatrix(renderer, elements, overlayOffsetX, overlayOffsetY, overlayWidth, overlayHeight);
 
         return {
             type: "Overlay_Heatmap",
@@ -83,12 +78,12 @@ class Heatmap implements OverlayDefinitionsBuilder {
                     top: overlayOffsetY,
                     left: overlayOffsetX,
                 },
-                html: asyncHtmlElement(futureHtmlElement),
+                html: renderer.element(),
             },
         };
     }
 
-    createTooltipOverlayDefinitions = (elements: ElementLike[], env: OverlayBuilderEnvironment) => {
+    createTooltipOverlayDefinitions = (elements: ElementLike[], env: OverlayBuilderEnvironment): OverlayDefinition[] => {
         return elements
             .filter(element => this.values[element.id])
             .map(element => {
@@ -116,134 +111,44 @@ class Heatmap implements OverlayDefinitionsBuilder {
             });
     }
 
-    calculateHeatMatrix = (elements: ElementLike[], xOffset: number, yOffset: number, width: number, height: number): Promise<number[]> => {
+    renderHeatMatrix = (renderer: Renderer, elements: ElementLike[], xOffset: number, yOffset: number, width: number, height: number): void => {
         const heatValues: { [key: string]: number} = {};
 
         elements.forEach(element => {
-            let value = this.values[element.id]?.value;
+            let value = this.values[element.id]?.value || 0;
             if (isConnection(element)) {
                 const businessObject = getBusinessObject(element);
-                const inHeatValue = this.values[businessObject.sourceRef.id]?.value;
-                const outHeatValue =  this.values[businessObject.targetRef.id]?.value;
+                const inHeatValue = this.values[businessObject.sourceRef.id]?.value || 0;
+                const outHeatValue =  this.values[businessObject.targetRef.id]?.value || 0;
                 value = Math.min(inHeatValue, outHeatValue);
             }
             heatValues[element.id] = value;
         });
 
-        return new Promise((resolve) => {
-            // TODO dynamic worker count
-            const workerCount = 2;
-            const workers: Worker[] = [];
+        const chunks = chunks2D({ width, height, chunkWidth: 1000, chunkHeight: 1000 });
 
-            const chunks: { startX: number, endX: number, startY: number, endY: number, done?: boolean }[] = [];
-            const heatMatrix = new Array(width * height).fill(Number.NaN);
+        const workerCount =  clamp(chunks.length, 1, 4);
+        const workers: Worker[] = [];
+        for (let i = 0; i < workerCount; i++) {
+            const opacity = this.opacity;
+            const colorFunc = this.color;
 
-            for (let i = 0; i < workerCount; i++) {
-                workers[i] = new Worker(new URL("./heatmap.worker", import.meta.url), {
-                    type: "module",
-                });
-                workers[i].onmessage = function(message: MessageEvent<HeatmatrixJobResultData>) {
-                    const { chunk: finishedChunk, result } = message.data;
-                    const { startX, endX, startY, endY } = finishedChunk;
-
-                    // TODO Consider more performant replacement
-                    for (let rowIndex = startY; rowIndex < endY; rowIndex++) {
-                        for (let columnIndex = startX; columnIndex < endX; columnIndex++) {
-                            heatMatrix[rowIndex * width + columnIndex] = result[rowIndex * width + columnIndex];
-                        }
-                    }
-
-                    const chunkReference = chunks.find(chunk => chunk.startX === finishedChunk.startX
-                        && chunk.endX === finishedChunk.endX
-                        && chunk.startY === finishedChunk.startY
-                        && chunk.endY === finishedChunk.endY);
-
-                    // TODO terminate worker
-                    if (chunkReference) {
-                        chunkReference.done = true;
-                    }
-
-                    if (chunks.every(chunk => chunk.done)) {
-                        resolve(heatMatrix);
-                    }
-                };
-            }
-
-            const chunkHeight = Math.ceil(height / workerCount);
-            for (let i = 0; i < workerCount; i++) {
-                const startRow = i * chunkHeight;
-                const endRow = Math.min(startRow + chunkHeight, height);
-                chunks.push({ startX: 0, endX: width, startY: startRow, endY: endRow, done: false });
-            }
-
-            chunks.forEach((chunk, index) => {
-                workers[index].postMessage({ values: heatValues, elements, xOffset, yOffset, width, height, chunk });
+            const worker = new Worker(new URL("./heatmap.worker", import.meta.url), {
+                type: "module",
             });
-        });
-    }
-
-    calculateContours = (heatMatrix: number[], width: number, height: number): ContourMultiPolygon[] => {
-        const contoursGenerator = contours().size([width, height]).thresholds(10);
-        const heatContours = contoursGenerator(heatMatrix);
-
-        const nonOverlappingHeatContours = [];
-        for (let i = 0; i < heatContours.length; i++) {
-            const c = heatContours[i];
-            const nextC = heatContours[i + 1];
-            if (nextC) {
-                const cleanedContur = difference(featureCollection([
-                    feature(c),
-                    feature(nextC),
-                ]));
-                if (cleanedContur) {
-                    const cleanedGeometry = { ...c, ...cleanedContur.geometry } as ContourMultiPolygon
-                    nonOverlappingHeatContours.push(cleanedGeometry);
-                }
-            } else {
-                nonOverlappingHeatContours.push(c);
+            worker.onmessage = function(message: MessageEvent<HeatmatrixJobResultData>) {
+                const { result } = message.data;
+                const contours = nonOverlappingContours(result, width, height, 10);
+                contours.forEach(c => {
+                    renderer.render(c, { color: colorFunc(c.value), opacity: opacity });
+                });
             }
+            workers.push(worker);
         }
-        return nonOverlappingHeatContours;
-    }
 
-    renderContoursToCanvas = (width: number, height: number, heatmapContours: ContourMultiPolygon[], color: (value: number) => string): HTMLElement => {
-        const canvas = create("canvas")
-            .attr("width", `${width}px`)
-            .attr("height", `${height}px`)
-            .node() as HTMLCanvasElement;
-        const renderContext = canvas.getContext("2d") as CanvasRenderingContext2D;
-        renderContext.globalAlpha = this.opacity;
-
-        const path = geoPath().projection(geoIdentity().scale(1)).context(renderContext);
-
-        heatmapContours.forEach(c => {
-            renderContext.fillStyle = color(c.value);
-
-            renderContext.beginPath();
-            path(c);
-            renderContext.fill();
-            renderContext.closePath();
+        chunks.forEach((chunk, index) => {
+            workers[index % workerCount].postMessage({ values: heatValues, elements, xOffset, yOffset, width, height, chunk });
         });
-
-        return canvas;
-    }
-
-    renderContoursToSvg = (width: number, height: number, heatmapContours: ContourMultiPolygon[], color: (value: number) => string): HTMLElement => {
-        const svg = create("svg")
-            .attr("width", `${width}px`)
-            .attr("height", `${height}px`);
-
-        const path = geoPath().projection(geoIdentity().scale(1));
-
-        svg.append("g")
-            .selectAll()
-            .data(heatmapContours)
-            .join("path")
-            .attr("d", c => path(c))
-            .attr("fill", c => color(c.value))
-            .attr("fill-opacity", this.opacity);
-
-        return svg.node() as unknown as HTMLElement;
     }
 }
 

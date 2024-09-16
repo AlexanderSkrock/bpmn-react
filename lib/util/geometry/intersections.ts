@@ -1,7 +1,8 @@
 import Rectangle from "./Rectangle";
 import Line from "./Line";
 
-import { slope } from "./lines";
+import {areCollinear, isVertical, overlap, slope} from "./lines";
+import Point from "./Point";
 
 export const intersectsRectangleRectangle = (rectangle1: Rectangle, rectangle2: Rectangle): boolean => {
     return !(
@@ -14,21 +15,42 @@ export const intersectsRectangleRectangle = (rectangle1: Rectangle, rectangle2: 
 
 export const intersectsRectangleLine = (rectangle: Rectangle, line: Line): boolean => {
     return intersectsLineLine(line, new Line(rectangle.upperLeft(), rectangle.upperRight()))
-        || intersectsLineLine(line, new Line(rectangle.upperRight(), rectangle.bottomLeft()))
-        || intersectsLineLine(line, new Line(rectangle.bottomLeft(), rectangle.bottomRight()))
-        || intersectsLineLine(line, new Line(rectangle.bottomRight(), rectangle.upperLeft()));
+        || intersectsLineLine(line, new Line(rectangle.upperRight(), rectangle.bottomRight()))
+        || intersectsLineLine(line, new Line(rectangle.bottomRight(), rectangle.bottomLeft()))
+        || intersectsLineLine(line, new Line(rectangle.bottomLeft(), rectangle.upperLeft()));
 }
 
 export const intersectsLineLine = (line1: Line, line2: Line): boolean => {
-    const slope1 = slope(line1);
-    const slope2 = slope(line2);
+    if (areCollinear(line1, line2)) {
+        return overlap(line1, line2);
+    }
 
-    const off1 = line1.point1.y - (slope1 * line1.point1.x);
-    const off2 = line2.point1.y - (slope2 * line2.point1.x);
+    let intersection;
+    if (isVertical(line1)) {
+        const slope2 = slope(line2);
+        const intersectionX = line1.point1.x;
+        intersection = new Point(intersectionX, slope2 * intersectionX + (line2.point1.y - slope2 * line2.point1.x));
+    } else if(isVertical(line2)) {
+        const slope1 = slope(line1);
+        const intersectionX = line2.point1.x;
+        intersection = new Point(intersectionX, slope1 * intersectionX + (line1.point1.y - slope1 * line1.point1.x));
+    } else {
+        const slope1 = slope(line1);
+        const slope2 = slope(line2);
+        const off1 = line1.point1.y - (slope1 * line1.point1.x);
+        const off2 = line2.point1.y - (slope2 * line2.point1.x);
 
-    const intersectionX = (off1 - off2) / (slope2 - slope1)
-    const intersectionY = slope1 * intersectionX + off1;
+        const intersectionX = (off1 - off2) / (slope2 - slope1)
+        const intersectionY = slope1 * intersectionX + off1;
+        intersection = new Point(intersectionX, intersectionY);
+    }
 
-    return intersectionX >= Math.min(line1.point1.x, line1.point2.x) && intersectionX <= Math.max(line1.point1.x, line1.point2.x)
-        && intersectionY >= Math.min(line1.point1.y, line1.point2.y) && intersectionX <= Math.max(line1.point1.y, line1.point2.y)
+    return intersectsPointLine(intersection, line1) && intersectsPointLine(intersection, line2)
+}
+
+export const intersectsPointLine = (point: Point, line: Line) => {
+    return point.x >= Math.min(line.point1.x, line.point2.x)
+        && point.x <= Math.max(line.point1.x, line.point2.x)
+        && point.y >= Math.min(line.point1.y, line.point2.y)
+        && point.y <= Math.max(line.point1.y, line.point2.y);
 }
