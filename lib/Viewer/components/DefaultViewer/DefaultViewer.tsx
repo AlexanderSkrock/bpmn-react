@@ -9,12 +9,13 @@ import MoveCanvasModule from 'diagram-js/lib/navigation/movecanvas';
 import CoreModule from "bpmn-js/lib/core";
 import type { ModdleElement, EventBusEventCallback, ImportDoneEvent } from "bpmn-js/lib/BaseViewer";
 
-import type { DefaultViewerProps, ModuleDeclaration, Overlays } from "./DefaultViewer.types";
+import type { BaseViewer, DefaultViewerProps, ModuleDeclaration, Overlays } from "./DefaultViewer.types";
 import { useBaseViewer, useEventHandler } from "../../hooks";
 import useOverlays from "./useOverlays";
 import { DynamicOverlaysModule } from "../../../Modules/DynamicOverlays";
 import { ZoomModule } from "../../../Modules/Zoom";
 import { CalledElementLoader, CalledElementLoadResult, ProcessNavigationModule} from "../../../Modules/ProcessNavigation";
+import { UseBpmnJsViewerResult } from '../../hooks/hooks.types';
 
 const DEFAULT_MODULES = [
     CoreModule,
@@ -62,7 +63,7 @@ const DefaultViewer = ({ xml, overlays = [], loadCalledElement, additionalModule
         })
     }, [loadCalledElement, setCurrentOverlays]);
 
-    const [handleViewerRef, viewer] = useBaseViewer({
+    const [handleViewerRef, viewer]: UseBpmnJsViewerResult<BaseViewer> = useBaseViewer({
         additionalModules: withLoaderModule(handleLoadCalledElement, withDefaultModules(additionalModules)),
         moddleExtensions,
     });

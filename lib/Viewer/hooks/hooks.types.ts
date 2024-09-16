@@ -14,6 +14,6 @@ export interface UseBpmnJsViewerOptions<V extends BaseViewer, O extends BaseView
 }
 
 export type UseBpmnJsViewerResult<V extends BaseViewer> = [
-    (viewerRef: HTMLElement) => void,
+    (viewerRef: HTMLElement | null) => void,
     V | null,
 ];

@@ -7,7 +7,7 @@ import { UseBpmnJsViewerOptions, UseBpmnJsViewerResult } from './hooks.types';
 export default <V extends BaseViewer, O extends BaseViewerOptions>({ factory, options }: UseBpmnJsViewerOptions<V, O>): UseBpmnJsViewerResult<V> => {
     const [viewer, setViewer] = useState<V | null>(null);
 
-    const handleRef = useCallback((ref: HTMLElement) => {
+    const handleRef = useCallback((ref: HTMLElement | null) => {
         if (viewer) {
             if (ref) {
                 viewer.attachTo(ref)
