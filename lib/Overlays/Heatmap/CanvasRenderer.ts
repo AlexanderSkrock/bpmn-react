@@ -1,4 +1,4 @@
-import { ContourMultiPolygon, create, geoIdentity, geoPath, Selection, svg } from "d3";
+import { ContourMultiPolygon, create, geoIdentity, geoPath } from "d3";
 import { Renderer, RendererInitOptions, RendererRenderOptions } from "./Heatmap.types";
 
 export default class CanvasRenderer implements Renderer {
@@ -15,7 +15,7 @@ export default class CanvasRenderer implements Renderer {
         if (!this.renderContext) {
             throw new Error("unable to render before calling init");
         }
-        
+
         this.renderContext.globalAlpha = opacity;
         this.renderContext.fillStyle = color;
 
@@ -28,7 +28,7 @@ export default class CanvasRenderer implements Renderer {
         this.renderContext.closePath();
     };
 
-    element = (): Element => {
+    element = (): HTMLElement => {
         if (!this.canvas) {
             throw new Error("unable to retrieve the element before calling init");
         }

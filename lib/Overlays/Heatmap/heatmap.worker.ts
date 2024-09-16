@@ -20,9 +20,9 @@ self.onmessage = function(message: MessageEvent<HeatmatrixJobRequestData>) {
     self.postMessage({ chunk, result });
 };
 
-function calculateHeatMatrixChunk(values: { [key: string]: number }, elements: ElementLike[], xOffset: number, yOffset: number, width: number, height: number, startX: number, endX: number, startY: number, endY: number): number[] {
+function calculateHeatMatrixChunk(values: { [key: string]: number }, elements: ElementLike[], xOffset: number, yOffset: number, width: number, height: number, startX: number, endX: number, startY: number, endY: number): Float32Array {
     const preGeometryMap = performance.now();
-    
+
     const geometryMap = new GeometryMap<ElementLike>(new Rectangle(xOffset, yOffset, width + xOffset, height + yOffset), 4);
     elements.forEach(element => {
         if (isConnection(element)) {
@@ -44,16 +44,28 @@ function calculateHeatMatrixChunk(values: { [key: string]: number }, elements: E
     });
 
     const postGeometryMap = performance.now();
-    console.debug(`Geometry map calculation duration: ${postGeometryMap - preGeometryMap}`)
+    console.debug(`Geometry map calculation duration: ${postGeometryMap - preGeometryMap}`);
+
+    let searchXRange = 6;
+    let searchYRange = 6;
+    elements.forEach(element => {
+        if (isConnection(element)) {
+            return;
+        }
+        // We need to add additional search range, because it seems we have an issue
+        // around the connection points between activities and sequence flows.
+        searchXRange = Math.max(searchXRange, (element.width / 2) + 25);
+        searchYRange = Math.max(searchYRange, (element.height / 2) + 25);
+    })
 
     const heatMatrix = new Float32Array(width * height).fill(Number.NaN);
     for (let rowIndex = startY; rowIndex < endY; rowIndex++) {
+        const coordinateY = rowIndex + yOffset;
         for (let columnIndex = startX; columnIndex < endX; columnIndex++) {
             const coordinateX = columnIndex + xOffset;
-            const coordinateY = rowIndex + yOffset;
 
-            // TODO Use dynamic value for rectangle to search in
-            const nearbyElements = geometryMap.query(new Rectangle(coordinateX - 200, coordinateY - 200, 400, 400))
+            const nearbyElements = geometryMap.query(new Rectangle(coordinateX - searchXRange, coordinateY - searchYRange, searchXRange * 2, searchYRange * 2));
+
             const weigths = nearbyElements.reduce((result, { value: element }) => {
                 const distance = getDistance({ x: coordinateX, y: coordinateY }, element);
 
@@ -62,7 +74,7 @@ function calculateHeatMatrixChunk(values: { [key: string]: number }, elements: E
                     : 1.8;
                 const maxRange = isConnection(element)
                     ? 12
-                    : calculateInfluenceMaxRange(element, { x: coordinateX, y: coordinateY }, 5);
+                    : calculateInfluenceMaxRange(element, { x: coordinateX, y: coordinateY }, 10);
 
                 const distanceFactor = -(1 / Math.pow(maxRange, 2)) * Math.pow(distance, 2) + maxInfluence;
                 const weight = Math.max(distanceFactor, 0);

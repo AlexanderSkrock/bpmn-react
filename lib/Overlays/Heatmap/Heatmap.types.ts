@@ -25,7 +25,7 @@ export interface HeatmatrixJobRequestData {
     xOffset: number;
     yOffset: number;
     width: number;
-    height: number; 
+    height: number;
     chunk: HeatmatrixChunk;
 }
 
@@ -37,7 +37,7 @@ export interface HeatmatrixJobResultData {
 export interface Renderer {
     init: (options: RendererInitOptions) => void;
     render: (contour: ContourMultiPolygon, options: RendererRenderOptions) => void;
-    element: () => Element;
+    element: () => HTMLElement;
 }
 
 export interface RendererInitOptions {

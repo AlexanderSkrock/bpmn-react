@@ -1,19 +1,15 @@
-import { difference, feature, featureCollection } from "@turf/turf";
-import { contours, create, geoPath, geoIdentity, scaleSequential, interpolateRgbBasis } from "d3";
-import { ContourMultiPolygon } from "d3-contour";
+import { scaleSequential, interpolateRgbBasis } from "d3";
 
 import { ElementLike } from "diagram-js/lib/model/Types";
 import { isConnection } from "diagram-js/lib/util/ModelUtil";
+import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 
-import type { OverlayBuilderEnvironment, OverlayDefinitionsBuilder } from "../../Modules/DynamicOverlays"
+import type { OverlayBuilderEnvironment, OverlayDefinition, OverlayDefinitionsBuilder } from "../../Modules/DynamicOverlays"
 import type { HeatDataPoint, HeatmapOptions, HeatmatrixJobResultData, Renderer } from "./Heatmap.types";
-
-import { getBusinessObject, isAny as isAnyType } from "bpmn-js/lib/util/ModelUtil";
-import asyncHtmlElement from "../asyncHtmlElement";
 import { chunks2D, clamp } from "../../util/math";
 import CanvasRenderer from "./CanvasRenderer";
 import SvgRenderer from "./SvgRenderer";
-import { contours, nonOverlappingContours } from "../../util/geometry";
+import { nonOverlappingContours } from "../../util/geometry";
 
 class Heatmap implements OverlayDefinitionsBuilder {
 
@@ -43,8 +39,6 @@ class Heatmap implements OverlayDefinitionsBuilder {
         });
         this.values = cleanedValues;
 
-
-
         const minValue = Math.min(...Object.values(this.values).map(dataPoint => dataPoint.value));
         const maxValue = Math.max(...Object.values(this.values).map(dataPoint => dataPoint.value));
         this.color = scaleSequential(interpolateRgbBasis(["green", "yellow", "red"])).domain([minValue, maxValue]);
@@ -62,7 +56,7 @@ class Heatmap implements OverlayDefinitionsBuilder {
         ];
     }
 
-    createHeatmapOverlayDefinition = (elements: ElementLike[], env: OverlayBuilderEnvironment) => {
+    createHeatmapOverlayDefinition = (elements: ElementLike[], env: OverlayBuilderEnvironment): OverlayDefinition => {
         const overlayOverflow = 30;
 
         const overlayWidth = env.canvas().viewbox().inner.width + overlayOverflow;
@@ -89,7 +83,7 @@ class Heatmap implements OverlayDefinitionsBuilder {
         };
     }
 
-    createTooltipOverlayDefinitions = (elements: ElementLike[], env: OverlayBuilderEnvironment) => {
+    createTooltipOverlayDefinitions = (elements: ElementLike[], env: OverlayBuilderEnvironment): OverlayDefinition[] => {
         return elements
             .filter(element => this.values[element.id])
             .map(element => {
@@ -121,11 +115,11 @@ class Heatmap implements OverlayDefinitionsBuilder {
         const heatValues: { [key: string]: number} = {};
 
         elements.forEach(element => {
-            let value = this.values[element.id]?.value;
+            let value = this.values[element.id]?.value || 0;
             if (isConnection(element)) {
                 const businessObject = getBusinessObject(element);
-                const inHeatValue = this.values[businessObject.sourceRef.id]?.value;
-                const outHeatValue =  this.values[businessObject.targetRef.id]?.value;
+                const inHeatValue = this.values[businessObject.sourceRef.id]?.value || 0;
+                const outHeatValue =  this.values[businessObject.targetRef.id]?.value || 0;
                 value = Math.min(inHeatValue, outHeatValue);
             }
             heatValues[element.id] = value;
@@ -137,7 +131,7 @@ class Heatmap implements OverlayDefinitionsBuilder {
         for (let i = 0; i < workerCount; i++) {
             const opacity = this.opacity;
             const colorFunc = this.color;
-            
+
             const worker = new Worker(new URL("./heatmap.worker", import.meta.url), {
                 type: "module",
             });
@@ -147,7 +141,7 @@ class Heatmap implements OverlayDefinitionsBuilder {
                 const preContours = performance.now();
                 const contours = nonOverlappingContours(result, width, height, 10);
                 console.debug(`Contours calculation: ${performance.now() - preContours}`);
-              
+
                 const preRender = performance.now();
                 contours.forEach(c => {
                     renderer.render(c, { color: colorFunc(c.value), opacity: opacity });
@@ -157,7 +151,7 @@ class Heatmap implements OverlayDefinitionsBuilder {
             workers.push(worker);
         }
 
-        const chunks = chunks2D({ width, height, chunkWidth: 1000, chunkHeight: 1000 });
+        const chunks = chunks2D({ width, height, chunkWidth: 500, chunkHeight: 500 });
         chunks.forEach((chunk, index) => {
             workers[index % workerCount].postMessage({ values: heatValues, elements, xOffset, yOffset, width, height, chunk });
         });

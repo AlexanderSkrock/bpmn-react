@@ -1,4 +1,4 @@
-import { ContourMultiPolygon, create, geoIdentity, geoPath, Selection, svg } from "d3";
+import { ContourMultiPolygon, create, geoIdentity, geoPath, Selection } from "d3";
 import { Renderer, RendererInitOptions, RendererRenderOptions } from "./Heatmap.types";
 
 export default class SvgRenderer implements Renderer {
@@ -23,11 +23,11 @@ export default class SvgRenderer implements Renderer {
             .attr("fill-opacity", opacity);
     };
 
-    element = (): Element => {
+    element = (): HTMLElement => {
         const node = this.svgSelection?.node();
         if (!node) {
             throw new Error("unable to retrieve the element before calling init");
         }
-        return node;
+        return node as unknown as HTMLElement;
     };
 }
