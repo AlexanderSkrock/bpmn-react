@@ -6,6 +6,9 @@ on:
       - main
 
 jobs:
+  verify-lint:
+    uses: ./.github/workflows/lint.yml
+
   verify-build:
     uses: ./.github/workflows/build-library.yml
 
