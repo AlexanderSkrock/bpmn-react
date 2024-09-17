@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 
-import { EventBusEventCallback } from "diagram-js/lib/core/EventBus";
-
-import {DiagramLike, getEventBus} from "../../util/services";
+import type { EventBusEventCallback } from "./hooks.types";
+import type { DiagramLike } from "../../util/services";
+import { getEventBus } from "../../util/services";
 
 const useEventHandler = <T> (diagramLike: DiagramLike | null, eventName: string, handler: EventBusEventCallback<T>): void => {
     useEffect(() => {
