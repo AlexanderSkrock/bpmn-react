@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1p1ag81" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.17.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.17.0">
+  <bpmn:process id="CustomViewerCalledProcess" isExecutable="true" camunda:historyTimeToLive="180">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_1l2m4s2</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_1l2m4s2" sourceRef="StartEvent_1" targetRef="Gateway_053q43x" />
+    <bpmn:endEvent id="Event_1j8rpgs">
+      <bpmn:incoming>Flow_0zwnibf</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0u9c8mz" sourceRef="Gateway_053q43x" targetRef="ParallelMail2Task" />
+    <bpmn:sendTask id="ParallelMail2Task" name="Parallel Mail 2" camunda:modelerTemplate="tobiMail" camunda:modelerTemplateVersion="2" camunda:class="de.data_experts.web.xout.tobi.workflows.event.SendMailEvent">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="displayName" value="" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0u9c8mz</bpmn:incoming>
+      <bpmn:outgoing>Flow_17s8yq8</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:sequenceFlow id="Flow_03grwg5" sourceRef="Gateway_053q43x" targetRef="ParallelMail1Task" />
+    <bpmn:sendTask id="ParallelMail1Task" name="Parallel Mail 1" camunda:modelerTemplate="tobiMail" camunda:modelerTemplateVersion="2" camunda:class="de.data_experts.web.xout.tobi.workflows.event.SendMailEvent">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="displayName" value="" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_03grwg5</bpmn:incoming>
+      <bpmn:outgoing>Flow_1umu3q2</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:sequenceFlow id="Flow_0zwnibf" sourceRef="Gateway_1mk41gt" targetRef="Event_1j8rpgs" />
+    <bpmn:sequenceFlow id="Flow_1umu3q2" sourceRef="ParallelMail1Task" targetRef="Gateway_1mk41gt" />
+    <bpmn:sequenceFlow id="Flow_17s8yq8" sourceRef="ParallelMail2Task" targetRef="Gateway_1mk41gt" />
+    <bpmn:parallelGateway id="Gateway_053q43x">
+      <bpmn:incoming>Flow_1l2m4s2</bpmn:incoming>
+      <bpmn:outgoing>Flow_0u9c8mz</bpmn:outgoing>
+      <bpmn:outgoing>Flow_03grwg5</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:parallelGateway id="Gateway_1mk41gt">
+      <bpmn:incoming>Flow_1umu3q2</bpmn:incoming>
+      <bpmn:incoming>Flow_17s8yq8</bpmn:incoming>
+      <bpmn:outgoing>Flow_0zwnibf</bpmn:outgoing>
+    </bpmn:parallelGateway>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="CustomViewerCalledProcess">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="179" y="209" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0b1xvez_di" bpmnElement="ParallelMail2Task">
+        <dc:Bounds x="370" y="300" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0gdoa8f_di" bpmnElement="ParallelMail1Task">
+        <dc:Bounds x="370" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0ld5h4t_di" bpmnElement="Gateway_053q43x">
+        <dc:Bounds x="265" y="202" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0045nqq_di" bpmnElement="Gateway_1mk41gt">
+        <dc:Bounds x="525" y="202" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1j8rpgs_di" bpmnElement="Event_1j8rpgs">
+        <dc:Bounds x="632" y="209" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1l2m4s2_di" bpmnElement="Flow_1l2m4s2">
+        <di:waypoint x="215" y="227" />
+        <di:waypoint x="265" y="227" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0u9c8mz_di" bpmnElement="Flow_0u9c8mz">
+        <di:waypoint x="290" y="252" />
+        <di:waypoint x="290" y="340" />
+        <di:waypoint x="370" y="340" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_03grwg5_di" bpmnElement="Flow_03grwg5">
+        <di:waypoint x="290" y="202" />
+        <di:waypoint x="290" y="120" />
+        <di:waypoint x="370" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0zwnibf_di" bpmnElement="Flow_0zwnibf">
+        <di:waypoint x="575" y="227" />
+        <di:waypoint x="632" y="227" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1umu3q2_di" bpmnElement="Flow_1umu3q2">
+        <di:waypoint x="470" y="120" />
+        <di:waypoint x="550" y="120" />
+        <di:waypoint x="550" y="202" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_17s8yq8_di" bpmnElement="Flow_17s8yq8">
+        <di:waypoint x="470" y="340" />
+        <di:waypoint x="550" y="340" />
+        <di:waypoint x="550" y="252" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

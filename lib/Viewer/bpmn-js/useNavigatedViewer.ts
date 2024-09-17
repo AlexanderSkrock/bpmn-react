@@ -1,10 +1,9 @@
-import type { BaseViewerOptions } from "bpmn-js/lib/BaseViewer";
-
 import NavigatedViewer from "bpmn-js/lib/NavigatedViewer";
 
+import type { BaseViewerOptions } from "./bpmn-js.types";
 import useBpmnJsViewer from "./useBpmnJsViewer";
 
 export default (options: BaseViewerOptions) => useBpmnJsViewer({
-    factory: (options) => new NavigatedViewer(options),
+    factory: (factoryOptions: BaseViewerOptions) => new NavigatedViewer(factoryOptions),
     options,
 });

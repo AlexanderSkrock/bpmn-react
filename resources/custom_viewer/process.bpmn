@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1p1ag81" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.17.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.17.0">
+  <bpmn:process id="CustomViewerProcess" isExecutable="true" camunda:historyTimeToLive="180">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_1l2m4s2</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:subProcess id="RandomizeSubProcess" name="Randomize">
+      <bpmn:incoming>Flow_1l2m4s2</bpmn:incoming>
+      <bpmn:outgoing>Flow_065v5zc</bpmn:outgoing>
+      <bpmn:startEvent id="Event_127b34u">
+        <bpmn:outgoing>Flow_0vkgeh6</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:sequenceFlow id="Flow_0vkgeh6" sourceRef="Event_127b34u" targetRef="GenerateRandomNumberTask" />
+      <bpmn:endEvent id="Event_0mubl9c">
+        <bpmn:incoming>Flow_1o3fi5j</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_16n62gt" sourceRef="GenerateRandomNumberTask" targetRef="Activity_0nkjo4u" />
+      <bpmn:scriptTask id="GenerateRandomNumberTask" name="Generate random number" scriptFormat="JavaScript" camunda:resultVariable="randomNumber">
+        <bpmn:incoming>Flow_0vkgeh6</bpmn:incoming>
+        <bpmn:outgoing>Flow_16n62gt</bpmn:outgoing>
+        <bpmn:script>Math.random();</bpmn:script>
+      </bpmn:scriptTask>
+      <bpmn:sequenceFlow id="Flow_1o3fi5j" sourceRef="Activity_0nkjo4u" targetRef="Event_0mubl9c" />
+      <bpmn:sendTask id="Activity_0nkjo4u" name="Announce">
+        <bpmn:incoming>Flow_16n62gt</bpmn:incoming>
+        <bpmn:outgoing>Flow_1o3fi5j</bpmn:outgoing>
+      </bpmn:sendTask>
+    </bpmn:subProcess>
+    <bpmn:sequenceFlow id="Flow_1l2m4s2" sourceRef="StartEvent_1" targetRef="RandomizeSubProcess" />
+    <bpmn:exclusiveGateway id="Gateway_053q43x">
+      <bpmn:incoming>Flow_065v5zc</bpmn:incoming>
+      <bpmn:outgoing>Flow_1lic1ra</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0u9c8mz</bpmn:outgoing>
+      <bpmn:outgoing>Flow_03grwg5</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_065v5zc" sourceRef="RandomizeSubProcess" targetRef="Gateway_053q43x" />
+    <bpmn:sequenceFlow id="Flow_1lic1ra" sourceRef="Gateway_053q43x" targetRef="Mail2Task">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${randomNumber = 0.5}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:endEvent id="Event_1j8rpgs">
+      <bpmn:incoming>Flow_0jromfy</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0rksygk" sourceRef="Mail2Task" targetRef="Gateway_1mk41gt" />
+    <bpmn:sequenceFlow id="Flow_0u9c8mz" sourceRef="Gateway_053q43x" targetRef="Mail3Task">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${randomNumber &lt; 0.5}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sendTask id="Mail2Task" name="Mail 2" camunda:modelerTemplate="tobiMail" camunda:modelerTemplateVersion="2" camunda:class="de.data_experts.web.xout.tobi.workflows.event.SendMailEvent">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="displayName" value="" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1lic1ra</bpmn:incoming>
+      <bpmn:outgoing>Flow_0rksygk</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:sendTask id="Mail3Task" name="Mail 3" camunda:modelerTemplate="tobiMail" camunda:modelerTemplateVersion="2" camunda:class="de.data_experts.web.xout.tobi.workflows.event.SendMailEvent">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="displayName" value="" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0u9c8mz</bpmn:incoming>
+      <bpmn:outgoing>Flow_17s8yq8</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:sequenceFlow id="Flow_03grwg5" sourceRef="Gateway_053q43x" targetRef="Mail1Task">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${randomNumber &gt; 0.5}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sendTask id="Mail1Task" name="Mail 1" camunda:modelerTemplate="tobiMail" camunda:modelerTemplateVersion="2" camunda:class="de.data_experts.web.xout.tobi.workflows.event.SendMailEvent">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="displayName" value="" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_03grwg5</bpmn:incoming>
+      <bpmn:outgoing>Flow_1umu3q2</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:exclusiveGateway id="Gateway_1mk41gt">
+      <bpmn:incoming>Flow_0rksygk</bpmn:incoming>
+      <bpmn:incoming>Flow_1umu3q2</bpmn:incoming>
+      <bpmn:incoming>Flow_17s8yq8</bpmn:incoming>
+      <bpmn:outgoing>Flow_0zwnibf</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_0zwnibf" sourceRef="Gateway_1mk41gt" targetRef="CallExternalCallActivity" />
+    <bpmn:sequenceFlow id="Flow_1umu3q2" sourceRef="Mail1Task" targetRef="Gateway_1mk41gt" />
+    <bpmn:sequenceFlow id="Flow_17s8yq8" sourceRef="Mail3Task" targetRef="Gateway_1mk41gt" />
+    <bpmn:sequenceFlow id="Flow_0jromfy" sourceRef="CallExternalCallActivity" targetRef="Event_1j8rpgs" />
+    <bpmn:callActivity id="CallExternalCallActivity" name="Call external" calledElement="CustomViewerCalledProcess">
+      <bpmn:incoming>Flow_0zwnibf</bpmn:incoming>
+      <bpmn:outgoing>Flow_0jromfy</bpmn:outgoing>
+    </bpmn:callActivity>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="CustomViewerProcess">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="179" y="209" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1hljwpf_di" bpmnElement="RandomizeSubProcess" isExpanded="false">
+        <dc:Bounds x="300" y="187" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_053q43x_di" bpmnElement="Gateway_053q43x" isMarkerVisible="true">
+        <dc:Bounds x="485" y="202" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1j8rpgs_di" bpmnElement="Event_1j8rpgs">
+        <dc:Bounds x="1052" y="209" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1kwi3cd_di" bpmnElement="Mail2Task">
+        <dc:Bounds x="590" y="187" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0b1xvez_di" bpmnElement="Mail3Task">
+        <dc:Bounds x="590" y="300" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0gdoa8f_di" bpmnElement="Mail1Task">
+        <dc:Bounds x="590" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1mk41gt_di" bpmnElement="Gateway_1mk41gt" isMarkerVisible="true">
+        <dc:Bounds x="745" y="202" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0b0cxx7_di" bpmnElement="CallExternalCallActivity">
+        <dc:Bounds x="870" y="187" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1l2m4s2_di" bpmnElement="Flow_1l2m4s2">
+        <di:waypoint x="215" y="227" />
+        <di:waypoint x="300" y="227" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_065v5zc_di" bpmnElement="Flow_065v5zc">
+        <di:waypoint x="400" y="227" />
+        <di:waypoint x="485" y="227" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1lic1ra_di" bpmnElement="Flow_1lic1ra">
+        <di:waypoint x="535" y="227" />
+        <di:waypoint x="590" y="227" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0rksygk_di" bpmnElement="Flow_0rksygk">
+        <di:waypoint x="690" y="227" />
+        <di:waypoint x="745" y="227" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0u9c8mz_di" bpmnElement="Flow_0u9c8mz">
+        <di:waypoint x="510" y="252" />
+        <di:waypoint x="510" y="340" />
+        <di:waypoint x="590" y="340" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_03grwg5_di" bpmnElement="Flow_03grwg5">
+        <di:waypoint x="510" y="202" />
+        <di:waypoint x="510" y="120" />
+        <di:waypoint x="590" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0zwnibf_di" bpmnElement="Flow_0zwnibf">
+        <di:waypoint x="795" y="227" />
+        <di:waypoint x="870" y="227" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1umu3q2_di" bpmnElement="Flow_1umu3q2">
+        <di:waypoint x="690" y="120" />
+        <di:waypoint x="770" y="120" />
+        <di:waypoint x="770" y="202" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_17s8yq8_di" bpmnElement="Flow_17s8yq8">
+        <di:waypoint x="690" y="340" />
+        <di:waypoint x="770" y="340" />
+        <di:waypoint x="770" y="252" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0jromfy_di" bpmnElement="Flow_0jromfy">
+        <di:waypoint x="970" y="227" />
+        <di:waypoint x="1052" y="227" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_0yvtgmi">
+    <bpmndi:BPMNPlane id="BPMNPlane_1hwi7zy" bpmnElement="RandomizeSubProcess">
+      <bpmndi:BPMNShape id="Event_127b34u_di" bpmnElement="Event_127b34u">
+        <dc:Bounds x="180" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0mubl9c_di" bpmnElement="Event_0mubl9c">
+        <dc:Bounds x="572" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1yu6lxs_di" bpmnElement="GenerateRandomNumberTask">
+        <dc:Bounds x="260" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_19kp1ha_di" bpmnElement="Activity_0nkjo4u">
+        <dc:Bounds x="410" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0vkgeh6_di" bpmnElement="Flow_0vkgeh6">
+        <di:waypoint x="216" y="120" />
+        <di:waypoint x="260" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_16n62gt_di" bpmnElement="Flow_16n62gt">
+        <di:waypoint x="360" y="120" />
+        <di:waypoint x="410" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1o3fi5j_di" bpmnElement="Flow_1o3fi5j">
+        <di:waypoint x="510" y="120" />
+        <di:waypoint x="572" y="120" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

@@ -56,7 +56,7 @@ export default class ProcessNavigationOverlayBehaviour {
         }
 
         eventBus.on("import.render.start", this._handleImportRenderStart);
-        eventBus.on("import.done", this._handleImportRenderComplete);
+        eventBus.on("import.render.complete", this._handleImportRenderComplete);
     }
 
     _handleImportRenderStart = () => {
