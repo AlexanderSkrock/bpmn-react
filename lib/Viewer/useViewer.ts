@@ -1,6 +1,6 @@
 import Viewer from "bpmn-js/lib/Viewer";
 
-import type { BaseViewerOptions } from "./bpmn-js.types";
+import type { BaseViewerOptions } from "./Viewer.types";
 import useBpmnJsViewer from "./useBpmnJsViewer";
 
 export default (options: BaseViewerOptions) => useBpmnJsViewer({

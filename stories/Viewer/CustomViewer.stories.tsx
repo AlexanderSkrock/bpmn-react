@@ -2,28 +2,30 @@ import React, { useCallback, useEffect, useState } from "react";
 
 import type { StoryObj, Meta } from "@storybook/react";
 
-import { is as isType } from "bpmn-js/lib/util/ModelUtil"
-import { ModdleElement } from "bpmn-js/lib/model/Types";
-
-import { useBaseViewer } from "../../lib/Viewer"
-import { useOverlays } from "../../lib/Viewer/hooks";
-import { DynamicOverlaysModule, OverlayDefinition, OverlayDefinitionBuilder, OverlayDefinitionsBuilder } from "../../lib/Modules/DynamicOverlays";
-import { CalledElementLoader, ProcessNavigationModule } from "../../lib/Modules/ProcessNavigation";
-import CoreModule from 'bpmn-js/lib/core';
 import TranslateModule from 'diagram-js/lib/i18n/translate';
 import MoveCanvasModule from 'diagram-js/lib/navigation/movecanvas';
+import CoreModule from 'bpmn-js/lib/core';
+import { ModdleElement } from "bpmn-js/lib/model/Types";
+import { is as isType } from "bpmn-js/lib/util/ModelUtil"
+
+import { useOverlays } from "../../lib/Diagram";
+import { useBaseViewer } from "../../lib/Viewer"
+import { DynamicOverlaysModule, OverlayDefinition, OverlayDefinitionBuilder, OverlayDefinitionsBuilder } from "../../lib/Modules/DynamicOverlays";
+import { CalledElementLoader, ProcessNavigationModule } from "../../lib/Modules/ProcessNavigation";
 import { ZoomModule } from "../../lib/Modules/Zoom";
+
+type Overlay = OverlayDefinition | OverlayDefinitionBuilder | OverlayDefinitionsBuilder;
 
 const CustomViewer = ({
     xml, overlays = [],
     loadCalledElement
 }: {
     xml: string,
-    overlays: (OverlayDefinition | OverlayDefinitionBuilder | OverlayDefinitionsBuilder)[],
-    loadCalledElement: (calledElement: ModdleElement) => Promise<{ xml: string, overlays?: (OverlayDefinition | OverlayDefinitionBuilder | OverlayDefinitionsBuilder)[] }>
+    overlays: Overlay[],
+    loadCalledElement: (calledElement: ModdleElement) => Promise<{ xml: string, overlays?: Overlay[] }>
 }) => {
-    const [currentOverlays, setCurrentOverlays] = useState<(OverlayDefinition | OverlayDefinitionBuilder | OverlayDefinitionsBuilder)[]>(overlays);
-    
+    const [currentOverlays, setCurrentOverlays] = useState<Overlay[]>(overlays);
+
     const handleLoadCalledElement = useCallback((calledElement: ModdleElement) => {
         return loadCalledElement(calledElement).then(result => {
             setCurrentOverlays(result.overlays || []);
@@ -43,7 +45,7 @@ const CustomViewer = ({
                 calledElementLoader: [
                     "type",
                     class CalledElementLoaderImpl implements CalledElementLoader {
-        
+
                         load = (element: ModdleElement) => {
                             return handleLoadCalledElement(element);
                         }

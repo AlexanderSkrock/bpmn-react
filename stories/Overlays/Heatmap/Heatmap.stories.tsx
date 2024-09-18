@@ -2,14 +2,15 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import type { StoryObj, Meta } from "@storybook/react";
 
-import { Heatmap } from "../../../lib/Overlays/Heatmap";
-import { HeatmapOptions } from '../../../dist/types/lib/Overlays/Heatmap/Heatmap.types';
-import { ModdleElement } from "bpmn-js/lib/BaseViewer";
+import MoveCanvasModule from "diagram-js/lib/navigation/movecanvas";
+import { ModdleElement } from "bpmn-js/lib/model/Types";
+
+import { Heatmap, HeatmapOptions } from "../../../lib/Overlays/Heatmap";
 import { DynamicOverlaysModule } from "../../../lib/Modules/DynamicOverlays";
 import { ZoomModule } from "../../../lib/Modules/Zoom";
 import { CalledElementLoader, ProcessNavigationModule } from "../../../lib/Modules/ProcessNavigation";
-import { useBaseViewer, useOverlays } from "../../../lib/Viewer";
-import MoveCanvasModule from 'diagram-js/lib/navigation/movecanvas';
+import { useOverlays } from "../../../lib/Diagram"
+import { useBaseViewer } from "../../../lib/Viewer";
 
 const HeatmapViewer = ({
     xml,
@@ -22,7 +23,7 @@ const HeatmapViewer = ({
 }) => {
     const [currentHeatmapOptions, setHeatmapOptions] = useState<HeatmapOptions>(heatmap);
     const overlays = useMemo(() => [new Heatmap(currentHeatmapOptions)], [currentHeatmapOptions]);
-    
+
     const handleLoadCalledElement = useCallback((calledElement: ModdleElement) => {
         return loadCalledElement(calledElement).then(result => {
             setHeatmapOptions(result.heatmap);
@@ -40,7 +41,7 @@ const HeatmapViewer = ({
                 calledElementLoader: [
                     "type",
                     class CalledElementLoaderImpl implements CalledElementLoader {
-        
+
                         load = (element: ModdleElement) => {
                             return handleLoadCalledElement(element);
                         }
