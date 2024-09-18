@@ -1,0 +1,25 @@
+import { Story } from "@storybook/blocks";
+
+import { SimpleProcess } from "./useNavigatedViewer.stories";
+
+# Overview
+
+This hook is a specialized form of `useBpmnJsViewer` that uses the `NavigatedViewer` from `bpmn-js`. Similarly, it returns a callback which can be passed as `ref` property and the `NavigatedViewer` instance.
+
+# Usage
+
+```tsx
+import React from "react";
+
+import { useNavigatedViewer, BaseViewerOptions } from "bpmn-react/Viewer";
+
+const BpmnJsViewer = ({ xml }: { xml: string }) => {
+    const [handleViewerRef, viewer] = useNavigatedViewer({} as BaseViewerOptions);
+
+    return <div ref={ handleViewerRef } />
+}
+```
+
+# Examples
+
+<Story of={ SimpleProcess } />
