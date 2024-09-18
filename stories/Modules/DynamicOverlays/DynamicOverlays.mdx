@@ -18,7 +18,7 @@ import { useBaseViewer } from "bpmn-react/Viewer"
 import { DynamicOverlaysModule } from "bpmn-react/Modules/DynamicOverlays"
 
 const BaseViewer = ({ xml }) => {
-    const [handleViewerRef, viewer] = useBaseViewer({ additionalModules: [ CoreModule, DynamicOverlays ] });
+    const [handleViewerRef, viewer] = useBaseViewer({ additionalModules: [ CoreModule, DynamicOverlaysModule ] });
 
     useEffect(() => {
         if (xml) {

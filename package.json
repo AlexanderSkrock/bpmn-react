@@ -11,6 +11,11 @@
     "./dist"
   ],
   "exports": {
+    "./Diagram": {
+      "types": "./dist/types/Diagram/index.d.ts",
+      "require": "./dist/cjs/Diagram/index.js",
+      "import": "./dist/esm/Diagram/index.js"
+    },
     "./Viewer": {
       "types": "./dist/types/Viewer/index.d.ts",
       "require": "./dist/cjs/Viewer/index.js",

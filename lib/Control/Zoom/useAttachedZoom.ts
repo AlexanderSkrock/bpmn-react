@@ -3,7 +3,7 @@ import { useCallback, useEffect } from "react";
 import { EventBusEventCallback } from "diagram-js/lib/core/EventBus";
 import { ElementLike } from "diagram-js/lib/model/Types";
 
-import useEventHandler from "../../Viewer/hooks/useEventHandler";
+import { useEventHandler } from "../../Diagram";
 import { useZoom } from "../../Components/Zoom";
 import { DiagramLike, getCanvas } from "../../util/services";
 

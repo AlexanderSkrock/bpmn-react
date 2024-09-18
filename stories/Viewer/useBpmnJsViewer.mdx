@@ -1,0 +1,28 @@
+import { Story } from "@storybook/blocks";
+
+import { SimpleProcess } from "./useBpmnJsViewer.stories";
+
+# Overview
+
+This hook provides a generic utility to integrate any viewer implementation based on the `BaseViewer` from `bpmn-js` into a React environment. As return value the caller receives a callback which can be passed as `ref` property and the `BaseViewer` instance.
+
+# Usage
+
+```tsx
+import React from "react";
+
+import { useBpmnJsViewer, BaseViewer, BaseViewerOptions } from "bpmn-react/Viewer";
+
+const BpmnJsViewer = ({ xml }: { xml: string }) => {
+    const [handleViewerRef, viewer] = useBpmnJsViewer<BaseViewer, BaseViewerOptions>({
+        factory: (options) => new BaseViewer(options),
+        options: {} as BaseViewerOptions,
+    });
+
+    return <div ref={ handleViewerRef } />
+}
+```
+
+# Examples
+
+<Story of={ SimpleProcess } />
