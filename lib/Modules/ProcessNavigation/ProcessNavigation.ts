@@ -8,7 +8,6 @@ import { getPlaneIdFromShape } from "bpmn-js/lib/util/DrilldownUtil";
 import type { CalledElementLoader, NavigateToCalledElementEvent, NavigateToSubprocessEvent, ProcessNavigationControlRenderer,  ProcessNavigationService } from "./ProcessNavigation.types";
 
 import { PathEntry } from "../../Components/Breadcrumbs";
-import { insertAt } from "../../util/html";
 import { ElementLike } from 'diagram-js/lib/model/Types';
 import { NAVIGATE_CALL_ACTIVITY_EVENT, NAVIGATE_SUBPROCESS_EVENT } from "./events";
 
