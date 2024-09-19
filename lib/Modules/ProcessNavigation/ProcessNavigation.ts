@@ -43,9 +43,7 @@ export default class ProcessNavigation implements ProcessNavigationService {
         this._elementRegistry = elementRegistry;
         this._processNavigationControlRenderer = processNavigationControlRenderer;
 
-        const navigationContainer = document.createElement("div");
-        insertAt(canvas.getContainer(), 0, navigationContainer);
-        this._processNavigationControlRenderer.init(navigationContainer)
+        this._processNavigationControlRenderer.init(canvas.getContainer())
 
         eventBus.on("import.parse.start", this._handleParseStart);
         eventBus.on("import.parse.complete", this._handleParseComplete);

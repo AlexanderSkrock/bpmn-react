@@ -1,24 +1,29 @@
 import React from "react";
 import { render } from "react-dom";
 
-import { ZoomControlGroup, ZoomControlGroupProps } from "../../Control/Zoom";
-import { ZoomControlRenderer } from "./Zoom.types";
+import { ZoomControlGroup } from "../../Control/Zoom";
+import type { ZoomControlRenderer, ZoomControlRendererProps } from "./Zoom.types";
 
 
 export default class DefaultControlRenderer implements ZoomControlRenderer {
 
-    container?: HTMLElement;
+    controlContainer?: HTMLElement;
 
     init = (container: HTMLElement) => {
-        container.style.position = "absolute";
-        container.style.top = "0";
-        container.style.right = "0";
-        this.container = container;
+        this.controlContainer = document.createElement("div");
+        this.controlContainer.style.position = "absolute";
+        this.controlContainer.style.top = "0";
+        this.controlContainer.style.right = "0";
+        
+        container.appendChild(this.controlContainer);
     }
 
-    render = (props: ZoomControlGroupProps) => {
-        if (this.container) {
-            render(<ZoomControlGroup {...props} />, this.container);
+    render = ({ diagramLike }: ZoomControlRendererProps) => {
+        if (this.controlContainer) {
+            render(
+                <ZoomControlGroup diagramLike={ diagramLike } direction="vertical" options={ { initialFit: true } } />,
+                this.controlContainer
+            );
         }
     }
 }

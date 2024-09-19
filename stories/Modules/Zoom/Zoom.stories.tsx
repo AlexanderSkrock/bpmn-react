@@ -1,13 +1,31 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
+import { render } from "react-dom";
 import {Meta, StoryObj} from "@storybook/react";
+
+import styled from "styled-components";
 
 import CoreModule from "bpmn-js/lib/core";
 
 import { useBaseViewer } from "../../../lib/Viewer";
 import { ZoomModule } from "../../../lib/Modules/Zoom";
+import type { ZoomControlRenderer, ZoomControlRendererProps } from "../../../lib/Modules/Zoom/Zoom.types";
+import { useAttachedZoom, ZoomControlGroup, ZoomInControl, ZoomOutControl } from "../../../lib/Control/Zoom";
+import DefaultControlRenderer from "../../../lib/Modules/Zoom/defaultControlRenderer";
+import { DiagramLike } from "../../../lib/util/services";
+import { insertAt } from "../../../lib/util/html";
 
-const ViewerWithZoomModule = ({ xml }: { xml: string }) => {
-    const [ handleViewerRef, viewer ] = useBaseViewer({ additionalModules: [CoreModule, ZoomModule]});
+const ViewerWithZoomModule = ({ xml, customRenderer }: { xml: string, customRenderer?: ZoomControlRenderer }) => {
+    const additionalModules = useMemo(() => {
+        const modules = [CoreModule, ZoomModule];
+        if (customRenderer) {
+            modules.push({
+                zoomControlRenderer: [ "type", customRenderer ]
+            });
+        }
+        return modules;
+    }, [customRenderer]);
+
+    const [ handleViewerRef, viewer ] = useBaseViewer({ additionalModules });
     useEffect(() => {
         if (viewer && xml) {
             viewer.importXML(xml);
@@ -32,4 +50,35 @@ export const DefaultStory: Story = {
             xml: await (await fetch('process.bpmn')).text(),
         }),
     ],
+};
+
+export const CustomRendererStory: Story = {
+    loaders: [
+        async () => ({
+            xml: await (await fetch('process.bpmn')).text(),
+        }),
+    ],
+    args: {
+        customRenderer: class CustomControlRenderer implements ZoomControlRenderer {
+
+            controlContainer?: HTMLElement;
+
+            init = (container: HTMLElement) => {
+                this.controlContainer = document.createElement("div");                
+                insertAt(container, 0, this.controlContainer);
+            }
+        
+            render = ({ diagramLike }: ZoomControlRendererProps) => {
+                if (this.controlContainer) {
+                    render(
+                        <>
+                            <ZoomInControl diagram={ diagramLike } options={ { initialFit: true } } />
+                            <ZoomOutControl diagram={ diagramLike} options={ { initialFit: true } } />
+                        </>,
+                        this.controlContainer
+                    );
+                }
+            }
+        }
+    }
 };

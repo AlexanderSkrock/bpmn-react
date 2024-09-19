@@ -7,6 +7,7 @@ import {
     ProcessNavigationControlRenderer
 } from "./ProcessNavigation.types";
 import { breadcrumbClassName, Breadcrumbs } from "../../Components/Breadcrumbs";
+import { insertAt } from "../../util/html";
 
 const processBreadcrumbClassName = "breadcrumb-process";
 const subProcessBreadcrumbClassName = "breadcrumb-subProcess";
@@ -27,11 +28,13 @@ const NavigationContainer = styled.div`
 
 export default class DefaultControlRenderer implements ProcessNavigationControlRenderer {
 
-    container?: HTMLElement;
+    controlContainer?: HTMLElement;
 
     init = (container: HTMLElement) => {
-        container.style.padding = "8px";
-        this.container = container;
+        this.controlContainer = document.createElement("div");
+        this.controlContainer.style.padding = "8px";
+        
+        insertAt(container, 0, this.controlContainer);
     }
 
     render = ({ history, path, onHistoryClick, onPathClick }: ProcessNavigationControlProps) => {
@@ -48,12 +51,12 @@ export default class DefaultControlRenderer implements ProcessNavigationControlR
             })),
         ];
 
-        if (this.container) {
+        if (this.controlContainer) {
             render(
                 <NavigationContainer>
                     <Breadcrumbs path={ entries } />
                 </NavigationContainer>,
-                this.container
+                this.controlContainer
             );
         }
     }
