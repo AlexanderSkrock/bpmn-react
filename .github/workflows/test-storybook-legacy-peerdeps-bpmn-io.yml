@@ -13,8 +13,6 @@ jobs:
         includes:
           - diagram-js-version: ^13.2.0
             bpmn-js-version: ^16.0.0
-          - diagram-js-version: ^14.1.0
-            bpmn-js-version: ^17.0.0
 
     env:
       DIAGRAM_JS_VERSION: ${{ matrix.diagram-js-version }}
