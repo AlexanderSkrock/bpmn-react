@@ -21,6 +21,11 @@
       "require": "./dist/cjs/Viewer/index.js",
       "import": "./dist/esm/Viewer/index.js"
     },
+    "./Modeler": {
+      "types": "./dist/types/Modeler/index.d.ts",
+      "require": "./dist/cjs/Modeler/index.js",
+      "import": "./dist/esm/Modeler/index.js"
+    },
     "./Modules/*": {
       "types": "./dist/types/Modules/*/index.d.ts",
       "require": "./dist/cjs/Modules/*/index.js",
