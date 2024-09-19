@@ -10,8 +10,9 @@ import {ModdleElement, ModuleDeclaration} from "bpmn-js/lib/BaseViewer";
 
 import { useBaseViewer } from "../../../lib/Viewer";
 import { ProcessNavigationControlRenderer, ProcessNavigationModule } from "../../../lib/Modules/ProcessNavigation";
-import type { CalledElementLoader } from "../../../lib/Modules/ProcessNavigation";
-import { ProcessNavigationControlProps, ProcessNavigationOverlayRenderer } from "../../../lib/Modules/ProcessNavigation/ProcessNavigation.types";
+import type { CalledElementLoader, ProcessNavigationControlInitOptions } from "../../../lib/Modules/ProcessNavigation";
+import { ProcessNavigationOverlayRenderer } from "../../../lib/Modules/ProcessNavigation/ProcessNavigation.types";
+import { insertAt } from "../../../lib/util/html";
 
 const LoaderModule: ModuleDeclaration = {
     calledElementLoader: [
@@ -79,11 +80,13 @@ export const CustomControlRendererStory: Story = {
                 "type",
                 class ProcessNavigationControlRendererImpl implements ProcessNavigationControlRenderer {
 
-                    container?: HTMLElement;
+                    controlContainer?: HTMLElement;
 
-                    init = (container: HTMLElement) => {
-                        container.style.padding = "8px";
-                        this.container = container;
+                    init = ({ container }: ProcessNavigationControlInitOptions) => {
+                        this.controlContainer = document.createElement("div");
+                        this.controlContainer.style.padding = "8px";
+                        
+                        insertAt(container, 0, this.controlContainer);
                     }
 
                     render = ({ history, path, onHistoryClick, onPathClick }: ProcessNavigationControlProps) => {
@@ -96,8 +99,8 @@ export const CustomControlRendererStory: Story = {
                             return <button key={ key } onClick={ () => onClick({ key, name}) }>{ name }</button>;
                         })
 
-                        if (this.container) {
-                            render(buttons, this.container);
+                        if (this.controlContainer) {
+                            render(buttons, this.controlContainer);
                         }
                     }
                 }

@@ -4,26 +4,26 @@ import { DiagramLike } from "./services.types";
 import { ProcessNavigation } from "../../Modules/ProcessNavigation";
 import { Zoom } from "../../Modules/Zoom";
 
-export const getDynamicOverlays = (diagramLike: DiagramLike): DynamicOverlays => {
-    if (diagramLike instanceof Diagram) {
-        return diagramLike.get("dynamicOverlays");
+export const getDynamicOverlays = (diagram: DiagramLike): DynamicOverlays => {
+    if (diagram instanceof Diagram) {
+        return diagram.get("dynamicOverlays");
     } else {
-        return diagramLike.dynamicOverlays as DynamicOverlays;
+        return diagram.dynamicOverlays as DynamicOverlays;
     }
 }
 
-export const getProcessNavigation = (diagramLike: DiagramLike): ProcessNavigation => {
-    if (diagramLike instanceof Diagram) {
-        return diagramLike.get("processNavigation");
+export const getProcessNavigation = (diagram: DiagramLike): ProcessNavigation => {
+    if (diagram instanceof Diagram) {
+        return diagram.get("processNavigation");
     } else {
-        return diagramLike.processNavigation as ProcessNavigation;
+        return diagram.processNavigation as ProcessNavigation;
     }
 }
 
-export const getZoom = (diagramLike: DiagramLike): Zoom => {
-    if (diagramLike instanceof Diagram) {
-        return diagramLike.get("zoom");
+export const getZoom = (diagram: DiagramLike): Zoom => {
+    if (diagram instanceof Diagram) {
+        return diagram.get("zoom");
     } else {
-        return diagramLike.zoom as Zoom;
+        return diagram.zoom as Zoom;
     }
 }

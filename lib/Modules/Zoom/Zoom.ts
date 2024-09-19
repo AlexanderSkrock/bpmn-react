@@ -2,31 +2,20 @@ import EventBus from "diagram-js/lib/core/EventBus";
 import Canvas from "diagram-js/lib/core/Canvas";
 
 import type { ZoomControlRenderer } from "./Zoom.types";
-import DefaultControlRenderer from "./defaultControlRenderer";
 
 export default class Zoom {
 
     static $inject = [
         "canvas",
         "eventBus",
+        "zoomControlRenderer",
     ];
 
-    zoomControlRenderer: ZoomControlRenderer;
+    constructor(canvas: Canvas, eventBus: EventBus, controlRenderer: ZoomControlRenderer) {
+        controlRenderer.init({ container: canvas.getContainer() });
 
-    constructor(canvas: Canvas, eventBus: EventBus) {
-        // we could make this injectable in the future
-        this.zoomControlRenderer = new DefaultControlRenderer();
-
-        const zoomContainer = document.createElement("div");
-        canvas.getContainer().appendChild(zoomContainer);
-        this.zoomControlRenderer.init(zoomContainer);
-
-        this.zoomControlRenderer.render({
-            diagramLike:  { canvas, eventBus },
-            direction: "vertical",
-            options: {
-                initialFit: true,
-            },
+        controlRenderer.render({
+            diagram:  { canvas, eventBus },
         });
     }
 }

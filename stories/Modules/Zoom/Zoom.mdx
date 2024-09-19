@@ -1,6 +1,7 @@
 import { Meta, Story } from "@storybook/blocks";
+import LinkTo from '@storybook/addon-links/react';
 
-import { DefaultStory } from "./Zoom.stories";
+import { DefaultStory, CustomRendererStory } from "./Zoom.stories";
 
 <Meta title="Modules/Zoom/Documentation" />
 
@@ -30,7 +31,30 @@ const BaseViewer = ({ xml }) => {
 }
 ```
 
-Currently it is not possible to configure the appearance of the zoom toolbar, but it might be scope of a later change.
+To customize the appearance of the zoom toolbar, you can register an additional module at the viewer that provides a component called `zoomControlRenderer` implementing the `ZoomControlRenderer` interface.
+
+```ts
+{
+    zoomControlRenderer: [
+        "type",
+        class CustomRenderer implements ZoomControlRenderer {
+            init = (options: ZoomControlInitOptions) {
+
+            };
+            render = (props: ZoomControlRenderProps) => {
+                
+            };
+        }
+    ]
+}
+```
+
+For a simplified implementation have a look on the following sections:
+* <LinkTo kind="Controls/Zoom/useAttachedZoom" story="docs">useAttachedZoom</LinkTo>.
+* <LinkTo kind="Controls/Zoom/ZoomControlGroup" story="docs">ZoomControlGroup</LinkTo>.
+* <LinkTo kind="Controls/Zoom/ZoomInControl" story="docs">ZoomInControl</LinkTo>.
+* <LinkTo kind="Controls/Zoom/ZoomOutControl" story="docs">ZoomOutControl</LinkTo>.
+* <LinkTo kind="Controls/Zoom/ZoomFitControl" story="docs">ZoomFitControl</LinkTo>.
 
 # Usage
 
@@ -40,6 +64,10 @@ When the `DynamicOverlaysModule` is configured properly, a toolbar will appear o
 - **Zoom Fit** to reduce zoom as much as needed to fit the diagram into the current viewport
 - **Zoom Out** to zoom farther away from the diagram
 
-# Example
+# Examples
 
+## Default
 <Story of={ DefaultStory } />
+
+## Customized appearance
+<Story of={ CustomRendererStory } />

@@ -6,10 +6,10 @@ import CoreModule from "bpmn-js/lib/core";
 
 import { useBaseViewer } from "../../../lib/Viewer";
 import type { AttachedZoomOptions } from "../../../lib/Control/Zoom";
-import { ZoomControlGroup } from  "../../../lib/Control/Zoom";
+import { ZoomInControl } from  "../../../lib/Control/Zoom";
 
 
-const BpmnViewerWithZoomControlGroup = ({ xml, options }: { xml: string, options: AttachedZoomOptions }) => {
+const BpmnViewerWithZoomControl = ({ xml, options }: { xml: string, options: AttachedZoomOptions }) => {
     const [ handleViewerRef, viewer ] = useBaseViewer({ additionalModules: [CoreModule]});
 
     useEffect(() => {
@@ -21,20 +21,20 @@ const BpmnViewerWithZoomControlGroup = ({ xml, options }: { xml: string, options
     return (
         <>
             <div ref={ handleViewerRef } />
-            <ZoomControlGroup diagramLike={ viewer } options={ options } />
+            <ZoomInControl diagram={ viewer } options={ options } />
         </>
     );
 }
 
-const meta: Meta<typeof BpmnViewerWithZoomControlGroup> = {
-    component: BpmnViewerWithZoomControlGroup,
-    render: (args, { loaded: { xml } }) => <BpmnViewerWithZoomControlGroup { ...args }  xml={ xml } />,
+const meta: Meta<typeof BpmnViewerWithZoomControl> = {
+    component: BpmnViewerWithZoomControl,
+    render: (args, { loaded: { xml } }) => <BpmnViewerWithZoomControl { ...args }  xml={ xml } />,
     tags: [ "autodocs" ],
-} as Meta<typeof BpmnViewerWithZoomControlGroup>;
+} as Meta<typeof BpmnViewerWithZoomControl>;
 
 export default meta;
 
-type Story = StoryObj<typeof BpmnViewerWithZoomControlGroup>;
+type Story = StoryObj<typeof BpmnViewerWithZoomControl>;
 
 export const DefaultZoomControlGroup: Story = {
     loaders: [

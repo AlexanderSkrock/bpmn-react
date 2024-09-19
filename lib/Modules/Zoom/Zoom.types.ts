@@ -1,6 +1,14 @@
-import type { ZoomControlGroupProps } from "../../Control/Zoom";
+import type { DiagramLike } from "../../util/services";
 
 export interface ZoomControlRenderer {
-    init: (container: HTMLElement) => void;
-    render: (props: ZoomControlGroupProps) => void;
+    init: (options: ZoomControlInitOptions) => void;
+    render: (props: ZoomControlRenderProps) => void;
+}
+
+export interface ZoomControlInitOptions {
+    container: HTMLElement;
+}
+
+export interface ZoomControlRenderProps {
+    diagram: DiagramLike;
 }
