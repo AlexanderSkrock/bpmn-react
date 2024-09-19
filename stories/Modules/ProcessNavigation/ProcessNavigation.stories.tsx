@@ -10,8 +10,8 @@ import {ModdleElement, ModuleDeclaration} from "bpmn-js/lib/BaseViewer";
 
 import { useBaseViewer } from "../../../lib/Viewer";
 import { ProcessNavigationControlRenderer, ProcessNavigationModule } from "../../../lib/Modules/ProcessNavigation";
-import type { CalledElementLoader } from "../../../lib/Modules/ProcessNavigation";
-import { ProcessNavigationControlProps, ProcessNavigationOverlayRenderer } from "../../../lib/Modules/ProcessNavigation/ProcessNavigation.types";
+import type { CalledElementLoader, ProcessNavigationControlInitOptions } from "../../../lib/Modules/ProcessNavigation";
+import { ProcessNavigationOverlayRenderer } from "../../../lib/Modules/ProcessNavigation/ProcessNavigation.types";
 import { insertAt } from "../../../lib/util/html";
 
 const LoaderModule: ModuleDeclaration = {
@@ -82,7 +82,7 @@ export const CustomControlRendererStory: Story = {
 
                     controlContainer?: HTMLElement;
 
-                    init = (container: HTMLElement) => {
+                    init = ({ container }: ProcessNavigationControlInitOptions) => {
                         this.controlContainer = document.createElement("div");
                         this.controlContainer.style.padding = "8px";
                         

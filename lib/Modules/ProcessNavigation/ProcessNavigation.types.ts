@@ -17,8 +17,8 @@ export interface ProcessNavigationOverlayRenderer {
 }
 
 export interface ProcessNavigationControlRenderer {
-    init: (container: HTMLElement) => void;
-    render: (props: ProcessNavigationControlProps) => void;
+    init: (options: ProcessNavigationControlInitOptions) => void;
+    render: (props: ProcessNavigationControlRenderProps) => void;
 }
 
 export interface ProcessNavigationService {
@@ -34,7 +34,11 @@ export interface NavigateToSubprocessEvent {
     element: ElementLike;
 }
 
-export interface ProcessNavigationControlProps {
+export interface ProcessNavigationControlInitOptions {
+    container: HTMLElement;
+}
+
+export interface ProcessNavigationControlRenderProps {
     history: PathEntry[],
     path: PathEntry[],
     onHistoryClick: (path: PathEntry) => void;

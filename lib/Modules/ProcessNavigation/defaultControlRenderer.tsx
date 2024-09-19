@@ -3,8 +3,10 @@ import { render } from "react-dom";
 import styled from "styled-components";
 
 import {
+    ProcessNavigationControlInitOptions,
     ProcessNavigationControlProps,
-    ProcessNavigationControlRenderer
+    ProcessNavigationControlRenderer,
+    ProcessNavigationControlRenderProps
 } from "./ProcessNavigation.types";
 import { breadcrumbClassName, Breadcrumbs } from "../../Components/Breadcrumbs";
 import { insertAt } from "../../util/html";
@@ -30,14 +32,14 @@ export default class DefaultControlRenderer implements ProcessNavigationControlR
 
     controlContainer?: HTMLElement;
 
-    init = (container: HTMLElement) => {
+    init = ({ container }: ProcessNavigationControlInitOptions) => {
         this.controlContainer = document.createElement("div");
         this.controlContainer.style.padding = "8px";
         
         insertAt(container, 0, this.controlContainer);
     }
 
-    render = ({ history, path, onHistoryClick, onPathClick }: ProcessNavigationControlProps) => {
+    render = ({ history, path, onHistoryClick, onPathClick }: ProcessNavigationControlRenderProps) => {
         const entries = [
             ...history.map(({ key, name }) => ({
                 key,

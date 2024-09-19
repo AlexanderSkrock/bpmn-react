@@ -6,7 +6,7 @@ import CoreModule from "bpmn-js/lib/core";
 
 import { useBaseViewer } from "../../../lib/Viewer";
 import { ZoomModule } from "../../../lib/Modules/Zoom";
-import type { ZoomControlRenderer, ZoomControlRendererProps } from "../../../lib/Modules/Zoom/Zoom.types";
+import type { ZoomControlRenderer, ZoomControlInitOptions, ZoomControlRenderProps } from "../../../lib/Modules/Zoom/Zoom.types";
 import { ZoomInControl, ZoomOutControl } from "../../../lib/Control/Zoom";
 import { insertAt } from "../../../lib/util/html";
 
@@ -59,12 +59,12 @@ export const CustomRendererStory: Story = {
 
             controlContainer?: HTMLElement;
 
-            init = (container: HTMLElement) => {
+            init = ({ container }: ZoomControlInitOptions) => {
                 this.controlContainer = document.createElement("div");                
                 insertAt(container, 0, this.controlContainer);
             }
         
-            render = ({ diagramLike }: ZoomControlRendererProps) => {
+            render = ({ diagramLike }: ZoomControlRenderProps) => {
                 if (this.controlContainer) {
                     render(
                         <>
