@@ -5,6 +5,107 @@ import LinkTo from '@storybook/addon-links/react';
 
 # Overview
 
+This hook handles the integration with the zoom API of `diagram-js` and allows modifying the current zoom while staying in sync with external changes to the zoom level.
+
+```ts
+const [
+    currentZoom,
+    increaseZoom,
+    decreaseZoom,
+    fitZoom,
+    setZoom,
+] = useAttachedZoom(diagram, options);
+```
+
 # Parameters
 
+As the first parameter, you will need to provide a `Diagram` instance or a `DiagramLike` object to attach to. Further configuration is possible via the second parameter consisting of the following properties.
+
+<table>
+  <thead>
+    <tr>
+      <th>Property</th>
+      <th>Type</th>
+      <th>Required</th>
+      <th>Default value</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>initialFit</td>
+      <td>boolean</td>
+      <td>false</td>
+      <td>false</td>
+      <td>When set to `true`, the `Diagram` will initially fit to viewport.</td>
+    </tr>
+    <tr>
+      <td>initialZoom</td>
+      <td>number</td>
+      <td>false</td>
+      <td>1</td>
+      <td>The initial zoom level to be applied. The parameter `initialFit` takes precedence.</td>
+    </tr>
+    <tr>
+      <td>step</td>
+      <td>number</td>
+      <td>false</td>
+      <td>0.2</td>
+      <td>The step size when increasing or decreasing the zoom level.</td>
+    </tr>
+    <tr>
+      <td>minZoom</td>
+      <td>number</td>
+      <td>false</td>
+      <td>0.2</td>
+      <td>The minimum zoom level that can be applied using this hook.</td>
+    </tr>
+    <tr>
+      <td>maxZoom</td>
+      <td>number</td>
+      <td>false</td>
+      <td>7</td>
+      <td>The maximum zoom level that can be applied using this hook.</td>
+    </tr>
+  </tbody>
+</table>
+
+
 # Return values
+
+<table>
+  <thead>
+    <tr>
+      <th>Index</th>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>number</td>
+      <td>The current zoom level.</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>() => void</td>
+      <td>Function to increase zoom level by step size.</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>() => void</td>
+      <td>Function to decrease zoom level by step size.</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>() => void</td>
+      <td>Function to fit viewport.</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>(nextZoom: number) => void</td>
+      <td>Function to set the zoom level to a specific value respecting minimal and maximal zoom.</td>
+    </tr>
+  </tbody>
+</table>

@@ -7,42 +7,42 @@ import type Overlays from "diagram-js/lib/features/overlays/Overlays";
 
 import { DiagramLike } from "./services.types";
 
-export const getCanvas = (diagramLike: DiagramLike): Canvas => {
-    if (diagramLike instanceof Diagram) {
-        return diagramLike.get("canvas");
+export const getCanvas = (diagram: DiagramLike): Canvas => {
+    if (diagram instanceof Diagram) {
+        return diagram.get("canvas");
     } else {
-        return diagramLike.canvas as Canvas;
+        return diagram.canvas as Canvas;
     }
 }
 
-export const getElementRegistry = (diagramLike: DiagramLike): ElementRegistry  => {
-    if (diagramLike instanceof Diagram) {
-        return diagramLike.get("elementRegistry");
+export const getElementRegistry = (diagram: DiagramLike): ElementRegistry  => {
+    if (diagram instanceof Diagram) {
+        return diagram.get("elementRegistry");
     } else {
-        return diagramLike.elementRegistry as ElementRegistry;
+        return diagram.elementRegistry as ElementRegistry;
     }
 }
 
-export const getEventBus = (diagramLike: DiagramLike): EventBus => {
-    if (diagramLike instanceof Diagram) {
-        return diagramLike.get("eventBus");
+export const getEventBus = (diagram: DiagramLike): EventBus => {
+    if (diagram instanceof Diagram) {
+        return diagram.get("eventBus");
     } else {
-        return diagramLike.eventBus as EventBus;
+        return diagram.eventBus as EventBus;
     }
 }
 
-export const getInteractionEvents = (diagramLike: DiagramLike): InteractionEvents => {
-    if (diagramLike instanceof Diagram) {
-        return diagramLike.get("interactionEvents");
+export const getInteractionEvents = (diagram: DiagramLike): InteractionEvents => {
+    if (diagram instanceof Diagram) {
+        return diagram.get("interactionEvents");
     } else {
-        return diagramLike.interactionEvents as InteractionEvents;
+        return diagram.interactionEvents as InteractionEvents;
     }
 }
 
-export const getOverlays = (diagramLike: DiagramLike): Overlays => {
-    if (diagramLike instanceof Diagram) {
-        return diagramLike.get("overlays");
+export const getOverlays = (diagram: DiagramLike): Overlays => {
+    if (diagram instanceof Diagram) {
+        return diagram.get("overlays");
     } else {
-        return diagramLike.overlays as Overlays;
+        return diagram.overlays as Overlays;
     }
 }
