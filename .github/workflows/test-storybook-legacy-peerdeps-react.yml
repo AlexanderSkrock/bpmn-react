@@ -22,8 +22,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
 
+      - run: npm ci
       - name: Install legacy versions of peer dependencies
-        run: npm i react-dom@${REACT_DOM_VERSION} react@${REACT_VERSION}
+        run: npm i --no-package-lock --no-save react-dom@${REACT_DOM_VERSION} react@${REACT_VERSION}
       - run: npx playwright install --with-deps
 
       - run: npm run build-storybook --quiet

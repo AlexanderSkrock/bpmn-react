@@ -1,0 +1,26 @@
+import { Story } from "@storybook/blocks";
+
+import { SimpleProcess } from "./useModeler.stories";
+
+# Overview
+
+This hook is a specialized form of `useBpmnJsModeler` that uses the `Modeler` from `bpmn-js`. Similarly, it returns a callback which can be passed as `ref` property and the `Modeler` instance.
+
+# Usage
+
+```tsx
+import React from "react";
+
+import Modeler from "bpmn-js/lib/Modeler";
+import { useModeler, BaseViewerOptions } from "bpmn-react/Modeler";
+
+const BpmnJsModeler = ({ xml }: { xml: string }) => {
+    const [handleModelerRef, modeler] = useModeler({} as BaseViewerOptions);
+
+    return <div ref={ handleModelerRef } />
+}
+```
+
+# Examples
+
+<Story of={ SimpleProcess } />
