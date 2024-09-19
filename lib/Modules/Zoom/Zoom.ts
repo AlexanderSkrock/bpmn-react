@@ -15,7 +15,7 @@ export default class Zoom {
         controlRenderer.init({ container: canvas.getContainer() });
 
         controlRenderer.render({
-            diagramLike:  { canvas, eventBus },
+            diagram:  { canvas, eventBus },
         });
     }
 }

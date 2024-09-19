@@ -10,15 +10,15 @@ import { DiagramLike, getCanvas } from "../../util/services";
 import type { AttachedZoomOptions } from "./Zoom.types";
 
 
-const useAttachedZoom = (diagramLike: DiagramLike | null, { initialFit, ...zoomOptions }: AttachedZoomOptions = {}): [number, () => void, () => void, () => void, (nextZoom: number) => void] => {
+const useAttachedZoom = (diagram: DiagramLike | null, { initialFit, ...zoomOptions }: AttachedZoomOptions = {}): [number, () => void, () => void, () => void, (nextZoom: number) => void] => {
     const [currentZoom, increaseZoom, decreaseZoom, setZoom] = useZoom(zoomOptions)
 
     const zoom = useCallback((zoomValue: number | "fit-viewport") => {
-        if (diagramLike) {
-            const nextZoom = getCanvas(diagramLike).zoom(zoomValue);
+        if (diagram) {
+            const nextZoom = getCanvas(diagram).zoom(zoomValue);
             setZoom(nextZoom);
         }
-    }, [diagramLike, setZoom])
+    }, [diagram, setZoom])
 
     const fitZoom = useCallback(() => {
         zoom("fit-viewport");
@@ -33,12 +33,12 @@ const useAttachedZoom = (diagramLike: DiagramLike | null, { initialFit, ...zoomO
             fitZoom();
         }
     }, [initialFit, fitZoom]);
-    useEventHandler(diagramLike, "root.set", handleRootSet);
+    useEventHandler(diagram, "root.set", handleRootSet);
 
     const handleScaleChanged: EventBusEventCallback<{ viewbox: { scale: number }}> = useCallback(event => {
         setZoom(event.viewbox.scale);
     }, [setZoom]);
-    useEventHandler(diagramLike, "canvas.viewbox.changed", handleScaleChanged);
+    useEventHandler(diagram, "canvas.viewbox.changed", handleScaleChanged);
 
     return [currentZoom, increaseZoom, decreaseZoom, fitZoom, setZoom];
 };

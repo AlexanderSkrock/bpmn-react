@@ -18,10 +18,10 @@ export default class DefaultControlRenderer implements ZoomControlRenderer {
         container.appendChild(this.controlContainer);
     }
 
-    render = ({ diagramLike }: ZoomControlRenderProps) => {
+    render = ({ diagram }: ZoomControlRenderProps) => {
         if (this.controlContainer) {
             render(
-                <ZoomControlGroup diagramLike={ diagramLike } direction="vertical" options={ { initialFit: true } } />,
+                <ZoomControlGroup diagram={ diagram } direction="vertical" options={ { initialFit: true } } />,
                 this.controlContainer
             );
         }

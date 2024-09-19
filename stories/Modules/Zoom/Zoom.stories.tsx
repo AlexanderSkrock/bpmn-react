@@ -64,12 +64,12 @@ export const CustomRendererStory: Story = {
                 insertAt(container, 0, this.controlContainer);
             }
         
-            render = ({ diagramLike }: ZoomControlRenderProps) => {
+            render = ({ diagram }: ZoomControlRenderProps) => {
                 if (this.controlContainer) {
                     render(
                         <>
-                            <ZoomInControl diagram={ diagramLike } options={ { initialFit: true } } />
-                            <ZoomOutControl diagram={ diagramLike} options={ { initialFit: true } } />
+                            <ZoomInControl diagram={ diagram } options={ { initialFit: true } } />
+                            <ZoomOutControl diagram={ diagram} options={ { initialFit: true } } />
                         </>,
                         this.controlContainer
                     );

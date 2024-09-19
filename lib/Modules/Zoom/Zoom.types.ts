@@ -10,5 +10,5 @@ export interface ZoomControlInitOptions {
 }
 
 export interface ZoomControlRenderProps {
-    diagramLike: DiagramLike;
+    diagram: DiagramLike;
 }

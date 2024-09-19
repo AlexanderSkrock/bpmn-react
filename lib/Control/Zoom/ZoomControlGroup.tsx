@@ -19,8 +19,8 @@ const VerticalZoomControlContainer = styled(ZoomControlContainer)`
     flex-direction: column;
 `;
 
-const ZoomControlGroup = ({ direction = "horizontal", diagramLike, options, zoomInTitle, zoomOutTitle, zoomFitTitle, className }: ZoomControlGroupProps) => {
-    const [, increaseZoom, decreaseZoom, fitZoom] = useAttachedZoom(diagramLike, options);
+const ZoomControlGroup = ({ direction = "horizontal", diagram, options, zoomInTitle, zoomOutTitle, zoomFitTitle, className }: ZoomControlGroupProps) => {
+    const [, increaseZoom, decreaseZoom, fitZoom] = useAttachedZoom(diagram, options);
 
     const Container = direction === "horizontal" ? HorizontalZoomControlContainer : VerticalZoomControlContainer;
 
