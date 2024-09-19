@@ -23,7 +23,7 @@ jobs:
       - uses: actions/setup-node@v4
 
       - name: Install legacy versions of peer dependencies
-        run: npm i diagram-js@${DIAGRAM_JS_VERSION} bpmn-js@${BPMN_JS_VERSION}
+        run: npm i --no-package-lock --no-save diagram-js@${DIAGRAM_JS_VERSION} bpmn-js@${BPMN_JS_VERSION}
       - run: npx playwright install --with-deps
 
       - run: npm run build-storybook --quiet
