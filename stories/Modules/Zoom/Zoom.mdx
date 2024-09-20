@@ -38,11 +38,11 @@ To customize the appearance of the zoom toolbar, you can register an additional 
     zoomControlRenderer: [
         "type",
         class CustomRenderer implements ZoomControlRenderer {
-            init = (options: ZoomControlInitOptions) {
+            init = (options: ZoomControlInitOptions) => {
 
             };
             render = (props: ZoomControlRenderProps) => {
-                
+
             };
         }
     ]
@@ -50,7 +50,7 @@ To customize the appearance of the zoom toolbar, you can register an additional 
 ```
 
 For a simplified implementation have a look on the following sections:
-* <LinkTo kind="Controls/Zoom/useAttachedZoom" story="docs">useAttachedZoom</LinkTo>.
+* <LinkTo kind="Diagram/useAttachedZoom" story="docs">useAttachedZoom</LinkTo>.
 * <LinkTo kind="Controls/Zoom/ZoomControlGroup" story="docs">ZoomControlGroup</LinkTo>.
 * <LinkTo kind="Controls/Zoom/ZoomInControl" story="docs">ZoomInControl</LinkTo>.
 * <LinkTo kind="Controls/Zoom/ZoomOutControl" story="docs">ZoomOutControl</LinkTo>.

@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 import { ZoomInButton, ZoomFitButton, ZoomOutButton } from "../../Components/Zoom";
 
-import useAttachedZoom from "./useAttachedZoom";
+import { useAttachedZoom } from "../../Diagram";
 import type { ZoomControlGroupProps } from "./Zoom.types";
 
 const ZoomControlContainer = styled.div`
