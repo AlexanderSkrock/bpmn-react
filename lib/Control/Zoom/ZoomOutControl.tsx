@@ -1,7 +1,7 @@
 import React from "react";
 
 import type { ZoomControlProps } from "./Zoom.types";
-import useAttachedZoom from "./useAttachedZoom";
+import { useAttachedZoom } from "../../Diagram";
 import { ZoomOutButton } from "../../Components/Zoom";
 
 

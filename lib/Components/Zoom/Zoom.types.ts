@@ -1,10 +1,3 @@
-export interface ZoomOptions {
-    initialZoom?: number;
-    step?: number;
-    minZoom?: number;
-    maxZoom?: number;
-}
-
 export interface ZoomInButtonProps {
     onZoomIn: () => void;
     title?: string;

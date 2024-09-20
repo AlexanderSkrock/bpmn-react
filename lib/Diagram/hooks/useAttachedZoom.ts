@@ -3,10 +3,10 @@ import { useCallback, useEffect } from "react";
 import { EventBusEventCallback } from "diagram-js/lib/core/EventBus";
 import { ElementLike } from "diagram-js/lib/model/Types";
 
-import { DiagramLike, getCanvas, useEventHandler } from "../../Diagram";
-import { useZoom } from "../../Components/Zoom";
-
-import type { AttachedZoomOptions } from "./Zoom.types";
+import { DiagramLike, getCanvas } from "../services";
+import type { AttachedZoomOptions } from "./hooks.types";
+import useEventHandler from "./useEventHandler"
+import useZoom from "./useZoom";
 
 
 const useAttachedZoom = (diagram: DiagramLike | null, { initialFit, ...zoomOptions }: AttachedZoomOptions = {}): [number, () => void, () => void, () => void, (nextZoom: number) => void] => {

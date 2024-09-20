@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { ZoomOptions } from "./Zoom.types";
+import { ZoomOptions } from "./hooks.types";
 
 /** Standard-Zoom (100%) */
 const DEFAULT_ZOOM_LEVEL = 1;
