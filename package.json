@@ -45,11 +45,6 @@
       "types": "./dist/types/Control/*/index.d.ts",
       "require": "./dist/cjs/Control/*/index.js",
       "import": "./dist/esm/Control/*/index.js"
-    },
-    "./util/*": {
-      "types": "./dist/types/util/*/index.d.ts",
-      "require": "./dist/cjs/util/*/index.js",
-      "import": "./dist/esm/util/*/index.js"
     }
   },
   "scripts": {

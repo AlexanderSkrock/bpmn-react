@@ -1,15 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import type { DiagramLike } from "../services";
-import { getOverlays } from "../services";
+import type { DiagramLike } from "../../Diagram";
+import { useEventHandler } from "../../Diagram";
 
-import useEventHandler from "./useEventHandler";
-import { Overlay } from "./hooks.types";
+import type { Overlay } from "./DynamicOverlays.types";
+import getDynamicOverlays from "./getDynamicOverlays";
 
 const useOverlays = (diagram: DiagramLike | null, overlays: Overlay[]): void => {
     const [overlayIds, setOverlayIds] = useState<string[]>([]);
 
-    const overlayService = useMemo(() => diagram ? getOverlays(diagram) : null, [diagram]);
+    const overlayService = useMemo(() => diagram ? getDynamicOverlays(diagram) : null, [diagram]);
 
     const resetOverlays = useCallback(() => {
         if (overlayService) {
@@ -21,11 +21,7 @@ const useOverlays = (diagram: DiagramLike | null, overlays: Overlay[]): void => 
 
     const initializeOverlays = useCallback(() => {
         if (overlayService) {
-            const ids = overlays.map(({ element, type, attributes }) => {
-                return type
-                    ? overlayService.add(element, type, attributes)
-                    : overlayService.add(element, attributes);
-            });
+            const ids = overlays.flatMap(overlayService.add);
             setOverlayIds(ids);
             console.log(`Registered ${ids.length} overlays.`);
         }

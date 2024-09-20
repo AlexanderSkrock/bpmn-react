@@ -8,9 +8,14 @@ import CoreModule from 'bpmn-js/lib/core';
 import { ModdleElement } from "bpmn-js/lib/model/Types";
 import { is as isType } from "bpmn-js/lib/util/ModelUtil"
 
-import { useOverlays } from "../../lib/Diagram";
 import { useBaseViewer } from "../../lib/Viewer"
-import { DynamicOverlaysModule, OverlayDefinition, OverlayDefinitionBuilder, OverlayDefinitionsBuilder } from "../../lib/Modules/DynamicOverlays";
+import {
+    DynamicOverlaysModule,
+    OverlayDefinition,
+    OverlayDefinitionBuilder,
+    OverlayDefinitionsBuilder,
+    useDynamicOverlays
+} from "../../lib/Modules/DynamicOverlays";
 import { CalledElementLoader, ProcessNavigationModule } from "../../lib/Modules/ProcessNavigation";
 import { ZoomModule } from "../../lib/Modules/Zoom";
 
@@ -55,7 +60,7 @@ const CustomViewer = ({
         ],
     });
 
-    useOverlays(viewer, currentOverlays);
+    useDynamicOverlays(viewer, currentOverlays);
 
     useEffect(() => {
         if (viewer && xml) {

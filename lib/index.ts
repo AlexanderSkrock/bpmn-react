@@ -7,5 +7,3 @@ export * as Overlays from "./Overlays";
 
 export * as Components from "./Components";
 export * as Control from "./Control";
-
-export * as util from "./util";

@@ -10,8 +10,10 @@ export type { ElementRegistryFilterCallback } from "diagram-js/lib/core/ElementR
 export type { default as Canvas } from "diagram-js/lib/core/Canvas";
 export type { OverlayAttrs, OverlaysFilter } from "diagram-js/lib/features/overlays/Overlays";
 
+export type Overlay = OverlayDefinition | OverlayDefinitionBuilder | OverlayDefinitionsBuilder;
+
 export interface DynamicOverlayService {
-  add: (overlay: OverlayDefinition | OverlayDefinitionBuilder | OverlayDefinitionsBuilder) => string[];
+  add: (overlay: Overlay) => string[];
   remove: (filter: OverlaysFilter) => void;
   clear: () => void;
 }
@@ -39,17 +41,17 @@ export interface OverlayDefinitionsBuilder {
   buildDefinitions: (elements: ElementLike[], env: OverlayBuilderEnvironment) => OverlayDefinition[];
 }
 
-export function isOverlayDefinition(o: OverlayDefinition | OverlayDefinitionBuilder | OverlayDefinitionsBuilder): o is OverlayDefinition {
+export function isOverlayDefinition(o: Overlay): o is OverlayDefinition {
   const overlay = o as OverlayDefinition;
   return !!overlay.element && !!overlay.config;
 }
 
-export function isOverlayDefinitionBuilder(o: OverlayDefinition | OverlayDefinitionBuilder | OverlayDefinitionsBuilder): o is OverlayDefinitionBuilder {
+export function isOverlayDefinitionBuilder(o: Overlay): o is OverlayDefinitionBuilder {
   const singleBuilder = o as OverlayDefinitionBuilder;
   return !!singleBuilder.buildDefinition;
 }
 
-export function isOverlayDefinitionsBuilder(o: OverlayDefinition | OverlayDefinitionBuilder | OverlayDefinitionsBuilder): o is OverlayDefinitionsBuilder {
+export function isOverlayDefinitionsBuilder(o: Overlay): o is OverlayDefinitionsBuilder {
   const multipleBuilder = o as OverlayDefinitionsBuilder;
   return !!multipleBuilder.buildDefinitions;
 }
