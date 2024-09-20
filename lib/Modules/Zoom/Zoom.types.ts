@@ -1,4 +1,4 @@
-import type { DiagramLike } from "../../util/services";
+import type { DiagramLike } from "../../Diagram";
 
 export interface ZoomControlRenderer {
     init: (options: ZoomControlInitOptions) => void;

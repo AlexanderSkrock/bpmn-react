@@ -5,12 +5,11 @@ import type { StoryObj, Meta } from "@storybook/react";
 import MoveCanvasModule from "diagram-js/lib/navigation/movecanvas";
 import { ModdleElement } from "bpmn-js/lib/model/Types";
 
+import { useBaseViewer } from "../../../lib/Viewer";
 import { Heatmap, HeatmapOptions } from "../../../lib/Overlays/Heatmap";
-import { DynamicOverlaysModule } from "../../../lib/Modules/DynamicOverlays";
+import { DynamicOverlaysModule, useDynamicOverlays } from "../../../lib/Modules/DynamicOverlays";
 import { ZoomModule } from "../../../lib/Modules/Zoom";
 import { CalledElementLoader, ProcessNavigationModule } from "../../../lib/Modules/ProcessNavigation";
-import { useOverlays } from "../../../lib/Diagram"
-import { useBaseViewer } from "../../../lib/Viewer";
 
 const HeatmapViewer = ({
     xml,
@@ -47,11 +46,11 @@ const HeatmapViewer = ({
                         }
                     }
                 ],
-            }
+            },
         ],
     });
 
-    useOverlays(viewer, overlays);
+    useDynamicOverlays(viewer, overlays);
 
     useEffect(() => {
         if (viewer && xml) {

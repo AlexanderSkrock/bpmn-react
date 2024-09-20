@@ -1,5 +1,5 @@
 import type { ZoomOptions } from "../../Components/Zoom";
-import type { DiagramLike } from "../../util/services";
+import type { DiagramLike } from "../../Diagram";
 
 export interface AttachedZoomOptions extends ZoomOptions {
     initialFit?: boolean,

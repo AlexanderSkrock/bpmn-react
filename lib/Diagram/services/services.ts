@@ -23,11 +23,11 @@ export const getElementRegistry = (diagram: DiagramLike): ElementRegistry  => {
     }
 }
 
-export const getEventBus = (diagram: DiagramLike): EventBus => {
+export const getEventBus = <T> (diagram: DiagramLike): EventBus<T> => {
     if (diagram instanceof Diagram) {
         return diagram.get("eventBus");
     } else {
-        return diagram.eventBus as EventBus;
+        return diagram.eventBus as EventBus<T>;
     }
 }
 
