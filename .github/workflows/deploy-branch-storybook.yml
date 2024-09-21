@@ -1,0 +1,53 @@
+name: Deploy Storybook (PR)
+
+on:
+  workflow_call:
+
+env:
+  PR_REPO_NAME: bpmn-react-pr-${{ github.event.pull_request.node_id }}
+
+jobs:
+  create-pr-repository:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create new repository for temporary deployment
+        uses: octobay/create-repository-action@v1
+        with:
+          name: ${{ env.PR_REPO_NAME }}
+          org: alexanderskrock
+    
+  update-pull-request-repository:
+    needs:
+      - create-pr-repository
+
+    runs-on: ubuntu-latest
+    environment: 
+      name: pull-request
+      url: https://alexanderskrock.github.io/${{ env.PR_REPO_NAME }}/
+    steps:
+      - uses: actions/setup-node@v4
+
+      - uses: actions/checkout@v4
+        with:
+          path: "repository"
+      - run: npm ci
+      - run: npm run build-storybook
+
+      - uses: actions/checkout@v4
+        with:
+          repository: alexanderskrock/${{ env.PR_REPO_NAME }}
+          path: "pull-request-repository"    
+      
+      - name: Move files to pull request repository
+        run: cp -r ./repository/storybook-static/* ./pull-request-repository/storybook-static/
+
+      - name: Set GitHub Actions as Commit Author
+        run: |
+          git config --global user.name github-actions
+          git config --global user.email github-actions@github.com
+
+      - run: |
+          cd ./pull-request-repository
+          git add -A
+          git commit -m $GITHUB_SHA
+          git push -u origin main

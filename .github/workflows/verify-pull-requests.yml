@@ -20,3 +20,15 @@ jobs:
   
   verify-storybook-legacy-peerdeps-bpmn-io:
     uses: ./.github/workflows/test-storybook-legacy-peerdeps-bpmn-io.yml
+
+  deploy-pull-request:
+    needs:
+      - verify-lint
+      - verify-build
+      - verify-storybook
+      - verify-storybook-legacy-peerdeps-react
+      - verify-storybook-legacy-peerdeps-bpmn-io
+    
+    uses: ./.github/workflows/deploy-branch-storybook.yml
+
+  

@@ -1,0 +1,19 @@
+name: Delete Deployed Storybook (Pull Request)
+on:
+  pull_request:
+    branches:
+        - main
+    types:
+        - closed
+
+env:
+  PR_REPO_NAME: bpmn-react-pr-${{ github.event.pull_request.node_id }}
+
+jobs:
+  delete-pr-repository:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete repository for temporary deployment
+        uses: octobay/delete-repository-action@v1
+        with:
+          name: alexanderskrock/${{ env.PR_REPO_NAME }}
