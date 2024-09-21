@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Create new repository for temporary deployment
-        run: gh repo create "${ORG_NAME}/${PR_REPO_NAME}"
+        run: gh repo create "${ORG_NAME}/${PR_REPO_NAME}" --public
         env:
           GH_TOKEN: ${GITHUB_TOKEN}
 
