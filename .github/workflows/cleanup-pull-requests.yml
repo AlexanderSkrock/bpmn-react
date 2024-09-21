@@ -9,6 +9,9 @@ on:
 env:
   PR_REPO_NAME: bpmn-react-pr-${{ github.event.pull_request.node_id }}
 
+permissions:
+  repository: write
+
 jobs:
   delete-pr-repository:
     runs-on: ubuntu-latest
