@@ -11,10 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Create new repository for temporary deployment
-        uses: octobay/create-repository-action@v1
-        with:
-          name: ${{ env.PR_REPO_NAME }}
-          org: alexanderskrock
+        run: gh repo create alexanderskrock/{{ env.$PR_REPO_NAME }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
   update-pull-request-repository:
     needs:
@@ -40,6 +39,48 @@ jobs:
       
       - name: Move files to pull request repository
         run: cp -r ./repository/storybook-static/* ./pull-request-repository/storybook-static/
+
+      - name: Add deployment action
+        run: |
+          YAML=$(cat << EOF
+          name: Deploy Storybook
+
+          on:
+            push:
+              branches:
+                - main
+
+          # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+          permissions:
+            contents: read
+            pages: write
+            id-token: write
+
+          # Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+          # However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+          concurrency:
+            group: "pages"
+            cancel-in-progress: true
+
+          jobs:      
+              runs-on: ubuntu-latest
+              environment:
+                name: github-pages
+                url: ${{ steps.deployment.outputs.page_url }}
+
+              steps:
+                - uses: actions/checkout@v4
+                - uses: actions/setup-node@v4
+
+                - uses: actions/configure-pages@v5
+                - uses: actions/upload-pages-artifact@v3
+                  with:
+                    path: "./storybook-static"
+                - id: deployment
+                  uses: actions/deploy-pages@v4"
+          EOF
+          )
+          echo ${YAML} >> ./pull-request-repository/.github/workflows/deploy.yml
 
       - name: Set GitHub Actions as Commit Author
         run: |

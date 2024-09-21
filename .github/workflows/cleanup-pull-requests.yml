@@ -14,6 +14,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Delete repository for temporary deployment
-        uses: octobay/delete-repository-action@v1
-        with:
-          name: alexanderskrock/${{ env.PR_REPO_NAME }}
+        run: gh repo delete --yes alexanderskrock/{{ env.$PR_REPO_NAME }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
