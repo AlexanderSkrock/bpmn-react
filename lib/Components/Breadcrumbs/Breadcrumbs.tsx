@@ -28,7 +28,7 @@ const Breadcrumbs = ({ path, onClick, direction = "horizontal", className }: Bre
 
     const breadcrumbs = useMemo(() => path.map((pathEntry) => (
         <Breadcrumb key={ `Breadcrumbs_${pathEntry.key}` } path={ pathEntry } onClick={ onClick } direction={ direction } />
-    )), [path, onClick]);
+    )), [direction, path, onClick]);
 
     return (
         <Container className={ classNames }>

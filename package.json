@@ -49,9 +49,9 @@
   },
   "scripts": {
     "lint": "eslint lib stories",
-    "build-ts-docs": "typedoc",
-    "ts-docs": "typedoc --watch",
     "build": "rollup -c --bundleConfigAsCjs",
+    "ts-docs": "typedoc --watch",
+    "build-ts-docs": "typedoc --build",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "test-storybook": "test-storybook"

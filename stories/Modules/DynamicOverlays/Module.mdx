@@ -1,7 +1,12 @@
-import { Meta } from "@storybook/blocks";
+import { Canvas, Meta } from "@storybook/blocks";
 import LinkTo from "@storybook/addon-links/react";
 
-<Meta title="Modules/DynamicOverlays/Module" />
+import { OverlayDefinitionExample, OverlayDefinitionBuilderExample, OverlayDefinitionsBuilderExample } from "./Module.stories";
+import OverlayDefinitionStoryComponentCode from "./OverlayDefinitionStoryComponent?raw";
+import OverlayDefinitionBuilderStoryComponentCode from "./OverlayDefinitionBuilderStoryComponent?raw";
+import OverlayDefinitionsBuilderStoryComponentCode from "./OverlayDefinitionsBuilderStoryComponent?raw";
+
+<Meta title="Modules/DynamicOverlays" />
 
 # Overview
 
@@ -45,74 +50,16 @@ When it comes to defining dynamic overlays there are three supported types.
 
 # Examples
 
-## Simple Overlay Definition
+## Overlay Definition
 
-```ts
-const element = document.createElement();
-element.innerText("This activity is very important!");
+<Canvas of={ OverlayDefinitionExample } source={ { code: OverlayDefinitionStoryComponentCode } } />
 
-useDynamicOverlays(viewer, [{
-  type: "",
-  interactive: false,
-  element: "Activity_12345",
-  config: {
-    position: {
-        bottom: -5,
-        right: -5,
-    },
-    html: element,
-  },
-}]);
-```
+## Overlay Definition Builder
 
-## Simple Builder
+<Canvas of={ OverlayDefinitionBuilderExample } source={ { code: OverlayDefinitionBuilderStoryComponentCode } } />
 
-```ts
-useDynamicOverlays(viewer, [{
-  elementFilter: (element: ElementLike) => is(element, "bpmn:userTask"),
-  buildDefinition: (element: ElementLike) => {
-    const htmlElement = document.createElement("div");
-    htmlElement.style.width = `${element.width}px`;
-    htmlElement.style.height = `${element.height}px`;
-    htmlElement.title = element.id;
+## Overlay Definitions Builder
 
-    return {
-      interactive: true,
-      element: element.id,
-      config: {
-        position: {
-            bottom: -5,
-            right: -5,
-        },
-        html: element,
-      }
-    }
-  }
-}]);
-```
-
-## Complex builder
-
-```ts
-useDynamicOverlays(viewer, [{
-  elementFilter: (element: ElementLike) => true,
-  buildDefinitions: (elements: ElementLike[], env: OverlayBuilderEnvironment) => {
-    const htmlElement = document.createElement("div");
-    htmlElement.innerText = `This model contains a total of ${elements.length} elements.`;
-
-    return {
-      interactive: false,
-      element: env.rootElement().id,
-      config: {
-        position: {
-            top: 0,
-            left: 0,
-        },
-        html: htmlElement,
-      }
-    }
-  }
-}]);
-```
+<Canvas of={ OverlayDefinitionsBuilderExample } source={ { code: OverlayDefinitionsBuilderStoryComponentCode } } />
 
 More examples can be found in the <LinkTo kind="Overlays/Documentation" story="docs">Overlays</LinkTo> section.

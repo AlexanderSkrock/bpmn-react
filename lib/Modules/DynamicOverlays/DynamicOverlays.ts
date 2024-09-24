@@ -45,6 +45,10 @@ export default class DynamicOverlays implements DynamicOverlayService {
         const ids: string[] = [];
 
         overlayDefinitions.forEach(({ type, element, interactive, config }: OverlayDefinition) => {
+            if (typeof element === "string" && !this._elementRegistry.get(element)) {
+                return;
+            }
+
             const overlayConfig = interactive
                 ? wrapOverlayInteractive(config)
                 : wrapOverlayNonInteractive(config);
