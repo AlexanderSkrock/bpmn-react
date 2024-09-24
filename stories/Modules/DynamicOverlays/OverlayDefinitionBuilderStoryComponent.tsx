@@ -8,24 +8,25 @@ import { ZoomModule } from "../../../lib/Modules/Zoom";
 import { DynamicOverlaysModule, ElementLike, Overlay, useDynamicOverlays } from "../../../lib/Modules/DynamicOverlays";
 
 const overlays: Overlay[] = [{
-    elementFilter: (element: ElementLike) => is(element, "bpmn:userTask"),
+    elementFilter: (element: ElementLike) => is(element, "bpmn:UserTask"),
     buildDefinition: (element: ElementLike) => {
         const htmlElement = document.createElement("div");
         htmlElement.style.width = `${element.width}px`;
         htmlElement.style.height = `${element.height}px`;
-        htmlElement.title = element.id;
+        htmlElement.style.backgroundColor = "seagreen";
+        htmlElement.style.opacity = "0.2";
 
-        return [{
+        return {
             interactive: true,
             element: element.id,
             config: {
                 position: {
-                    bottom: -5,
-                    right: -5,
+                    top: 0,
+                    left: 0,
                 },
-                html: element,
+                html: htmlElement,
             }
-        }]
+        }
     }
 }];
 
