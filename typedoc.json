@@ -8,11 +8,11 @@
   "hidePageHeader": true,
   "hideBreadcrumbs": true,
   "hidePageTitle": false,
-  "parametersFormat": "table",
-  "interfacePropertiesFormat": "table",
-  "classPropertiesFormat": "table",
-  "typeDeclarationFormat": "table",
-  "propertyMembersFormat": "table",
+  "parametersFormat": "list",
+  "interfacePropertiesFormat": "list",
+  "classPropertiesFormat": "list",
+  "typeDeclarationFormat": "list",
+  "propertyMembersFormat": "list",
   "plugin": [
     "typedoc-plugin-markdown"
   ]
