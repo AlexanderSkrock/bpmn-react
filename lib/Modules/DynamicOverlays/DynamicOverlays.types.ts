@@ -10,8 +10,14 @@ export type { ElementRegistryFilterCallback } from "diagram-js/lib/core/ElementR
 export type { default as Canvas } from "diagram-js/lib/core/Canvas";
 export type { OverlayAttrs, OverlaysFilter } from "diagram-js/lib/features/overlays/Overlays";
 
+/**
+ * The union type that contains all possibilities to define dynamic overlays.
+ */
 export type Overlay = OverlayDefinition | OverlayDefinitionBuilder | OverlayDefinitionsBuilder;
 
+/**
+ * A service complying with this interface is registered at the diagram instance. It defines the public api to work dynamic overlays.
+ */
 export interface DynamicOverlayService {
     /**
      * Registers an overlay at the Diagram
@@ -29,6 +35,9 @@ export interface DynamicOverlayService {
     clear: () => void;
 }
 
+/**
+ * This interface defines additional information that will be available to all {@link OverlayDefinitionBuilder} and {@link OverlayDefinitionsBuilder}.
+ */
 export interface OverlayBuilderEnvironment {
     /**
      * Provides the current root element of the diagram
@@ -47,6 +56,14 @@ export interface OverlayBuilderEnvironment {
     delegateEvent: (eventType: string, event: Event, element: ElementLike) => void;
 }
 
+/**
+ * A wrapper around the {@link OverlayAttrs} type provided by diagram-js.
+ * <br />
+ * This interface can be used to define static overlays and represents results of the builder types.
+ * <br />
+ * @see OverlayDefinitionBuilder
+ * @see OverlayDefinitionsBuilder
+ */
 export interface OverlayDefinition {
     /**
      * The type of overlay. This attribute can be used to classify overlays and group the together.
@@ -69,6 +86,10 @@ export interface OverlayDefinition {
     config: OverlayAttrs;
 }
 
+/**
+ * The main interface to implement dynamic overlays. It allows to select elements that fulfill a filter criterion and maps them 1:1 to an {@link OverlayDefinition}.
+ * For use cases that can not be implemented with this 1:1 mapping have a look at {@link OverlayDefinitionsBuilder}.
+ */
 export interface OverlayDefinitionBuilder {
     /**
      * The filter criterion to determine which elements this builder applies to.
@@ -78,6 +99,10 @@ export interface OverlayDefinitionBuilder {
     buildDefinition: (element: ElementLike, env: OverlayBuilderEnvironment) => OverlayDefinition;
 }
 
+/**
+ * This interface can also be used to implement dynamic overlays. While {@link OverlayDefinitionBuilder} is sufficient most of the time,
+ * this interface can be used to handle more complex scenarios where a 1:1 mapping of elements to overlays is not enough.
+ */
 export interface OverlayDefinitionsBuilder {
     /**
      * The filter criterion to determine which elements this builder applies to.

@@ -6,6 +6,11 @@ import { useEventHandler } from "../../Diagram";
 import type { Overlay } from "./DynamicOverlays.types";
 import getDynamicOverlays from "./getDynamicOverlays";
 
+/**
+ * A custom React hook to simplify the usage of dynamic overlays. It handles diagram events and component lifecycle events appropriately, so you are only left with defining and changing your overlays.
+ * @param diagram the diagram to work with
+ * @param overlays the overlays to apply
+ */
 const useOverlays = (diagram: DiagramLike | null, overlays: Overlay[]): void => {
     const [overlayIds, setOverlayIds] = useState<string[]>([]);
 
