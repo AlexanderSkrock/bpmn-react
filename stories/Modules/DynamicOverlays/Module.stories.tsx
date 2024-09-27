@@ -6,6 +6,7 @@ import OverlayDefinitionsBuilderStoryComponent from "./OverlayDefinitionsBuilder
 
 export default {
   title: "Modules/DynamicOverlays",
+  tags: [ "!dev" ],
 }
 
 export const OverlayDefinitionExample = {
