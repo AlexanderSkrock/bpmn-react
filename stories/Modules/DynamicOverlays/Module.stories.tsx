@@ -5,7 +5,7 @@ import OverlayDefinitionBuilderStoryComponent from "./OverlayDefinitionBuilderSt
 import OverlayDefinitionsBuilderStoryComponent from "./OverlayDefinitionsBuilderStoryComponent";
 
 export default {
-  title: "Modules/DynamicOverlays"
+  title: "Modules/DynamicOverlays",
 }
 
 export const OverlayDefinitionExample = {
