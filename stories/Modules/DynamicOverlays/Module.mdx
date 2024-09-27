@@ -1,7 +1,8 @@
 import { Canvas, Meta } from "@storybook/blocks";
 import LinkTo from "@storybook/addon-links/react";
 
-import { OverlayDefinitionExample, OverlayDefinitionBuilderExample, OverlayDefinitionsBuilderExample } from "./Module.stories";
+import { OverlayDefinitionExample, OverlayDefinitionBuilderExample, OverlayDefinitionsBuilderExample, DynamicOverlaysConfigurationExample } from "./Module.stories";
+import DynamicOverlaysConfigurationStoryComponentCode from "./DynamicOverlaysConfigurationStoryComponent?raw";
 import OverlayDefinitionStoryComponentCode from "./OverlayDefinitionStoryComponent?raw";
 import OverlayDefinitionBuilderStoryComponentCode from "./OverlayDefinitionBuilderStoryComponent?raw";
 import OverlayDefinitionsBuilderStoryComponentCode from "./OverlayDefinitionsBuilderStoryComponent?raw";
@@ -16,25 +17,7 @@ This module extends the possibilities provided by the `OverlaysModule` from diag
 
 The `Dynamic Overlays Module` can be added to any `Diagram` instance via the `additionalModules` config property.
 
-```tsx
-import React, { useEffect } from "react";
-
-import CoreModule from 'bpmn-js/lib/core';
-import { useBaseViewer } from "bpmn-react/Viewer"
-import { DynamicOverlaysModule } from "bpmn-react/Modules/DynamicOverlays"
-
-const BaseViewer = ({ xml }) => {
-    const [handleViewerRef, viewer] = useBaseViewer({ additionalModules: [ CoreModule, DynamicOverlaysModule ] });
-
-    useEffect(() => {
-        if (xml) {
-            viewer?.importXML(xml);
-        }
-    }, [viewer, xml])
-
-    return <div ref={ handleViewerRef } />
-}
-```
+<Canvas of={ DynamicOverlaysConfigurationExample } sourceState="shown" source={ { code: DynamicOverlaysConfigurationStoryComponentCode } } />
 
 # Usage
 

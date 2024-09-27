@@ -3,10 +3,22 @@ import React from "react";
 import OverlayDefinitionStoryComponent from "./OverlayDefinitionStoryComponent";
 import OverlayDefinitionBuilderStoryComponent from "./OverlayDefinitionBuilderStoryComponent";
 import OverlayDefinitionsBuilderStoryComponent from "./OverlayDefinitionsBuilderStoryComponent";
+import DynamicOverlaysConfigurationStoryComponent from "./DynamicOverlaysConfigurationStoryComponent";
 
 export default {
   title: "Modules/DynamicOverlays",
   tags: [ "!dev" ],
+}
+
+export const DynamicOverlaysConfigurationExample = {
+    render: (args, { loaded: { xml } }) => {
+        return <DynamicOverlaysConfigurationStoryComponent xml={ xml } />
+    },
+    loaders: [
+        async () => ({
+            xml: await (await fetch("modules/module_configuration.bpmn")).text(),
+        }),
+    ],
 }
 
 export const OverlayDefinitionExample = {

@@ -51,9 +51,9 @@
     "lint": "eslint lib stories",
     "build": "rollup -c --bundleConfigAsCjs",
     "ts-docs": "typedoc --watch",
-    "build-ts-docs": "typedoc --build",
+    "build-ts-docs": "typedoc",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build",
+    "build-storybook": "typedoc && storybook build",
     "test-storybook": "test-storybook"
   },
   "peerDependencies": {
