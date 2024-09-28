@@ -48,14 +48,15 @@
     }
   },
   "scripts": {
-    "dev": "run-p \"eslint:dev\" \"ts-docs:dev\" \"storybook:dev\"",
-    "build": "rollup -c --bundleConfigAsCjs",
+    "dev": "run-p \"**:dev\"",
+    "lint": "run-s \"**:lint\"",
+    "test": "run-s \"**:test\"",
+    "build": "run-s rollup:build",
     "build-docs": "run-s \"ts-docs:build\" \"storybook:build\"",
-    "lint": "run-s \"eslint:lint\"",
-    "test": "run-s \"storybook:test\"",
 
-    "eslint:dev": "",
     "eslint:lint": "eslint lib stories",
+
+    "rollup:build": "rollup -c --bundleConfigAsCjs",
 
     "ts-docs:dev": "typedoc --watch",
     "ts-docs:build": "typedoc",
