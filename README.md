@@ -1,7 +1,7 @@
 <!-- PROJECT SHIELDS -->
 ![MIT License][license-shield]
 ![NPM Version][version-shield]
-![GitHub Actions Workflow Status][storybook-shield]
+![GitHub Actions Workflow Status][docs-shield]
 
 <!-- PROJECT -->
 <br />
@@ -33,5 +33,5 @@ If you have a suggestion that would make this better, please fork the repo and c
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 [license-shield]: https://img.shields.io/github/license/alexanderskrock/bpmn-react.svg?style=for-the-badge
 [version-shield]: https://img.shields.io/npm/v/bpmn-react?style=for-the-badge
-[storybook-shield]: https://img.shields.io/website?url=https%3A%2F%2Fbpmn-react.projects.skrock.dev%2F&style=for-the-badge&label=Storybook
+[docs-shield]: https://img.shields.io/website?url=https%3A%2F%2Fbpmn-react.projects.skrock.dev%2F&style=for-the-badge&label=Docs
 

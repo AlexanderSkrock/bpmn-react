@@ -1,4 +1,4 @@
-name: Deploy Storybook
+name: Deploy docs
 
 on:
   push:
@@ -18,12 +18,12 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  verify-storybook:
-    uses: ./.github/workflows/test-storybook.yml
+  verify-docs:
+    uses: ./.github/workflows/test-docs.yml
 
   deploy:
     needs:
-      - verify-storybook
+      - verify-docs
       
     runs-on: ubuntu-latest
     environment:
@@ -35,11 +35,11 @@ jobs:
       - uses: actions/setup-node@v4
       
       - run: npm ci
-      - run: npm run build-storybook
+      - run: npm run build-docs
 
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: "./storybook-static"
+          path: "./docs-static"
       - id: deployment
         uses: actions/deploy-pages@v4

@@ -12,11 +12,11 @@ jobs:
   verify-build:
     uses: ./.github/workflows/build-library.yml
 
-  verify-storybook:
-    uses: ./.github/workflows/test-storybook.yml
+  verify-docs:
+    uses: ./.github/workflows/test-docs.yml
 
-  verify-storybook-legacy-peerdeps-react:
-    uses: ./.github/workflows/test-storybook-legacy-peerdeps-react.yml
+  verify-docs-legacy-peerdeps-react:
+    uses: ./.github/workflows/test-docs-legacy-peerdeps-react.yml
   
-  verify-storybook-legacy-peerdeps-bpmn-io:
-    uses: ./.github/workflows/test-storybook-legacy-peerdeps-bpmn-io.yml
+  verify-docs-legacy-peerdeps-bpmn-io:
+    uses: ./.github/workflows/test-docs-legacy-peerdeps-bpmn-io.yml

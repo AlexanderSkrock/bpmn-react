@@ -50,7 +50,7 @@
   "scripts": {
     "dev": "run-p \"**:dev\"",
     "lint": "run-s \"**:lint\"",
-    "test": "run-s \"**:test\"",
+    "test-docs": "run-s \"ts-docs:test\" \"storybook:test\"",
     "build": "run-s rollup:build",
     "build-docs": "run-s \"ts-docs:build\" \"storybook:build\"",
 
@@ -62,7 +62,7 @@
     "ts-docs:build": "typedoc",
 
     "storybook:dev": "storybook dev -p 6006",
-    "storybook:build": "storybook build",
+    "storybook:build": "storybook build -o ./docs-static",
     "storybook:test": "test-storybook"
   },
   "peerDependencies": {
