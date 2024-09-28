@@ -20,7 +20,7 @@ const overlays = [{
     },
 }];
 
-const OverlayDefinitionStoryComponent = ({ xml }) => {
+const OverlayDefinitionStoryComponent = ({ xml }: { xml: string }) => {
     const [handleViewerRef, viewer] = useBaseViewer({
         additionalModules: [
             CoreModule,

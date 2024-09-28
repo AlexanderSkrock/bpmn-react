@@ -5,7 +5,7 @@ import CoreModule from "bpmn-js/lib/core";
 import { useBaseViewer } from "../../../lib/Viewer";
 import { DynamicOverlaysModule } from "../../../lib/Modules/DynamicOverlays";
 
-const ViewerWithDynamicOverlaysModule = ({ xml }) => {
+const ViewerWithDynamicOverlaysModule = ({ xml }: { xml: string }) => {
     const [handleViewerRef, viewer] = useBaseViewer({ additionalModules: [ CoreModule, DynamicOverlaysModule ] });
 
     useEffect(() => {
