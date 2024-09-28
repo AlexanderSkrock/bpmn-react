@@ -48,8 +48,8 @@
     }
   },
   "scripts": {
-    "dev": "run-p \"**:dev\"",
-    "lint": "run-s \"**:lint\"",
+    "dev": "run-p \"*:dev\"",
+    "lint": "run-s \"*:lint\"",
     "test-docs": "run-s \"ts-docs:test\" \"storybook:test\"",
     "build": "run-s rollup:build",
     "build-docs": "run-s \"ts-docs:build\" \"storybook:build\"",
