@@ -8,6 +8,23 @@ const preview: Preview = {
                 date: /Date$/i,
             },
         },
+        options: {
+            storySort: {
+                method: "alphabetical",
+                order: [
+                    "Diagram",
+                    "Viewer",
+                    "Modeler",
+                    "Modules", [
+                        "DynamicOverlays", [
+                            "Docs", "getDynamicOverlays", "useDynamicOverlays", "*", "Types"
+                        ],
+                    ],
+                    "Overlays",
+                ],
+                locales: "en-US",
+            },
+        },
     },
 };
 

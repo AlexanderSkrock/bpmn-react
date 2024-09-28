@@ -3,7 +3,7 @@ import type { StorybookConfig } from "@storybook/react-vite";
 const config: StorybookConfig = {
   stories: [
     "../stories/**/*.mdx",
-    "../stories/**/*.@(js|jsx|mjs|ts|tsx)"
+    "../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)"
   ],
   staticDirs: [
     "../resources"
@@ -16,10 +16,7 @@ const config: StorybookConfig = {
   },
   addons: [
     "@storybook/addon-essentials",
-    "@storybook/addon-docs",
     "@storybook/addon-links",
-    "@storybook/addon-interactions",
-    "@storybook/addon-storysource",
   ],
   typescript: {
     reactDocgen: "react-docgen-typescript",

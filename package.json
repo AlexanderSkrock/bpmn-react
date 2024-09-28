@@ -50,8 +50,10 @@
   "scripts": {
     "lint": "eslint lib stories",
     "build": "rollup -c --bundleConfigAsCjs",
+    "ts-docs": "typedoc --watch",
+    "build-ts-docs": "typedoc",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build",
+    "build-storybook": "typedoc && storybook build",
     "test-storybook": "test-storybook"
   },
   "peerDependencies": {
@@ -72,11 +74,8 @@
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^11.1.6",
-    "@storybook/addon-docs": "^8.2.9",
     "@storybook/addon-essentials": "^8.2.9",
-    "@storybook/addon-interactions": "^8.2.9",
     "@storybook/addon-links": "^8.2.9",
-    "@storybook/addon-storysource": "^8.2.9",
     "@storybook/blocks": "^8.2.9",
     "@storybook/react": "^8.2.9",
     "@storybook/react-vite": "^8.2.9",
@@ -98,6 +97,8 @@
     "rollup-plugin-typescript2": "^0.36.0",
     "storybook": "^8.2.9",
     "tslib": "^2.7.0",
+    "typedoc": "^0.26.7",
+    "typedoc-plugin-markdown": "^4.2.8",
     "typescript": "^5.6.2",
     "typescript-eslint": "^8.6.0"
   },

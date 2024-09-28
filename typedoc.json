@@ -1,0 +1,19 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "lib/index.ts"
+  ],
+  "out": "./ts-docs",
+  "disableSources": true,
+  "hidePageHeader": true,
+  "hideBreadcrumbs": true,
+  "hidePageTitle": false,
+  "parametersFormat": "list",
+  "interfacePropertiesFormat": "list",
+  "classPropertiesFormat": "list",
+  "typeDeclarationFormat": "list",
+  "propertyMembersFormat": "list",
+  "plugin": [
+    "typedoc-plugin-markdown"
+  ]
+}
