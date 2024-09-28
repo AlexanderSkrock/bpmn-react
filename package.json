@@ -48,13 +48,21 @@
     }
   },
   "scripts": {
-    "lint": "eslint lib stories",
+    "dev": "run-p \"eslint:dev\" \"ts-docs:dev\" \"storybook:dev\"",
     "build": "rollup -c --bundleConfigAsCjs",
-    "ts-docs": "typedoc --watch",
-    "build-ts-docs": "typedoc",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "typedoc && storybook build",
-    "test-storybook": "test-storybook"
+    "build-docs": "run-s \"ts-docs:build\" \"storybook:build\"",
+    "lint": "run-s \"eslint:lint\"",
+    "test": "run-s \"storybook:test\"",
+
+    "eslint:dev": "",
+    "eslint:lint": "eslint lib stories",
+
+    "ts-docs:dev": "typedoc --watch",
+    "ts-docs:build": "typedoc",
+
+    "storybook:dev": "storybook dev -p 6006",
+    "storybook:build": "storybook build",
+    "storybook:test": "test-storybook"
   },
   "peerDependencies": {
     "bpmn-js": "^16.0.0 || ^17.0.0",
@@ -89,6 +97,7 @@
     "eslint": "^9.10.0",
     "eslint-plugin-react": "^7.36.1",
     "globals": "^15.9.0",
+    "npm-run-all": "^4.1.5",
     "path": "^0.12.7",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
