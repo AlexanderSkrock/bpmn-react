@@ -8,7 +8,12 @@ import type { AttachedZoomOptions } from "./hooks.types";
 import useEventHandler from "./useEventHandler"
 import useZoom from "./useZoom";
 
-
+/**
+ * This hook handles the integration with the zoom API of `diagram-js` and allows modifying the current zoom while staying in sync with external changes to the zoom level.
+ * @param diagram diagram instance to attach to
+ * @param options configuration of the zoom behaviour 
+ * @returns 
+ */
 const useAttachedZoom = (diagram: DiagramLike | null, { initialFit, ...zoomOptions }: AttachedZoomOptions = {}): [number, () => void, () => void, () => void, (nextZoom: number) => void] => {
     const [currentZoom, increaseZoom, decreaseZoom, setZoom] = useZoom(zoomOptions)
 
