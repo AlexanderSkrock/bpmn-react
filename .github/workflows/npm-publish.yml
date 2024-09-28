@@ -11,21 +11,21 @@ jobs:
   verify-build:
     uses: ./.github/workflows/build-library.yml
 
-  verify-storybook-tests:
-    uses: ./.github/workflows/test-storybook.yml
+  verify-docs-tests:
+    uses: ./.github/workflows/test-docs.yml
 
-  verify-storybook-legacy-peerdeps-react:
-    uses: ./.github/workflows/test-storybook-legacy-peerdeps-react.yml
+  verify-docs-legacy-peerdeps-react:
+    uses: ./.github/workflows/test-docs-legacy-peerdeps-react.yml
     
-  verify-storybook-legacy-peerdeps-bpmn-io:
-    uses: ./.github/workflows/test-storybook-legacy-peerdeps-bpmn-io.yml
+  verify-docs-legacy-peerdeps-bpmn-io:
+    uses: ./.github/workflows/test-docs-legacy-peerdeps-bpmn-io.yml
 
   publish-npm:
     needs:
       - verify-build
-      - verify-storybook-tests
-      - verify-storybook-legacy-peerdeps-react
-      - verify-storybook-legacy-peerdeps-bpmn-io
+      - verify-docs-tests
+      - verify-docs-legacy-peerdeps-react
+      - verify-docs-legacy-peerdeps-bpmn-io
 
     runs-on: ubuntu-latest
     steps:
