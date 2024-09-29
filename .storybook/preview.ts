@@ -12,12 +12,12 @@ const preview: Preview = {
             storySort: {
                 method: "alphabetical",
                 order: [
-                    "Diagram",
+                    "Diagram", [ "Docs", "*", "Types" ],
                     "Viewer",
                     "Modeler",
                     "Modules", [
                         "DynamicOverlays", [
-                            "Docs", "getDynamicOverlays", "useDynamicOverlays", "*", "Types"
+                            "Docs", "*", "Types"
                         ],
                     ],
                     "Overlays",

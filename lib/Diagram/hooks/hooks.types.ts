@@ -10,8 +10,17 @@ export type { OverlayAttrs } from "diagram-js/lib/features/overlays/Overlays";
  * This interface can be used to define overlays that can be passed to the {@link useOverlays} hook.
  */
 export type Overlay = {
+    /**
+     * The element or its id the overlay should be attached to.
+     */
     element: string | Element,
+    /**
+     * An optiona type this overlay belongs to.
+     */
     type?: string,
+    /**
+     * Contains the html implementation of this overlay and information on its positioning.
+     */
     attributes: OverlayAttrs
 }
 

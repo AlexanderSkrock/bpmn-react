@@ -1,10 +1,4 @@
 export type {
-    Element,
-    ElementLike,
-    ElementRegistryFilterCallback,
-    Canvas,
-    OverlayAttrs,
-    OverlaysFilter,
     OverlayBuilderEnvironment,
     OverlayDefinition,
     OverlayDefinitionBuilder,

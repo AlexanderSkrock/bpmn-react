@@ -1,6 +1,5 @@
 export type {
     AttachedZoomOptions,
-    EventBusEventCallback,
     Overlay,
 } from "./hooks.types";
 

@@ -1,9 +1,4 @@
 export type {
-    BaseViewer,
-    Viewer,
-    NavigatedViewer,
-    BaseViewerOptions,
-
     UseBpmnJsViewerOptions,
     UseBpmnJsViewerResult,
 } from "./Viewer.types";

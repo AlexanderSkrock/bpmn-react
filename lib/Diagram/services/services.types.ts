@@ -5,7 +5,10 @@ import ElementRegistry from "diagram-js/lib/core/ElementRegistry";
 import Overlays from "diagram-js/lib/features/overlays/Overlays";
 import InteractionEvents from "diagram-js/lib/features/interaction-events/InteractionEvents";
 
-type diagramServices = {
+/**
+ * A compound types which contains a growing collection of known {@link Diagram} services.
+ */
+export type DiagramServices = {
     "canvas": Canvas,
     "elementRegistry": ElementRegistry,
     "eventBus": EventBus,
@@ -13,4 +16,7 @@ type diagramServices = {
     "overlays": Overlays,
 };
 
-export type DiagramLike = Diagram | Partial<{ [Key in keyof diagramServices]: diagramServices[Key] }> & { [key: string]: unknown };
+/**
+ * A type alias which represents either a {@link Diagram} or a similar object which provides a varying number of services.
+ */
+export type DiagramLike = Diagram | Partial<{ [Key in keyof DiagramServices]: DiagramServices[Key] }> & { [key: string]: unknown };
