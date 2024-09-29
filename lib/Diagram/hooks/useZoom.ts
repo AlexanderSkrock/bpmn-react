@@ -1,15 +1,14 @@
 import { useCallback, useState } from "react";
 import { ZoomOptions } from "./hooks.types";
 
-/** Standard-Zoom (100%) */
+/** Default zoom (100%) */
 const DEFAULT_ZOOM_LEVEL = 1;
-
-/** Minimaler Zoomlevel (20%) */
+/** Minimal zoom factor (20%) */
 const MIN_ZOOM_LEVEL = 0.2;
-/** Maximaler Zoomlevel (700%) */
+/** Maximal zoom factor (700%) */
 const MAX_ZOOM_LEVEL = 7;
 
-/** Zoom Stufen -> 20% Schritte */
+/** Zoom step -> 20% steps */
 const ZOOM_STEP = 0.2;
 
 const useZoom = ({ initialZoom = DEFAULT_ZOOM_LEVEL, minZoom = MIN_ZOOM_LEVEL, maxZoom = MAX_ZOOM_LEVEL, step = ZOOM_STEP }: ZoomOptions = {}): [number, () => void, () => void, (nextZoom: number) => void] => {
