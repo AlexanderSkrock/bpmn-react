@@ -1,0 +1,22 @@
+import { Meta } from "@storybook/blocks";
+import LinkTo from "@storybook/addon-links/react";
+
+<Meta title="Diagram" />
+
+# Overview
+
+This section contains a multitude of functions around `Diagram` provided by `diagram-js`. Currently, there is no hook style utility `useDiagram` as this library focusses on the bpmn-scoped imlementation `bpmn-js`. Still, there is some utility which applies to `Diagram` overall.
+
+Firstly, there is a couple helper methods to extract named services from a `Diagram` instance. Depending on the active modules, they might not be available.
+
+* <LinkTo kind="Diagram/getCanvas" story="docs">getCanvas</LinkTo>
+* <LinkTo kind="Diagram/getElementRegistry" story="docs">getElementRegistry</LinkTo>
+* <LinkTo kind="Diagram/getEventBus" story="docs">getEventBus</LinkTo>
+* <LinkTo kind="Diagram/getInteractionEvents" story="docs">getInteractionEvents</LinkTo>
+* <LinkTo kind="Diagram/getOverlays" story="docs">getOverlays</LinkTo>
+
+In addition to these service helpers, some hooks are provided to work with specific `Diagram` features. Similarily as for the services, some might not work depending on the active modules.
+
+* <LinkTo kind="Diagram/useAttachedZoom" story="docs">useAttachedZoom</LinkTo>
+* <LinkTo kind="Diagram/useEventHandler" story="docs">useEventHandler</LinkTo>
+* <LinkTo kind="Diagram/useOverlays" story="docs">useOverlays</LinkTo>
