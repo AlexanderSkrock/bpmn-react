@@ -4,17 +4,16 @@ import { EventBusEventCallback } from "diagram-js/lib/core/EventBus";
 import { ElementLike } from "diagram-js/lib/model/Types";
 
 import { DiagramLike, getCanvas } from "../services";
-import type { AttachedZoomOptions } from "./hooks.types";
+import type {AttachedZoomOptions, UseAttachedZoomResult} from "./hooks.types";
 import useEventHandler from "./useEventHandler"
 import useZoom from "./useZoom";
 
 /**
  * This hook handles the integration with the zoom API of `diagram-js` and allows modifying the current zoom while staying in sync with external changes to the zoom level.
  * @param diagram diagram instance to attach to
- * @param options configuration of the zoom behaviour 
- * @returns 
+ * @param options configuration of the zoom behaviour
  */
-const useAttachedZoom = (diagram: DiagramLike | null, { initialFit, ...zoomOptions }: AttachedZoomOptions = {}): [number, () => void, () => void, () => void, (nextZoom: number) => void] => {
+const useAttachedZoom = (diagram: DiagramLike | null, { initialFit, ...zoomOptions }: AttachedZoomOptions = {}): UseAttachedZoomResult => {
     const [currentZoom, increaseZoom, decreaseZoom, setZoom] = useZoom(zoomOptions)
 
     const zoom = useCallback((zoomValue: number | "fit-viewport") => {

@@ -55,3 +55,37 @@ export interface ZoomOptions {
      */
     maxZoom?: number;
 }
+
+/**
+ * The return type for the {@link useAttachedZoom} hook. As usual for React hooks it has an array-structure containing the following in order:
+ * <ul>
+ *     <li>current zoom factor</li>
+ *     <li>function to zoom in</li>
+ *     <li>function to zoom out</li>
+ *     <li>function to fit zoom</li>
+ *     <li>function to set the zoom factor to a specific value</li>
+ * </ul>
+ */
+export type UseAttachedZoomResult = [
+    /**
+     * The current zoom factor.
+     */
+    number,
+    /**
+     * A function to increase the current zoom factor by the configured step size.
+     */
+    () => void,
+    /**
+     * A function to decrease the current zoom factor by the configured step size.
+     */
+    () => void,
+    /**
+     * A function to automatically fit the current diagram to viewport.
+     */
+    () => void,
+    /**
+     * A function to set the zoom factor to a specific value, while respect the lower and upper boundaries.
+     */
+    (nextZoom: number) => void,
+]
+

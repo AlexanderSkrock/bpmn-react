@@ -6,6 +6,11 @@ import { getOverlays } from "../services";
 import useEventHandler from "./useEventHandler";
 import { Overlay } from "./hooks.types";
 
+/**
+ * A React hook to simplify the usage of Overlays. This requires the `Overlays` module to be configured.
+ * @param diagram the diagram instance at which the overlays should be registered.
+ * @param overlays the overlays which should be managed.
+ */
 const useOverlays = (diagram: DiagramLike | null, overlays: Overlay[]): void => {
     const [overlayIds, setOverlayIds] = useState<string[]>([]);
 
