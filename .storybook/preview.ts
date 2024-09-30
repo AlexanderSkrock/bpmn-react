@@ -17,10 +17,12 @@ const preview: Preview = {
                     "Modeler",
                     "Modules", [
                         "DynamicOverlays", [
-                            "Docs", "*", "Types"
+                            "Docs", "*", "Types",
                         ],
                     ],
-                    "Overlays",
+                    "Overlays", [
+                        "Heatmap", [ "Docs", "*", "Types" ],
+                    ],
                 ],
                 locales: "en-US",
             },
