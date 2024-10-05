@@ -26,9 +26,14 @@ const useOverlays = (diagram: DiagramLike | null, overlays: Overlay[]): void => 
 
     const initializeOverlays = useCallback(() => {
         if (overlayService) {
-            const ids = overlays.flatMap(overlayService.add);
-            setOverlayIds(ids);
-            console.log(`Registered ${ids.length} overlays.`);
+            if (overlays) {
+                const ids = overlays.flatMap(overlayService.add);
+                setOverlayIds(ids);
+                console.log(`Registered ${ids.length} overlays.`);
+            } else {
+                setOverlayIds([]);
+                console.log("Registered no overlays.");
+            }
         }
     }, [overlayService, overlays]);
 

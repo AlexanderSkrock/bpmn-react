@@ -1,8 +1,13 @@
-import { Meta } from "@storybook/blocks";
+import { Canvas, Meta } from "@storybook/blocks";
 import LinkTo from '@storybook/addon-links/react';
 
-<Meta title="Overlays/Documentation" />
+import { OverlaysConfiguration } from "./Overlays.stories";
+import ViewerWithOverlaysCode from "./ViewerWithOverlays?raw"; 
+
+<Meta title="Overlays" />
 
 # Overlays
 
 All overlays described here require the `Dynamic Overlays Module`. Further information on configuration and usage can be found <LinkTo kind="Modules/Dynamic Overlays/Documentation" story="docs">here</LinkTo>.
+
+<Canvas of={ OverlaysConfiguration } sourceState="shown" source={ { code: ViewerWithOverlaysCode } } />
