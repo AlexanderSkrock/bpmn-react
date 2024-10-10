@@ -17,7 +17,7 @@ type Story = StoryObj<typeof ViewerWithOverlays>;
 export const SimpleSvgHeatmap: Story = {
     loaders: [
         async () => ({
-            xml: await (await fetch('process.bpmn')).text(),
+            xml: await (await fetch("overlays/heatmap/simple.bpmn")).text(),
         }),
     ],
     args: {
@@ -26,16 +26,13 @@ export const SimpleSvgHeatmap: Story = {
                 renderMode: "svg",
                 values: {
                     "StartEvent_1": 1,
-                    "Event_127b34u": 1,
-                    "Activity_1kbapgo": 5,
-                    "Event_0mubl9c": 1,
-                    "Gateway_053q43x": 3,
-                    "Activity_0nvttov": 7,
-                    "Activity_1o0wpg8": 5,
-                    "Activity_1gxgh10": 7,
-                    "Gateway_1mk41gt": 7,
-                    "Activity_00ppsme": 5,
-                    "Event_1j8rpgs": 1,
+                    "Activity_1hzvr68": 5,
+                    "Gateway_0tf974l": 1,
+                    "Activity_073j6cw": 3,
+                    "Activity_0dszmpd": 1,
+                    "Gateway_0vy4cip": 1,
+                    "Activity_01oumqu": 2,
+                    "Event_0qtcf0f": 1,
                 },
             }),
         ],
@@ -45,7 +42,7 @@ export const SimpleSvgHeatmap: Story = {
 export const SimpleCanvasHeatmap: Story = {
     loaders: [
         async () => ({
-            xml: await (await fetch('process.bpmn')).text(),
+            xml: await (await fetch("overlays/heatmap/simple.bpmn")).text(),
         }),
     ],
     args: {
@@ -54,16 +51,13 @@ export const SimpleCanvasHeatmap: Story = {
                 renderMode: "canvas",
                 values: {
                     "StartEvent_1": 1,
-                    "Event_127b34u": 1,
-                    "Activity_1kbapgo": 5,
-                    "Event_0mubl9c": 1,
-                    "Gateway_053q43x": 3,
-                    "Activity_0nvttov": 7,
-                    "Activity_1o0wpg8": 5,
-                    "Activity_1gxgh10": 7,
-                    "Gateway_1mk41gt": 7,
-                    "Activity_00ppsme": 5,
-                    "Event_1j8rpgs": 1,
+                    "Activity_1hzvr68": 5,
+                    "Gateway_0tf974l": 1,
+                    "Activity_073j6cw": 3,
+                    "Activity_0dszmpd": 1,
+                    "Gateway_0vy4cip": 1,
+                    "Activity_01oumqu": 2,
+                    "Event_0qtcf0f": 1,
                 },
             })
         ],
@@ -73,7 +67,7 @@ export const SimpleCanvasHeatmap: Story = {
 export const PerformanceSvgHeatmap: Story = {
     loaders: [
         async () => ({
-            xml: await (await fetch("heatmap/performance.bpmn")).text(),
+            xml: await (await fetch("overlays/heatmap/performance.bpmn")).text(),
         }),
     ],
     args: {
@@ -128,7 +122,7 @@ export const PerformanceSvgHeatmap: Story = {
 export const PerformanceCanvasHeatmap: Story = {
     loaders: [
         async () => ({
-            xml: await (await fetch("heatmap/performance.bpmn")).text(),
+            xml: await (await fetch("overlays/heatmap/performance.bpmn")).text(),
         }),
     ],
     args: {
@@ -183,35 +177,39 @@ export const PerformanceCanvasHeatmap: Story = {
 export const HeatmapWithSubprocess: Story = {
     loaders: [
         async () => ({
-            xml: await (await fetch('root_process.bpmn')).text(),
+            xml: await (await fetch("overlays/heatmap/with_subprocess.bpmn")).text(),
         }),
     ],
     args: {
         loadCalledElement: (calledConfig) => {
-            if (calledConfig.calledElement === "Sub_Process") {
-                return fetch("sub_process.bpmn").then(response => response.text()).then(xml => ({
-                    xml,
-                    overlays: [
-                        new Heatmap({
-                            renderMode: "svg",
-                            values: {
-                                "StartEvent_1": 5,
-                                "ManualTaskTask": 3,
-                                "Event_16fv82x": 1,
-                            },
-                        }),
-                    ],
-                }))
-            } else if (calledConfig.calledElement === "RootProcess") {
-                return fetch("root_process.bpmn").then(response => response.text()).then(xml => ({
+            if (calledConfig.calledElement === "called_subprocess") {
+                return fetch("overlays/heatmap/called_subprocess.bpmn").then(response => response.text()).then(xml => ({
                     xml,
                     overlays: [
                         new Heatmap({
                             renderMode: "svg",
                             values: {
                                 "StartEvent_1": 1,
-                                "CallSubprocessCallActivity": 12,
-                                "Event_0iis7zc": 1,
+                                "Activity_08b2g79": 5,
+                                "Event_1wm2oz9": 1,
+                            },
+                        }),
+                    ],
+                }))
+            } else if (calledConfig.calledElement === "with_subprocess") {
+                return fetch("overlays/heatmap/with_subprocess.bpmn").then(response => response.text()).then(xml => ({
+                    xml,
+                    overlays: [
+                        new Heatmap({
+                            renderMode: "svg",
+                            values: {
+                                "StartEvent_1": 1,
+                                "Activity_13xrnse": 12,
+                                "Event_1qjnbu1": 1,
+                                "Activity_0jehdpd": 5,
+                                "Event_0f9or00": 1,
+                                "Activity_0uehpm8": 7,
+                                "Event_19snngu": 1,
                             },
                         }),
                     ],
@@ -224,8 +222,12 @@ export const HeatmapWithSubprocess: Story = {
                 renderMode: "svg",
                 values: {
                     "StartEvent_1": 1,
-                    "CallSubprocessCallActivity": 12,
-                    "Event_0iis7zc": 1,
+                    "Activity_13xrnse": 12,
+                    "Event_1qjnbu1": 1,
+                    "Activity_0jehdpd": 5,
+                    "Event_0f9or00": 1,
+                    "Activity_0uehpm8": 7,
+                    "Event_19snngu": 1,
                 },
             }),
         ],
