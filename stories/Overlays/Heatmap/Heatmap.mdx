@@ -1,0 +1,36 @@
+import { Meta, Story } from "@storybook/blocks";
+import LinkTo from '@storybook/addon-links/react';
+
+import { SimpleSvgHeatmap } from "./Heatmap.stories";
+
+<Meta title="Overlays/Heatmap" />
+
+# Overview
+
+This overlay implementation visualizes heat points on a bpmn diagram. It is based on the `Dynamic Overlays Module`.
+
+# Configuration
+
+First of all, the `Dynamic Overlays Module` has to be configured. Please have a look on the following pages on how to achieve this:
+* <LinkTo kind="Overlays" story="docs">Overlays</LinkTo>
+* <LinkTo kind="Modules/DynamicOverlays" story="docs">Dynamic Overlays Module</LinkTo>
+
+If this module is (already) configured, you are ready to use the `Heatmap` overlay. You can use any of the available integration points to pass an instance of the `Heatmap` overlay to your bpmn viewer instance. The recommended way is to use the <LinkTo kind="Modules/DynamicOverlays/useDynamicOverlays" story="docs">useDynamicOverlays</LinkTo> hook.
+
+```ts
+useDynamicOverlays(viewer, [
+    new Heatmap({
+        values: {
+          // Your value mapping goes here!
+        },
+    });
+]);
+```
+
+# Usage
+
+If everything is configured properly, you'll see a colorful overlay on top of your bpmn diagram showing specific heat points. To have an insight on the raw values, you can hover over each element, which will show a tooltip.
+
+# Example
+
+<Story of={ SimpleSvgHeatmap } />
