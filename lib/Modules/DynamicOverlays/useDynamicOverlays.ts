@@ -47,7 +47,10 @@ const useOverlays = (diagram: DiagramLike | null, overlays: Overlay[]): void => 
         return resetOverlays;
     }, [overlayService, overlays]);
 
+    // Configure overlays on imports
     useEventHandler(diagram, "import.render.complete", configureOverlays);
+    // Configure overlays on plane switching like navigating into embedded subprocesses
+    useEventHandler(diagram, "root.set", configureOverlays);
 };
 
 export default useOverlays;
